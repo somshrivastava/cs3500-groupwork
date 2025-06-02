@@ -1,10 +1,8 @@
 package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
-import calendar.model.SingleEvent;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class CreateSingleAllDayEventCommand extends CreateEventCommand {
   public CreateSingleAllDayEventCommand(String subject, LocalDateTime date) {

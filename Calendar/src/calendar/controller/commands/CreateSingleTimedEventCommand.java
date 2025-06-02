@@ -2,7 +2,6 @@ package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
 import calendar.model.IEvent;
-import calendar.model.SingleEvent;
 
 import java.time.LocalDateTime;
 

@@ -2,7 +2,6 @@ package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
 import calendar.model.IEvent;
-import calendar.model.RecurringEvent;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
