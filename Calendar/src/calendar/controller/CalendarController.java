@@ -3,7 +3,7 @@ package calendar.controller;
 import java.io.IOException;
 import java.util.Scanner;
 
-import calendar.controller.commands.CreateEventCommand;
+import calendar.controller.commands.ICalendarCommand;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 

@@ -3,7 +3,7 @@ package calendar.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public abstract class AbstractEvent implements IEvent {
+public class Event implements IEvent {
 
   protected final String subject;
   protected final String description;
@@ -14,7 +14,7 @@ public abstract class AbstractEvent implements IEvent {
   protected final LocalDateTime endDateTime;
   protected final Integer seriesId;
 
-  protected AbstractEvent(String subject, String description, EventLocation location, EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId) {
+  protected Event(String subject, String description, EventLocation location, EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId) {
     this.subject = subject;
     this.description = description;
     this.location = location;
@@ -22,6 +22,32 @@ public abstract class AbstractEvent implements IEvent {
     this.startDateTime = startDateTime;
     this.endDateTime = endDateTime;
     this.seriesId = seriesId;
+  }
+
+
+  public static AbstractEventBuilder<EventBuilder> getBuilder() {
+    return new Event.EventBuilder();
+  }
+
+  public static class EventBuilder extends AbstractEventBuilder<EventBuilder> {
+
+    @Override
+    protected IEvent build() {
+      return new Event(
+              subject,
+              description,
+              location,
+              status,
+              startDateTime,
+              endDateTime,
+              seriesId
+      );
+    }
+
+    @Override
+    protected EventBuilder getBuilder() {
+      return this;
+    }
   }
 
   @Override
@@ -41,9 +67,9 @@ public abstract class AbstractEvent implements IEvent {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof AbstractEvent)) return false;
+    if (!(obj instanceof Event)) return false;
 
-    AbstractEvent that = (AbstractEvent) obj;
+    Event that = (Event) obj;
 
     return Objects.equals(this.subject, that.subject) &&
             Objects.equals(this.startDateTime, that.startDateTime);

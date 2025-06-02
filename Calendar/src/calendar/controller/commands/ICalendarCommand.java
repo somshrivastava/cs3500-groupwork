@@ -1,4 +1,4 @@
-package calendar.controller;
+package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
 
