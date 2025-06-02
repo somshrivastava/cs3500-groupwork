@@ -1,6 +1,6 @@
-package calendar.controller;
+package calendar.controller.commands;
 
-import model.ICalendarModel;
+import calendar.model.ICalendarModel;
 
 public interface ICalendarCommand {
 

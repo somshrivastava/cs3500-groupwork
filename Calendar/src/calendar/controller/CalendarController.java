@@ -3,9 +3,10 @@ package calendar.controller;
 import java.io.IOException;
 import java.util.Scanner;
 
-import controller.commands.CreateEventCommand;
-import model.ICalendarModel;
-import view.ICalendarView;
+import calendar.controller.commands.CreateEventCommand;
+import calendar.controller.commands.ICalendarCommand;
+import calendar.model.ICalendarModel;
+import calendar.view.ICalendarView;
 
 public class CalendarController implements ICalendarController {
   private final ICalendarModel calendarModel;

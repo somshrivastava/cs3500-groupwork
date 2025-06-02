@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarView implements ICalendarView{
+public class CalendarView implements ICalendarView {
   private final Appendable out;
 
   public CalendarView(Appendable out) {
