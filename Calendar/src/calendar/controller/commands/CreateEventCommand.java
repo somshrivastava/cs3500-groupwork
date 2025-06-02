@@ -3,8 +3,8 @@ package calendar.controller.commands;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import controller.ICalendarCommand;
-import model.ICalendarModel;
+import calendar.controller.ICalendarCommand;
+import calendar.model.ICalendarModel;
 
 public abstract class CreateEventCommand implements ICalendarCommand {
     protected final String subject;
@@ -26,6 +26,6 @@ public abstract class CreateEventCommand implements ICalendarCommand {
 
     @Override
     public void execute(ICalendarModel calendarModel) {
-        calendarModel.createEvent(subject, startDateTime, endDateTime, weekdays, count, untilDate);
+        // calendarModel.createEvent(subject, startDateTime, endDateTime, weekdays, count, untilDate);
     }
 }

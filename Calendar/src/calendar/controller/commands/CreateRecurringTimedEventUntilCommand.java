@@ -1,7 +1,8 @@
 package calendar.controller.commands;
 
-import model.ICalendarModel;
-import model.RecurringEvent;
+import calendar.model.ICalendarModel;
+import calendar.model.IEvent;
+import calendar.model.RecurringEvent;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

@@ -15,7 +15,7 @@ public class RecurringEvent extends AbstractEvent {
   public static class RecurringEventBuilder extends AbstractEventBuilder<RecurringEventBuilder> {
 
     @Override
-    protected IEvent build() {
+    public IEvent build() {
       return new RecurringEvent(
               subject,
               description,

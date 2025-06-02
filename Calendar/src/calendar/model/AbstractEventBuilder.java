@@ -1,8 +1,6 @@
 package calendar.model;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public abstract class AbstractEventBuilder<T extends AbstractEventBuilder<T>> implements IEventBuilder<T> {
   protected String subject;
@@ -58,7 +56,7 @@ public abstract class AbstractEventBuilder<T extends AbstractEventBuilder<T>> im
     return this.getBuilder();
   }
 
-  protected abstract IEvent build();
+  public abstract IEvent build();
 
-  protected abstract T getBuilder();
+  public abstract T getBuilder();
 }

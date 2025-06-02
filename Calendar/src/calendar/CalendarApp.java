@@ -2,12 +2,12 @@ package calendar;
 
 import java.io.InputStreamReader;
 
-import controller.CalendarController;
-import controller.ICalendarController;
-import model.CalendarModel;
-import model.ICalendarModel;
-import view.CalendarView;
-import view.ICalendarView;
+import calendar.controller.CalendarController;
+import calendar.controller.ICalendarController;
+import calendar.model.CalendarModel;
+import calendar.model.ICalendarModel;
+import calendar.view.CalendarView;
+import calendar.view.ICalendarView;
 
 public class CalendarApp {
 

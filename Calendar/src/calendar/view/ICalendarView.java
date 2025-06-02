@@ -1,6 +1,6 @@
 package calendar.view;
 
-import model.IEvent;
+import calendar.model.IEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,7 +15,7 @@ public class SingleEvent extends AbstractEvent {
   public static class SingleEventBuilder extends AbstractEventBuilder<SingleEventBuilder> {
 
     @Override
-    protected IEvent build() {
+    public IEvent build() {
       return new SingleEvent(
               subject,
               description,

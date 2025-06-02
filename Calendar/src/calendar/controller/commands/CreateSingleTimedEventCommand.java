@@ -1,7 +1,8 @@
 package calendar.controller.commands;
 
-import model.ICalendarModel;
-import model.SingleEvent;
+import calendar.model.ICalendarModel;
+import calendar.model.IEvent;
+import calendar.model.SingleEvent;
 import java.time.LocalDateTime;
 
 public class CreateSingleTimedEventCommand extends CreateEventCommand {
