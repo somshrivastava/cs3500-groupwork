@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import calendar.model.ICalendarModel;
+import calendar.view.ICalendarView;
 
 public abstract class CreateEventCommand implements ICalendarCommand {
   protected final String subject;
@@ -29,5 +30,5 @@ public abstract class CreateEventCommand implements ICalendarCommand {
   }
 
   @Override
-  public abstract void execute(ICalendarModel calendarModel);
+  public abstract void execute(ICalendarModel calendarModel, ICalendarView calendarView);
 }

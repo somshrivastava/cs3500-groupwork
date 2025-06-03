@@ -53,6 +53,26 @@ public class Event implements IEvent {
   }
 
   @Override
+  public String getDescription() {
+    return this.description;
+  }
+
+  @Override
+  public EventLocation getLocation() {
+    return this.location;
+  }
+
+  @Override
+  public EventStatus getStatus() {
+    return this.status;
+  }
+
+  @Override
+  public Integer getSeriesId() {
+    return this.seriesId;
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof Event)) return false;
 

@@ -3,6 +3,7 @@ package calendar.controller.commands;
 import calendar.model.Event;
 import calendar.model.ICalendarModel;
 import calendar.model.IEvent;
+import calendar.view.ICalendarView;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class CreateRecurringAllDayEventUntilDateCommand extends CreateEventComma
   }
 
   @Override
-  public void execute(ICalendarModel calendarModel) {
+  public void execute(ICalendarModel calendarModel, ICalendarView calendarView) {
     LocalDateTime currentDate = startDateTime;
     int seriesId = calendarModel.getNextSeriesId();
 

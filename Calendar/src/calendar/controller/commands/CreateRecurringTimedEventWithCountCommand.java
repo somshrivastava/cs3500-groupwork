@@ -1,6 +1,7 @@
 package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
+import calendar.view.ICalendarView;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public class CreateRecurringTimedEventWithCountCommand extends CreateEventComman
   }
 
   @Override
-  public void execute(ICalendarModel calendarModel) {
+  public void execute(ICalendarModel calendarModel, ICalendarView calendarView) {
     LocalDateTime currentDate = startDateTime;
     int eventsCreated = 0;
     long durationMinutes = ChronoUnit.MINUTES.between(startDateTime, endDateTime);

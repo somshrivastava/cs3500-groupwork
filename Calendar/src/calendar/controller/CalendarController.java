@@ -11,12 +11,14 @@ public class CalendarController implements ICalendarController {
   private final ICalendarModel calendarModel;
   private final ICalendarView calendarView;
   private final Readable in;
+  private final CommandParser commandParser;
 
   public CalendarController(ICalendarModel model, ICalendarView view,
                             Readable in) {
     this.calendarModel = model;
     this.calendarView = view;
     this.in = in;
+    this.commandParser = new CommandParser();
   }
 
   @Override
@@ -44,27 +46,6 @@ public class CalendarController implements ICalendarController {
     }
   }
 
-  private ICalendarCommand parseCommand(String commandLine) {
-    Scanner scanner = new Scanner(commandLine);
-
-    String action = scanner.next();
-
-    switch (action) {
-      case "create":
-        break;
-      case "edit":
-        break;
-      case "print":
-        break;
-      case "show":
-        break;
-      default:
-        break;
-    }
-
-    return null;
-  }
-
   public void runInteractiveMode() throws IOException {
     this.calendarView.displayMessage("Welcome to the Calendar Application - Interactive Mode");
     this.calendarView.displayMessage("Type 'exit' to quit");
@@ -87,11 +68,10 @@ public class CalendarController implements ICalendarController {
       }
 
       try {
-        ICalendarCommand command = this.parseCommand(commandLine);
-        command.execute(this.calendarModel);
+        ICalendarCommand command = commandParser.parse(commandLine);
+        command.execute(this.calendarModel, this.calendarView);
       } catch (Exception e) {
         this.calendarView.displayError(e.getMessage());
-        System.exit(1);
       }
 
       this.calendarView.displayBlankLine();
@@ -99,6 +79,6 @@ public class CalendarController implements ICalendarController {
   }
 
   public void runHeadlessMode() throws IOException {
-
+    // TODO: Implement headless mode
   }
 }

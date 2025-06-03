@@ -26,6 +26,30 @@ public interface IEvent {
   LocalDateTime getEndDateTime();
 
   /**
+   * Gets the description of the event.
+   * @return the description of the event
+   */
+  String getDescription();
+
+  /**
+   * Gets the location of the event.
+   * @return the location of the event
+   */
+  EventLocation getLocation();
+
+  /**
+   * Gets the status of the event.
+   * @return the status of the event
+   */
+  EventStatus getStatus();
+
+  /**
+   * Gets the series ID of the event.
+   * @return the series ID, or null if this is not part of a series
+   */
+  Integer getSeriesId();
+
+  /**
    * Compares this event with another object for equality.
    * Two events are considered equal if they have the same subject and start date/time.
    * @param obj the object to compare with
