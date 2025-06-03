@@ -1,7 +1,6 @@
 package calendar.controller.commands;
 
 import calendar.model.ICalendarModel;
-import calendar.model.IEvent;
 
 import java.time.LocalDateTime;
 
@@ -12,11 +11,6 @@ public class CreateSingleTimedEventCommand extends CreateEventCommand {
 
   @Override
   public void execute(ICalendarModel calendarModel) {
-    IEvent event = SingleEvent.getBuilder()
-            .subject(subject)
-            .startDateTime(startDateTime)
-            .endDateTime(endDateTime)
-            .build();
-    calendarModel.createEvent(event);
+    calendarModel.createEvent(subject, startDateTime, endDateTime, null);
   }
 } 

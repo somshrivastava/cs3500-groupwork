@@ -120,10 +120,10 @@ public class CommandParser {
 
         if (countOrUntil.matches("\\d+")) {
           int count = Integer.parseInt(countOrUntil);
-          return new CreateRecurringTimedEventCommand(subject, startTime, endTime, weekdays, count);
+          return new CreateRecurringTimedEventWithCountCommand(subject, startTime, endTime, weekdays, count);
         } else {
           LocalDateTime untilDate = parseDate(countOrUntil);
-          return new CreateRecurringTimedEventUntilCommand(subject, startTime, endTime, weekdays, untilDate);
+          return new CreateRecurringTimedEventUntilDateCommand(subject, startTime, endTime, weekdays, untilDate);
         }
 
       case "allday":
@@ -135,10 +135,10 @@ public class CommandParser {
 
         if (countOrUntilDate.matches("\\d+")) {
           int count = Integer.parseInt(countOrUntilDate);
-          return new CreateRecurringAllDayEventCommand(subject, startDate, weekdays, count);
+          return new CreateRecurringAllDayEventWithCountCommand(subject, startDate, weekdays, count);
         } else {
           LocalDateTime untilDate = parseDate(countOrUntilDate);
-          return new CreateRecurringAllDayEventUntilCommand(subject, startDate, weekdays, untilDate);
+          return new CreateRecurringAllDayEventUntilDateCommand(subject, startDate, weekdays, untilDate);
         }
 
       default:

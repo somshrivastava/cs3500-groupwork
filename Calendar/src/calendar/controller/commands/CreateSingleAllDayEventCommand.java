@@ -1,8 +1,8 @@
 package calendar.controller.commands;
 
+import calendar.model.Event;
 import calendar.model.ICalendarModel;
 import calendar.model.IEvent;
-import calendar.model.SingleEvent;
 
 import java.time.LocalDateTime;
 
@@ -15,12 +15,7 @@ public class CreateSingleAllDayEventCommand extends CreateEventCommand {
   public void execute(ICalendarModel calendarModel) {
     LocalDateTime startOfDay = startDateTime.toLocalDate().atTime(8, 0);
     LocalDateTime endOfDay = startDateTime.toLocalDate().atTime(17, 0);
-
-    IEvent event = SingleEvent.getBuilder()
-            .subject(subject)
-            .startDateTime(startOfDay)
-            .endDateTime(endOfDay)
-            .build();
-    calendarModel.createEvent(event);
+    
+    calendarModel.createEvent(subject, startOfDay, endOfDay, null);
   }
 } 

@@ -2,15 +2,41 @@ package calendar.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents an event in the calendar system.
+ * This interface defines the core properties and behaviors that all calendar events must have.
+ */
 public interface IEvent {
+  /**
+   * Gets the subject/title of the event.
+   * @return the subject of the event
+   */
+  String getSubject();
 
-  public String getSubject();
+  /**
+   * Gets the start date and time of the event.
+   * @return the start date and time
+   */
+  LocalDateTime getStartDateTime();
 
-  public LocalDateTime getEndDateTime();
+  /**
+   * Gets the end date and time of the event.
+   * @return the end date and time
+   */
+  LocalDateTime getEndDateTime();
 
-  public LocalDateTime getStartDateTime();
+  /**
+   * Compares this event with another object for equality.
+   * Two events are considered equal if they have the same subject and start date/time.
+   * @param obj the object to compare with
+   * @return true if the events are equal, false otherwise
+   */
+  boolean equals(Object obj);
 
-  public boolean equals(Object ob);
-
-  public int hashCode();
+  /**
+   * Returns a hash code value for this event.
+   * The hash code is based on the event's subject and start date/time.
+   * @return a hash code value for this event
+   */
+  int hashCode();
 }

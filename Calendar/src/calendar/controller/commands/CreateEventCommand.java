@@ -1,9 +1,9 @@
 package calendar.controller.commands;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import calendar.controller.ICalendarCommand;
 import calendar.model.ICalendarModel;
 
 public abstract class CreateEventCommand implements ICalendarCommand {
@@ -14,8 +14,12 @@ public abstract class CreateEventCommand implements ICalendarCommand {
   protected final Integer count;
   protected final LocalDateTime untilDate;
 
-  protected CreateEventCommand(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                               ArrayList<java.time.DayOfWeek> weekdays, Integer count, LocalDateTime untilDate) {
+  protected CreateEventCommand(String subject,
+                               LocalDateTime startDateTime,
+                               LocalDateTime endDateTime,
+                               ArrayList<DayOfWeek> weekdays,
+                               Integer count,
+                               LocalDateTime untilDate) {
     this.subject = subject;
     this.startDateTime = startDateTime;
     this.endDateTime = endDateTime;
@@ -25,7 +29,5 @@ public abstract class CreateEventCommand implements ICalendarCommand {
   }
 
   @Override
-  public void execute(ICalendarModel calendarModel) {
-    calendarModel.createEvent(subject, startDateTime, endDateTime, weekdays, count, untilDate);
-  }
+  public abstract void execute(ICalendarModel calendarModel);
 }
