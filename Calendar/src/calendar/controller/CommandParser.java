@@ -1,6 +1,8 @@
 package calendar.controller;
 
 import calendar.model.ICalendarModel;
+import calendar.model.IEvent;
+import calendar.view.ICalendarView;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +22,7 @@ public class CommandParser {
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
   private static final Map<Character, DayOfWeek> WEEKDAY_MAP = new HashMap<>();
   private final ICalendarModel model;
+  private final ICalendarView view;
 
   static {
     WEEKDAY_MAP.put('M', DayOfWeek.MONDAY);
@@ -31,11 +35,13 @@ public class CommandParser {
   }
 
   /**
-   * Constructs a new CommandParser with the given calendar model.
+   * Constructs a new CommandParser with the given calendar model and view.
    * @param model the calendar model to use
+   * @param view the calendar view to use for displaying events
    */
-  public CommandParser(ICalendarModel model) {
+  public CommandParser(ICalendarModel model, ICalendarView view) {
     this.model = model;
+    this.view = view;
   }
 
   /**
@@ -325,22 +331,29 @@ public class CommandParser {
       throw new IllegalArgumentException("Invalid print command. Must start with 'print events'");
     }
 
+    List<IEvent> events;
+    String header;
+
     if (parts[2].equals("on")) {
       if (parts.length != 4) {
         throw new IllegalArgumentException("Invalid print events on date format");
       }
       LocalDateTime date = parseDate(parts[3]);
-      model.printEvents(date);
+      events = model.printEvents(date);
+      header = "Events on " + date.toLocalDate().toString();
     } else if (parts[2].equals("from")) {
       if (parts.length != 6 || !parts[4].equals("to")) {
         throw new IllegalArgumentException("Invalid print events from-to format");
       }
       LocalDateTime startDate = parseDate(parts[3]);
       LocalDateTime endDate = parseDate(parts[5]);
-      model.printEvents(startDate, endDate);
+      events = model.printEvents(startDate, endDate);
+      header = "Events from " + startDate.toLocalDate().toString() + " to " + endDate.toLocalDate().toString();
     } else {
       throw new IllegalArgumentException("Invalid print command format");
     }
+
+    view.displayEvents(header, events);
   }
 
   private void parseShowCommand(String[] parts) throws IllegalArgumentException {

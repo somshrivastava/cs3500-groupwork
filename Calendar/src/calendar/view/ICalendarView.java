@@ -22,4 +22,11 @@ public interface ICalendarView {
   void displayPrompt();
 
   void displayBlankLine();
+
+  /**
+   * Displays a list of events with a header.
+   * @param header the header text for the event list
+   * @param events the list of events to display
+   */
+  void displayEvents(String header, List<IEvent> events);
 }

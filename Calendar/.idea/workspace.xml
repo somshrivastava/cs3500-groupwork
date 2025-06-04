@@ -6,12 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/EditSingleEventCommand.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/CalendarController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/HeadlessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/HeadlessController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/InteractiveController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/InteractiveController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/CalendarControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/CalendarControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/CalendarView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/CalendarView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/ICalendarView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/ICalendarView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,29 +29,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.CalendarApp.executor&quot;: &quot;Run&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;JUnit.CalendarControllerTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CalendarModelTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CommandParserTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;som&quot;,
-    &quot;last_directory_selection&quot;: &quot;/Users/somshrivastava/Developer/cs3500-groupwork/Calendar/test&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.CalendarApp.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "JUnit.CalendarControllerTest.executor": "Run",
+    "JUnit.CalendarModelTest.executor": "Run",
+    "JUnit.CommandParserTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_directory_selection": "/Users/somshrivastava/Developer/cs3500-groupwork/Calendar/test",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />

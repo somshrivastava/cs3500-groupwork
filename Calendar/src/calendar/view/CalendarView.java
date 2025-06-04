@@ -1,5 +1,6 @@
 package calendar.view;
 
+import calendar.model.IEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,27 @@ public class CalendarView implements ICalendarView {
 
       for (String eventLine : eventLines) {
         this.out.append(eventLine).append("\n");
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to write output", e);
+    }
+  }
+
+  @Override
+  public void displayEvents(String header, List<IEvent> events) {
+    try {
+      this.out.append(header).append("\n");
+      this.out.append("-".repeat(header.length())).append("\n");
+
+      for (IEvent event : events) {
+        StringBuilder eventLine = new StringBuilder();
+        eventLine.append(event.getSubject())
+                .append(" (")
+                .append(event.getStartDateTime().toLocalTime())
+                .append(" - ")
+                .append(event.getEndDateTime().toLocalTime())
+                .append(")");
+        this.out.append(eventLine.toString()).append("\n");
       }
     } catch (IOException e) {
       throw new IllegalStateException("Failed to write output", e);

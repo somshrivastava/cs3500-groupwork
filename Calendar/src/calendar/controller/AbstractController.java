@@ -2,10 +2,20 @@ package calendar.controller;
 
 import java.util.Scanner;
 
+import calendar.model.ICalendarModel;
+import calendar.view.ICalendarView;
+
 /**
  * This class represents implementations of a controller of a calendar application.
  */
 public abstract class AbstractController implements ICalendarController {
+  protected final ICalendarModel calendarModel;
+  protected final ICalendarView calendarView;
+
+  protected AbstractController(ICalendarModel calendarModel, ICalendarView calendarView) {
+    this.calendarModel = calendarModel;
+    this.calendarView = calendarView;
+  }
 
   /**
    * Takes a command line and parses it, creating the corresponding command or throwing an exception.
@@ -14,21 +24,7 @@ public abstract class AbstractController implements ICalendarController {
    * @return a calendar command corresponding the command
    */
   protected void parseCommand(String commandLine) {
-    Scanner scanner = new Scanner(commandLine);
-
-    String action = scanner.next();
-
-    switch (action) {
-      case "create":
-        break;
-      case "edit":
-        break;
-      case "print":
-        break;
-      case "show":
-        break;
-      default:
-        break;
-    }
+    CommandParser commandParser = new CommandParser(this.calendarModel, this.calendarView);
+    commandParser.parse(commandLine);
   }
 }

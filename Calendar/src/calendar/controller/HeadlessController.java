@@ -13,8 +13,6 @@ import calendar.view.ICalendarView;
  * executes the file instructions.
  */
 public class HeadlessController extends AbstractController {
-  private final ICalendarModel calendarModel;
-  private final ICalendarView calendarView;
   private final File file;
 
   /**
@@ -27,13 +25,12 @@ public class HeadlessController extends AbstractController {
    */
   public HeadlessController(ICalendarModel model, ICalendarView view, File file)
           throws FileNotFoundException {
+    super(model, view);
     if ((model == null) || (view == null) || (file == null)) {
       throw new IllegalArgumentException("model, view or readable is null");
     } else if (!file.exists() || !file.canRead()) {
       throw new FileNotFoundException("File does not exist or cannot be read.");
     }
-    this.calendarModel = model;
-    this.calendarView = view;
     this.file = file;
   }
 

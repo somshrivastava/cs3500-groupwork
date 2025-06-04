@@ -12,8 +12,6 @@ import calendar.view.ICalendarView;
  * This controller works with any Readable to read its inputs.
  */
 public class InteractiveController extends AbstractController {
-  private final ICalendarModel calendarModel;
-  private final ICalendarView calendarView;
   private final Readable in;
 
   /**
@@ -25,11 +23,10 @@ public class InteractiveController extends AbstractController {
    * @param in    the Readable object for inputs
    */
   public InteractiveController(ICalendarModel model, ICalendarView view, Readable in) {
+    super(model, view);
     if ((model == null) || (view == null) || (in == null)) {
       throw new IllegalArgumentException("model, view or readable is null");
     }
-    this.calendarModel = model;
-    this.calendarView = view;
     this.in = in;
   }
 
