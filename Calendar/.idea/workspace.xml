@@ -6,22 +6,28 @@
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calendar.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Calendar.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/CalendarApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/CalendarApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/CalendarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/CalendarController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateEventCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateEventCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventUntilDateCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventUntilDateCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventWithCountCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventWithCountCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventUntilDateCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventUntilDateCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventWithCountCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventWithCountCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleAllDayEventCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleAllDayEventCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleTimedEventCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleTimedEventCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/ICalendarCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/commands/ICalendarCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateEventCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventUntilDateCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringAllDayEventWithCountCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventUntilDateCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateRecurringTimedEventWithCountCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleAllDayEventCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/CreateSingleTimedEventCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/EditEventCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/EditEventsFromDateCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/EditSeriesCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/EditSingleEventCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/ICalendarCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/PrintEventsInIntervalCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/PrintEventsOnDateCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/commands/ShowStatusCommand.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/Event.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/ICalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ICalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/IEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/IEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CalendarControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/CalendarControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/CalendarModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CommandParserTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +58,7 @@
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "som",
     "last_directory_selection": "/Users/somshrivastava/Developer/cs3500-groupwork/Calendar/test",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -83,7 +89,7 @@
       <option name="presentableId" value="Default" />
       <updated>1748880362080</updated>
       <workItem from="1748880363126" duration="553000" />
-      <workItem from="1748915727724" duration="18205000" />
+      <workItem from="1748915727724" duration="24543000" />
     </task>
     <servers />
   </component>

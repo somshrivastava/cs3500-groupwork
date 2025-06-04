@@ -12,47 +12,67 @@ import java.util.List;
  */
 public interface ICalendarModel {
   /**
-   * Creates a new event in the calendar.
+   * Creates a single timed event.
    * @param subject the subject/title of the event
    * @param startDateTime the start date and time of the event
    * @param endDateTime the end date and time of the event
-   * @param seriesId the ID of the event series (null for single events)
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  void createEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId);
+  void createSingleTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
   /**
-   * Gets the next available series ID for recurring events.
-   * @return the next series ID
+   * Creates a single all-day event.
+   * @param subject the subject/title of the event
+   * @param date the date of the event
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  Integer getNextSeriesId();
+  void createSingleAllDayEvent(String subject, LocalDateTime date);
 
   /**
-   * Gets all events in the calendar.
-   * @return a list of all events
+   * Creates a recurring timed event with a count.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  List<IEvent> getEvents();
+  void createRecurringTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime, 
+                                ArrayList<DayOfWeek> weekdays, int count);
 
   /**
-   * Gets all events that occur on a specific date.
-   * @param date the date to filter events for
-   * @return a list of events that occur on the given date
+   * Creates a recurring timed event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  List<IEvent> getEventsOnDate(LocalDate date);
+  void createRecurringTimedEventUntil(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime, 
+                                     ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate);
 
   /**
-   * Gets all events that occur within a time interval.
-   * @param startTime the start of the interval (inclusive)
-   * @param endTime the end of the interval (inclusive)
-   * @return a list of events that overlap with the given interval
+   * Creates a recurring all-day event with a count.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  List<IEvent> getEventsInInterval(LocalDateTime startTime, LocalDateTime endTime);
+  void createRecurringAllDayEvent(String subject, LocalDateTime startDate, 
+                                 ArrayList<DayOfWeek> weekdays, int count);
 
   /**
-   * Checks if the given time is busy (has an event scheduled).
-   * @param time the time to check
-   * @return true if there is an event at the given time, false otherwise
+   * Creates a recurring all-day event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
    */
-  boolean isTimeBusy(LocalDateTime time);
+  void createRecurringAllDayEventUntil(String subject, LocalDateTime startDate, 
+                                      ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate);
 
   /**
    * Edits a single event's property.
@@ -63,7 +83,8 @@ public interface ICalendarModel {
    * @param newValue the new value for the property
    * @throws IllegalArgumentException if the event is not found or the property is invalid
    */
-  void editEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime, String property, String newValue);
+  void editEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime, 
+                String property, String newValue);
 
   /**
    * Edits all events in a series that start at or after the given date/time.
@@ -84,4 +105,26 @@ public interface ICalendarModel {
    * @throws IllegalArgumentException if the event is not found or the property is invalid
    */
   void editSeries(String subject, LocalDateTime startDateTime, String property, String newValue);
+
+  /**
+   * Gets all events that occur on a specific date.
+   * @param date the date to filter events for
+   * @return a list of events that occur on the given date
+   */
+  List<IEvent> printEvents(LocalDateTime date);
+
+  /**
+   * Gets all events that occur within a time interval.
+   * @param startDateTime the start of the interval (inclusive)
+   * @param endDateTime the end of the interval (inclusive)
+   * @return a list of events that overlap with the given interval
+   */
+  List<IEvent> printEvents(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+  /**
+   * Checks if the given time is busy (has an event scheduled).
+   * @param dateTime the time to check
+   * @return true if there is an event at the given time, false otherwise
+   */
+  boolean showStatus(LocalDateTime dateTime);
 }

@@ -1,6 +1,6 @@
 package calendar.controller;
 
-import calendar.controller.commands.*;
+import calendar.model.ICalendarModel;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parser for calendar commands. Handles parsing user input and creating appropriate command objects.
+ * Parser for calendar commands. Handles parsing user input and calling appropriate model methods.
  */
 public class CommandParser {
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
   private static final Map<Character, DayOfWeek> WEEKDAY_MAP = new HashMap<>();
+  private final ICalendarModel model;
 
   static {
     WEEKDAY_MAP.put('M', DayOfWeek.MONDAY);
@@ -30,13 +31,20 @@ public class CommandParser {
   }
 
   /**
-   * Parses a command line and returns the appropriate command object.
+   * Constructs a new CommandParser with the given calendar model.
+   * @param model the calendar model to use
+   */
+  public CommandParser(ICalendarModel model) {
+    this.model = model;
+  }
+
+  /**
+   * Parses a command line and executes the appropriate model method.
    *
    * @param commandLine the command line to parse
-   * @return the parsed command
    * @throws IllegalArgumentException if the command line is invalid
    */
-  public ICalendarCommand parse(String commandLine) throws IllegalArgumentException {
+  public void parse(String commandLine) throws IllegalArgumentException {
     if (commandLine == null || commandLine.trim().isEmpty()) {
       throw new IllegalArgumentException("Command line cannot be empty");
     }
@@ -48,19 +56,19 @@ public class CommandParser {
 
     String commandType = parts[0].toLowerCase();
     if (commandType.equals("create")) {
-      return parseCreateCommand(parts);
+      parseCreateCommand(parts);
     } else if (commandType.equals("edit")) {
-      return parseEditCommand(parts);
+      parseEditCommand(parts);
     } else if (commandType.equals("print")) {
-      return parsePrintCommand(parts);
+      parsePrintCommand(parts);
     } else if (commandType.equals("show")) {
-      return parseShowCommand(parts);
+      parseShowCommand(parts);
     } else {
       throw new IllegalArgumentException("Unknown command type: " + commandType);
     }
   }
 
-  private ICalendarCommand parseCreateCommand(String[] commandParts) throws IllegalArgumentException {
+  private void parseCreateCommand(String[] commandParts) throws IllegalArgumentException {
     validateCreateCommandFormat(commandParts);
     String eventSubject = extractQuotedSubject(commandParts);
     int subjectEndIndex = findSubjectEndIndex(commandParts);
@@ -69,9 +77,11 @@ public class CommandParser {
     String eventType = commandParts[subjectEndIndex].toLowerCase();
     
     String[] remainingParts = Arrays.copyOfRange(commandParts, subjectEndIndex + 1, commandParts.length);
-    return eventType.equals("from") 
-        ? parseTimedEvent(eventSubject, remainingParts)
-        : parseAllDayEvent(eventSubject, remainingParts);
+    if (eventType.equals("from")) {
+      parseTimedEvent(eventSubject, remainingParts);
+    } else {
+      parseAllDayEvent(eventSubject, remainingParts);
+    }
   }
 
   private void validateCreateCommandFormat(String[] commandParts) throws IllegalArgumentException {
@@ -130,26 +140,23 @@ public class CommandParser {
     }
   }
 
-  private ICalendarCommand parseTimedEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
+  private void parseTimedEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
     validateTimedEventFormat(remainingParts);
     
     final int START_TIME_INDEX = 0;
     final int TO_KEYWORD_INDEX = 1;
     final int END_TIME_INDEX = 2;
-    final int REPEATS_KEYWORD_INDEX = 3;
-    final int WEEKDAYS_INDEX = 4;
-    final int FOR_OR_UNTIL_INDEX = 5;
-    final int COUNT_OR_DATE_INDEX = 6;
     
     LocalDateTime startTime = parseDateTime(remainingParts[START_TIME_INDEX]);
     validateToKeyword(remainingParts[TO_KEYWORD_INDEX]);
     LocalDateTime endTime = parseDateTime(remainingParts[END_TIME_INDEX]);
 
     if (isSingleEvent(remainingParts)) {
-      return new CreateSingleTimedEventCommand(subject, startTime, endTime);
+      model.createSingleTimedEvent(subject, startTime, endTime);
+      return;
     }
 
-    return parseRecurringTimedEvent(subject, startTime, endTime, remainingParts);
+    parseRecurringTimedEvent(subject, startTime, endTime, remainingParts);
   }
 
   private void validateTimedEventFormat(String[] parts) throws IllegalArgumentException {
@@ -168,7 +175,7 @@ public class CommandParser {
     return parts.length == 3;
   }
 
-  private ICalendarCommand parseRecurringTimedEvent(String subject, LocalDateTime startTime, 
+  private void parseRecurringTimedEvent(String subject, LocalDateTime startTime, 
       LocalDateTime endTime, String[] parts) throws IllegalArgumentException {
     validateRecurringEventFormat(parts);
     final int WEEKDAYS_INDEX = 4;
@@ -177,9 +184,13 @@ public class CommandParser {
     
     ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[WEEKDAYS_INDEX]);
     
-    return parts[FOR_OR_UNTIL_INDEX].equalsIgnoreCase("for")
-        ? createRecurringTimedEventWithCount(subject, startTime, endTime, weekdays, parts)
-        : createRecurringTimedEventUntilDate(subject, startTime, endTime, weekdays, parts);
+    if (parts[FOR_OR_UNTIL_INDEX].equalsIgnoreCase("for")) {
+      int count = Integer.parseInt(parts[COUNT_OR_DATE_INDEX]);
+      model.createRecurringTimedEvent(subject, startTime, endTime, weekdays, count);
+    } else {
+      LocalDateTime untilDate = parseDate(parts[COUNT_OR_DATE_INDEX]);
+      model.createRecurringTimedEventUntil(subject, startTime, endTime, weekdays, untilDate);
+    }
   }
 
   private void validateRecurringEventFormat(String[] parts) throws IllegalArgumentException {
@@ -189,37 +200,18 @@ public class CommandParser {
     }
   }
 
-  private ICalendarCommand createRecurringTimedEventWithCount(String subject, LocalDateTime startTime,
-      LocalDateTime endTime, ArrayList<DayOfWeek> weekdays, String[] parts) throws IllegalArgumentException {
-    final int COUNT_INDEX = 6;
-    if (parts.length != 7) {
-      throw new IllegalArgumentException("Invalid count format");
-    }
-    int count = Integer.parseInt(parts[COUNT_INDEX]);
-    return new CreateRecurringTimedEventWithCountCommand(subject, startTime, endTime, weekdays, count);
-  }
-
-  private ICalendarCommand createRecurringTimedEventUntilDate(String subject, LocalDateTime startTime,
-      LocalDateTime endTime, ArrayList<DayOfWeek> weekdays, String[] parts) throws IllegalArgumentException {
-    final int UNTIL_DATE_INDEX = 6;
-    if (parts.length != 7) {
-      throw new IllegalArgumentException("Invalid until date format");
-    }
-    LocalDateTime untilDate = parseDate(parts[UNTIL_DATE_INDEX]);
-    return new CreateRecurringTimedEventUntilDateCommand(subject, startTime, endTime, weekdays, untilDate);
-  }
-
-  private ICalendarCommand parseAllDayEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
+  private void parseAllDayEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
     validateAllDayEventFormat(remainingParts);
     final int DATE_INDEX = 0;
     
     LocalDateTime eventDate = parseDate(remainingParts[DATE_INDEX]);
 
     if (remainingParts.length == 1) {
-      return new CreateSingleAllDayEventCommand(subject, eventDate);
+      model.createSingleAllDayEvent(subject, eventDate);
+      return;
     }
 
-    return parseRecurringAllDayEvent(subject, eventDate, remainingParts);
+    parseRecurringAllDayEvent(subject, eventDate, remainingParts);
   }
 
   private void validateAllDayEventFormat(String[] parts) throws IllegalArgumentException {
@@ -228,7 +220,7 @@ public class CommandParser {
     }
   }
 
-  private ICalendarCommand parseRecurringAllDayEvent(String subject, LocalDateTime eventDate, 
+  private void parseRecurringAllDayEvent(String subject, LocalDateTime eventDate, 
       String[] parts) throws IllegalArgumentException {
     validateRecurringEventFormat(parts);
     final int WEEKDAYS_INDEX = 2;
@@ -237,32 +229,16 @@ public class CommandParser {
     
     ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[WEEKDAYS_INDEX]);
     
-    return parts[FOR_OR_UNTIL_INDEX].equalsIgnoreCase("for")
-        ? createRecurringAllDayEventWithCount(subject, eventDate, weekdays, parts)
-        : createRecurringAllDayEventUntilDate(subject, eventDate, weekdays, parts);
-  }
-
-  private ICalendarCommand createRecurringAllDayEventWithCount(String subject, LocalDateTime eventDate,
-      ArrayList<DayOfWeek> weekdays, String[] parts) throws IllegalArgumentException {
-    final int COUNT_INDEX = 4;
-    if (parts.length != 5) {
-      throw new IllegalArgumentException("Invalid count format");
+    if (parts[FOR_OR_UNTIL_INDEX].equalsIgnoreCase("for")) {
+      int count = Integer.parseInt(parts[COUNT_OR_DATE_INDEX]);
+      model.createRecurringAllDayEvent(subject, eventDate, weekdays, count);
+    } else {
+      LocalDateTime untilDate = parseDate(parts[COUNT_OR_DATE_INDEX]);
+      model.createRecurringAllDayEventUntil(subject, eventDate, weekdays, untilDate);
     }
-    int count = Integer.parseInt(parts[COUNT_INDEX]);
-    return new CreateRecurringAllDayEventWithCountCommand(subject, eventDate, weekdays, count);
   }
 
-  private ICalendarCommand createRecurringAllDayEventUntilDate(String subject, LocalDateTime eventDate,
-      ArrayList<DayOfWeek> weekdays, String[] parts) throws IllegalArgumentException {
-    final int UNTIL_DATE_INDEX = 4;
-    if (parts.length != 5) {
-      throw new IllegalArgumentException("Invalid until date format");
-    }
-    LocalDateTime untilDate = parseDate(parts[UNTIL_DATE_INDEX]);
-    return new CreateRecurringAllDayEventUntilDateCommand(subject, eventDate, weekdays, untilDate);
-  }
-
-  private ICalendarCommand parseEditCommand(String[] parts) throws IllegalArgumentException {
+  private void parseEditCommand(String[] parts) throws IllegalArgumentException {
     if (parts.length < 7) {
       throw new IllegalArgumentException("Invalid edit command format");
     }
@@ -316,7 +292,7 @@ public class CommandParser {
       }
       i++;
       String newValue = parts[i];
-      return new EditSingleEventCommand(subject, startTime, endTime, property, newValue);
+      model.editEvent(subject, startTime, endTime, property, newValue);
     } else {
       if (!parts[i].equals("with")) {
         throw new IllegalArgumentException("Invalid edit format");
@@ -324,9 +300,9 @@ public class CommandParser {
       i++;
       String newValue = parts[i];
       if (editType.equals("events")) {
-        return new EditEventsFromDateCommand(subject, startTime, property, newValue);
+        model.editEvents(subject, startTime, property, newValue);
       } else { // series
-        return new EditSeriesCommand(subject, startTime, property, newValue);
+        model.editSeries(subject, startTime, property, newValue);
       }
     }
   }
@@ -340,7 +316,7 @@ public class CommandParser {
            property.equals("status");
   }
 
-  private ICalendarCommand parsePrintCommand(String[] parts) throws IllegalArgumentException {
+  private void parsePrintCommand(String[] parts) throws IllegalArgumentException {
     if (parts.length < 4) {
       throw new IllegalArgumentException("Invalid print command format");
     }
@@ -353,22 +329,26 @@ public class CommandParser {
       if (parts.length != 4) {
         throw new IllegalArgumentException("Invalid print events on date format");
       }
-      return new PrintEventsOnDateCommand(parts[3]);
+      LocalDateTime date = parseDate(parts[3]);
+      model.printEvents(date);
     } else if (parts[2].equals("from")) {
       if (parts.length != 6 || !parts[4].equals("to")) {
         throw new IllegalArgumentException("Invalid print events from-to format");
       }
-      return new PrintEventsInIntervalCommand(parts[3], parts[5]);
+      LocalDateTime startDate = parseDate(parts[3]);
+      LocalDateTime endDate = parseDate(parts[5]);
+      model.printEvents(startDate, endDate);
     } else {
       throw new IllegalArgumentException("Invalid print command format");
     }
   }
 
-  private ICalendarCommand parseShowCommand(String[] parts) throws IllegalArgumentException {
+  private void parseShowCommand(String[] parts) throws IllegalArgumentException {
     if (parts.length != 4 || !parts[1].equals("status") || !parts[2].equals("on")) {
       throw new IllegalArgumentException("Invalid show status format. Must be 'show status on <dateStringTtimeString>'");
     }
-    return new ShowStatusCommand(parts[3]);
+    LocalDateTime dateTime = parseDateTime(parts[3]);
+    model.showStatus(dateTime);
   }
 
   private LocalDateTime parseDateTime(String dateTimeStr) throws IllegalArgumentException {

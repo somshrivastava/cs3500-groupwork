@@ -3,7 +3,6 @@ package calendar.controller;
 import java.io.IOException;
 import java.util.Scanner;
 
-import calendar.controller.commands.ICalendarCommand;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -18,7 +17,7 @@ public class CalendarController implements ICalendarController {
     this.calendarModel = model;
     this.calendarView = view;
     this.in = in;
-    this.commandParser = new CommandParser();
+    this.commandParser = new CommandParser(this.calendarModel);
   }
 
   @Override
@@ -68,8 +67,7 @@ public class CalendarController implements ICalendarController {
       }
 
       try {
-        ICalendarCommand command = commandParser.parse(commandLine);
-        command.execute(this.calendarModel, this.calendarView);
+        commandParser.parse(commandLine);
       } catch (Exception e) {
         this.calendarView.displayError(e.getMessage());
       }
