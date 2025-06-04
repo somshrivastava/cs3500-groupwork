@@ -1,7 +1,12 @@
 import java.util.ArrayList;
+import java.util.List;
 
+import calendar.model.IEvent;
 import calendar.view.ICalendarView;
 
+/**
+ * This class is a mock CalendarView used for testing the CalendarController.
+ */
 public class MockCalendarView implements ICalendarView {
     private final StringBuilder output;
 
@@ -53,5 +58,16 @@ public class MockCalendarView implements ICalendarView {
     @Override
     public void displayBlankLine() {
         output.append("\n");
+    }
+
+    /**
+     * Displays a list of events with a header.
+     *
+     * @param header the header text for the event list
+     * @param events the list of events to display
+     */
+    @Override
+    public void displayEvents(String header, List<IEvent> events) {
+
     }
 } 

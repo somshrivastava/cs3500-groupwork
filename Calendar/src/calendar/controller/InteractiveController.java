@@ -41,7 +41,7 @@ public class InteractiveController extends AbstractController {
     this.calendarView.displayBlankLine();
 
     while (!quit && sc.hasNext()) { //continue until the user quits
-      this.calendarView.displayPrompt(); //prompt for the instruction name
+      this.calendarView.displayPrompt(); //prompt for the command
       //String commandLine = sc.next(); //take an instruction name
       String commandLine = sc.nextLine().trim();
 
