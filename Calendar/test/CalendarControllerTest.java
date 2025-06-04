@@ -1,18 +1,3 @@
-import calendar.controller.CalendarController;
-import calendar.model.CalendarModel;
-import calendar.model.ICalendarModel;
-import calendar.model.IEvent;
-import calendar.view.ICalendarView;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.StringReader;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 /*
 public class CalendarControllerTest {
     private ICalendarModel model;

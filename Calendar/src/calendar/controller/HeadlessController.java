@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import calendar.controller.commands.ICalendarCommand;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -53,8 +52,7 @@ public class HeadlessController extends AbstractController {
         System.exit(0);
       } else {
         try {
-          ICalendarCommand command = parseCommand(commandLine);
-          command.execute(this.calendarModel);
+          parseCommand(commandLine);
         } catch (Exception e) {
           this.calendarView.displayError(e.getMessage());
         }

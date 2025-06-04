@@ -2,7 +2,6 @@ package calendar.controller;
 
 import java.util.Scanner;
 
-import calendar.controller.commands.ICalendarCommand;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -56,8 +55,7 @@ public class InteractiveController extends AbstractController {
       } else {
         //processCommand(userInstruction, sc, sheet);
         try {
-          ICalendarCommand command = parseCommand(commandLine);
-          command.execute(this.calendarModel);
+          parseCommand(commandLine);
         } catch (Exception e) {
           this.calendarView.displayError(e.getMessage());
           //System.exit(1);
