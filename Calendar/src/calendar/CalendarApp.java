@@ -1,46 +1,54 @@
 package calendar;
 
 import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
-import calendar.controller.CalendarController;
+import calendar.controller.HeadlessController;
+import calendar.controller.InteractiveController;
 import calendar.controller.ICalendarController;
 import calendar.model.CalendarModel;
 import calendar.model.ICalendarModel;
 import calendar.view.CalendarView;
 import calendar.view.ICalendarView;
 
+/**
+ * The driver of this application.
+ */
 public class CalendarApp {
 
+  /**
+   * The main method of the program.
+   *
+   * @param args any command line arguments
+   * @throws IllegalArgumentException if the mode is invalid or the file cannot be accessed
+   */
   public static void main(String[] args) {
+    if (args.length < 2 || !args[0].equals("--mode")) {
+      throw new IllegalArgumentException("Must specify mode.");
+    }
+    // get mode
+    String mode = args[1];
+
     ICalendarModel calendarModel = new CalendarModel();
     ICalendarView calendarView = new CalendarView(System.out);
-    ICalendarController calendarController = new CalendarController(calendarModel, calendarView, new InputStreamReader(System.in));
+    Readable readable = new InputStreamReader(System.in);
+    ICalendarController controller;
 
-    String mode = null;
-    String filename = null;
-
-    if (args.length < 2 || !args[0].equalsIgnoreCase("--mode")) {
-      throw new IllegalArgumentException("Usage: java CalendarApp --mode [interactive|headless] [filename]");
-    }
-
-    mode = args[1].toLowerCase();
-    if (!mode.equals("interactive") && !mode.equals("headless")) {
-      throw new IllegalArgumentException("Mode must be either 'interactive' or 'headless'");
-    }
-
-    if (mode.equals("headless")) {
-      if (args.length < 3) {
-        throw new IllegalArgumentException("Headless mode requires a filename");
+    if (mode.equalsIgnoreCase("interactive")) {
+      controller = new InteractiveController(calendarModel, calendarView, readable);
+    } else if (mode.equalsIgnoreCase("headless")) {
+      // get file from path name
+      File file = new File(args[2]);
+      try {
+        controller = new HeadlessController(calendarModel, calendarView, file);
+      } catch (FileNotFoundException e) {
+        throw new RuntimeException("File not found.");
       }
-      filename = args[2];
+    } else {
+      throw new IllegalArgumentException("Invalid mode.");
     }
-
-    try {
-      calendarController.go(mode, filename);
-    } catch (IllegalArgumentException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    }
+    controller.go();
   }
 }
