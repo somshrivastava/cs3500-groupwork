@@ -114,7 +114,7 @@ public class Event implements IEvent {
      */
     public EventBuilder subject(String subject) {
       this.subject = subject;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -124,7 +124,7 @@ public class Event implements IEvent {
      */
     public EventBuilder description(String description) {
       this.description = description;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -134,7 +134,7 @@ public class Event implements IEvent {
      */
     public EventBuilder location(EventLocation location) {
       this.location = location;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -144,7 +144,7 @@ public class Event implements IEvent {
      */
     public EventBuilder status(EventStatus status) {
       this.status = status;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -154,7 +154,7 @@ public class Event implements IEvent {
      */
     public EventBuilder startDateTime(LocalDateTime startDateTime) {
       this.startDateTime = startDateTime;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -164,7 +164,7 @@ public class Event implements IEvent {
      */
     public EventBuilder endDateTime(LocalDateTime endDateTime) {
       this.endDateTime = endDateTime;
-      return this.getBuilder();
+      return this;
     }
 
     /**
@@ -174,7 +174,7 @@ public class Event implements IEvent {
      */
     public EventBuilder seriesId(Integer seriesId) {
       this.seriesId = seriesId;
-      return this.getBuilder();
+      return this;
     }
 
     /**
