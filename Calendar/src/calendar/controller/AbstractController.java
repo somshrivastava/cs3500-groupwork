@@ -1,7 +1,5 @@
 package calendar.controller;
 
-import java.util.Scanner;
-
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -21,7 +19,6 @@ public abstract class AbstractController implements ICalendarController {
    * Takes a command line and parses it, creating the corresponding command or throwing an exception.
    *
    * @param commandLine the line to parse
-   * @return a calendar command corresponding the command
    */
   protected void parseCommand(String commandLine) {
     CommandParser commandParser = new CommandParser(this.calendarModel, this.calendarView);
