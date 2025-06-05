@@ -1,3 +1,5 @@
+package controller.tests;
+
 /**
  * Represents a user providing the program with  an input
  */

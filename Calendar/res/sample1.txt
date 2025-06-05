@@ -1,1 +1,31 @@
+// create single event
+create event "Team Meeting" from 2024-03-20T10::00 to 2024-03-20T11:00
+
+// create single all-day event
+create event "Club" on 2025-05-19
+
+// create recurring event with count
+create event "OOD Lecture" from 2025-05-05T11:40 to 2025-06-20T01:20 repeats MTWR for 10 times
+
+// create recurring event with end date
+create event "Brunch with Friends" from 2025-02-20T10:30 to 2025-02-20T12:45 repeats SU until 2025-06-01
+
+// create series of all-day events repeated N times on specific weekdays
+create event "Tournament" on 2026-04-15 repeats SU for 2 times
+
+// create series all-day events until date
+create event "Class" on 2025-09-01 repeats MWRF until 2026-05-10
+
+edit event subject Club from 2025-02-20T10:30 to 2025-02-20T10:30 with newproperty
+
+edit events <property> <eventSubject> from <dateStringTtimeString> with <NewPropertyValue>
+
+edit series <property> <eventSubject> from <dateStringTtimeString> with <NewPropertyValue>
+
+print events on <dateString>
+
+print events from <dateStringTtimeString> to <dateStringTtimeString>
+
+show status on <dateStringTtimeString>
+
 exit
