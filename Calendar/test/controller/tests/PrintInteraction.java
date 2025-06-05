@@ -1,3 +1,5 @@
+package controller.tests;
+
 /**
  * Represents the printing of a sequence of lines to output
  */
