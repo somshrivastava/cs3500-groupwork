@@ -47,7 +47,6 @@ public class HeadlessController extends AbstractController {
       String commandLine = sc.nextLine().trim();
       if (commandLine.equals("exit") || commandLine.equals("q")) {
         return;
-        //System.exit(0);
       } else {
         try {
           parseCommand(commandLine);
@@ -58,6 +57,5 @@ public class HeadlessController extends AbstractController {
     }
     this.calendarView.displayError("No exit command.");
     return;
-    //System.exit(1);
   }
 }
