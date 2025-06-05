@@ -1,6 +1,5 @@
 package calendar.controller;
 
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import calendar.model.ICalendarModel;

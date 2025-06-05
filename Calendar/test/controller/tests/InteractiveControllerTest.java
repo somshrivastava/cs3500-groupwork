@@ -1,6 +1,5 @@
 package controller.tests;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -26,15 +25,10 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     input = new StringReader(s);
   }
 
-  // ----------------------------------------------------------------------------------------------
-  // Tests for invalid commands
-
   @Test
   public void testInvalidCommandFormat() {
     super.testInvalidCommandFormat();
   }
-
-  // invalid date/time
 
   @Override
   public void testCreateSingleTimedEvent() {
@@ -187,8 +181,5 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     controller.go();
     assertEquals(expectedOutput.toString(), logView.toString());
   }
-
-  // ----------------------------------------------------------------------------------------------
-  // Integration tests
 
 }

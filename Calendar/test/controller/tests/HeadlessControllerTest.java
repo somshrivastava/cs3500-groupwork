@@ -54,9 +54,5 @@ public class HeadlessControllerTest extends AbstractControllerTest {
     controller.go();
     assertEquals("", logModel.toString());
     assertEquals("Error: No exit command.\n", logView.toString());
-
   }
-
-  // ----------------------------------------------------------------------------------------------
-  // Tests for sequence of commands interactions
 }
