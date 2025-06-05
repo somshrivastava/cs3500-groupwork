@@ -8,26 +8,43 @@ import calendar.view.ICalendarView;
  * This class is a mock CalendarView used for testing the CalendarController.
  */
 public class MockCalendarView implements ICalendarView {
-    private final StringBuilder output;
+  private final StringBuilder output;
 
-    public MockCalendarView(StringBuilder output) {
-        this.output = output;
-    }
+  public MockCalendarView(StringBuilder output) {
+    this.output = output;
+  }
 
-    @Override
-    public void displayMessage(String message) {
-        output.append(message).append("\n");
-    }
+  /**
+   * Displays a general message to the user.
+   *
+   * @param message the message to display
+   */
+  @Override
+  public void displayMessage(String message) {
+    output.append(message);
+  }
 
-    @Override
-    public void displayError(String error) {
-        output.append("Error: ").append(error).append("\n");
-    }
+  /**
+   * Displays an error message to the user.
+   *
+   * @param error the error message to display
+   */
+  @Override
+  public void displayError(String error) {
+    String msg = "Error: " + error;
+    output.append(msg);
+  }
 
-    @Override
-    public void displaySuccess(String message) {
-        output.append("Success: ").append(message).append("\n");
-    }
+  /**
+   * Displays a success message to the user.
+   *
+   * @param message the success message to display
+   */
+  @Override
+  public void displaySuccess(String message) {
+    String msg = "Success: " + message;
+    output.append(msg);
+  }
 
     public void displayEvent(String subject, ArrayList<String> details) {
         output.append("Event: ").append(subject).append("\n");

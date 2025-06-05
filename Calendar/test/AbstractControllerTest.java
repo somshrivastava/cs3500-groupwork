@@ -18,6 +18,8 @@ public abstract class AbstractControllerTest {
   protected ICalendarController controller;
   protected ICalendarModel model;
   protected ICalendarView view;
+  protected StringBuilder logModel;
+  protected StringBuilder logView;
 
   @Before
   public abstract void setUp();
