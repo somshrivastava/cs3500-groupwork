@@ -14,15 +14,6 @@ import java.util.Comparator;
  * Implementation of the calendar model that manages a collection of events.
  * This class handles the creation, editing, and querying of calendar events,
  * both single and recurring.
- *
- * <p>Key features:</p>
- * <ul>
- *   <li>Single and recurring event creation</li>
- *   <li>All-day events (8 AM to 5 PM)</li>
- *   <li>Event series management with unique series IDs</li>
- *   <li>Duplicate event prevention</li>
- *   <li>Property-based event editing</li>
- * </ul>
  */
 public class CalendarModel implements ICalendarModel {
   private final Set<IEvent> events;
@@ -87,7 +78,7 @@ public class CalendarModel implements ICalendarModel {
     LocalDateTime currentStart = startDateTime;
     LocalDateTime currentEnd = endDateTime;
 
-    // Compare dates only, not times, for "until" logic (inclusive)
+    // Compare dates only, not times, for "until" logic
     while (!currentStart.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentStart.getDayOfWeek())) {
         addTimedEvent(subject, currentStart, currentEnd, seriesId);
@@ -123,7 +114,7 @@ public class CalendarModel implements ICalendarModel {
     Integer seriesId = nextSeriesId++;
     LocalDateTime currentDate = startDate;
 
-    // Compare dates only, not times, for "until" logic (inclusive)
+    // Compare dates only, not times, for "until" logic
     while (!currentDate.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentDate.getDayOfWeek())) {
         addAllDayEvent(subject, currentDate, seriesId);
@@ -174,8 +165,6 @@ public class CalendarModel implements ICalendarModel {
     }
     return false;
   }
-
-  // ==================== HELPER METHODS ====================
 
   /**
    * Creates and adds a timed event without validation.
@@ -279,35 +268,53 @@ public class CalendarModel implements ICalendarModel {
     }
 
     Integer seriesId = baseEvent.getSeriesId();
-    Integer newSeriesId = null;
-
-    // Only create new series ID if start time is actually changing
-    if (property.equals("start")) {
-      try {
-        LocalDateTime newStart = parseDateTime(newValue);
-        // Only compare the time portion since all events in series have different dates
-        if (!newStart.toLocalTime().equals(baseEvent.getStartDateTime().toLocalTime())) {
-          newSeriesId = nextSeriesId++;
-        }
-      } catch (Exception e) {
-        // Let updateEventProperty handle the error
-      }
-    }
+    Integer newSeriesId = determineNewSeriesId(baseEvent, property, newValue);
 
     // Create a copy of events to avoid concurrent modification
     Set<IEvent> eventsCopy = new HashSet<>(events);
     LocalDateTime baseDate = baseEvent.getStartDateTime();
 
     for (IEvent event : eventsCopy) {
-      if (event.getSeriesId() != null && event.getSeriesId().equals(seriesId)) {
-        boolean shouldEdit = !fromThisEventForward ||
-                !event.getStartDateTime().toLocalDate().isBefore(baseDate.toLocalDate());
-
-        if (shouldEdit) {
-          updateEventProperty(event, property, newValue, newSeriesId);
-        }
+      if (shouldEditEvent(event, seriesId, baseDate, fromThisEventForward)) {
+        updateEventProperty(event, property, newValue, newSeriesId);
       }
     }
+  }
+
+  /**
+   * Determines if a new series ID is needed based on the property being changed.
+   * @param baseEvent the base event being edited
+   * @param property the property being changed
+   * @param newValue the new value for the property
+   * @return new series ID if needed, null otherwise
+   */
+  private Integer determineNewSeriesId(IEvent baseEvent, String property, String newValue) {
+    if (property.equals("start")) {
+      LocalDateTime newStart = parseDateTime(newValue);
+      // Only compare the time portion since all events in series have different dates
+      if (!newStart.toLocalTime().equals(baseEvent.getStartDateTime().toLocalTime())) {
+        return nextSeriesId++;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Determines if an event should be edited based on series criteria.
+   * @param event the event to check
+   * @param seriesId the series ID to match
+   * @param baseDate the base date for forward editing
+   * @param fromThisEventForward if true, only edit from base date forward
+   * @return true if the event should be edited
+   */
+  private boolean shouldEditEvent(IEvent event, Integer seriesId, LocalDateTime baseDate,
+                                  boolean fromThisEventForward) {
+    if (event.getSeriesId() == null || !event.getSeriesId().equals(seriesId)) {
+      return false;
+    }
+
+    return !fromThisEventForward ||
+            !event.getStartDateTime().toLocalDate().isBefore(baseDate.toLocalDate());
   }
 
   /**
@@ -341,27 +348,18 @@ public class CalendarModel implements ICalendarModel {
   private Object parsePropertyValue(String property, String newValue, IEvent event) {
     switch (property.toLowerCase()) {
       case "subject":
+      case "description":
         return newValue;
-
       case "start":
-        LocalDateTime newStart = parseDateTime(newValue);
-        // Don't validate - we'll adjust the end time to maintain duration
-        return newStart;
-
+        return parseDateTime(newValue);
       case "end":
         LocalDateTime newEnd = parseDateTime(newValue);
         validator.validateStartBeforeEnd(event.getStartDateTime(), newEnd);
         return newEnd;
-
-      case "description":
-        return newValue;
-
       case "location":
         return parseLocation(newValue);
-
       case "status":
         return parseStatus(newValue);
-
       default:
         throw new IllegalArgumentException("Invalid property: " + property);
     }
@@ -377,7 +375,19 @@ public class CalendarModel implements ICalendarModel {
    */
   private IEvent copyEventWithChange(IEvent original, String property,
                                      Object newValue, Integer newSeriesId) {
-    Event.EventBuilder builder = Event.getBuilder()
+    Event.EventBuilder builder = createBuilderFromEvent(original, newSeriesId);
+    applyPropertyChange(builder, original, property, newValue);
+    return builder.build();
+  }
+
+  /**
+   * Creates a builder initialized with values from an existing event.
+   * @param original the original event
+   * @param newSeriesId the new series ID (or null to keep existing)
+   * @return a builder with values from the original event
+   */
+  private Event.EventBuilder createBuilderFromEvent(IEvent original, Integer newSeriesId) {
+    return Event.getBuilder()
             .subject(original.getSubject())
             .startDateTime(original.getStartDateTime())
             .endDateTime(original.getEndDateTime())
@@ -385,30 +395,23 @@ public class CalendarModel implements ICalendarModel {
             .location(original.getLocation())
             .status(original.getStatus())
             .seriesId(newSeriesId != null ? newSeriesId : original.getSeriesId());
+  }
 
-    // Apply the property change
+  /**
+   * Applies a property change to an event builder.
+   * @param builder the builder to modify
+   * @param original the original event
+   * @param property the property to change
+   * @param newValue the new value for the property
+   */
+  private void applyPropertyChange(Event.EventBuilder builder, IEvent original,
+                                   String property, Object newValue) {
     switch (property.toLowerCase()) {
       case "subject":
         builder.subject((String) newValue);
         break;
       case "start":
-        LocalDateTime newStart = (LocalDateTime) newValue;
-
-        // For series events, only change the time, keep the original date
-        if (original.getSeriesId() != null) {
-          newStart = original.getStartDateTime().toLocalDate()
-                  .atTime(newStart.toLocalTime());
-        }
-
-        builder.startDateTime(newStart);
-
-        // Maintain the duration
-        long duration = java.time.Duration.between(
-                original.getStartDateTime(),
-                original.getEndDateTime()
-        ).toMinutes();
-        LocalDateTime newEnd = newStart.plusMinutes(duration);
-        builder.endDateTime(newEnd);
+        applyStartTimeChange(builder, original, (LocalDateTime) newValue);
         break;
       case "end":
         builder.endDateTime((LocalDateTime) newValue);
@@ -423,8 +426,30 @@ public class CalendarModel implements ICalendarModel {
         builder.status((EventStatus) newValue);
         break;
     }
+  }
 
-    return builder.build();
+  /**
+   * Applies a start time change to an event, maintaining duration.
+   * @param builder the builder to modify
+   * @param original the original event
+   * @param newStart the new start time
+   */
+  private void applyStartTimeChange(Event.EventBuilder builder, IEvent original,
+                                    LocalDateTime newStart) {
+    // For series events, only change the time, keep the original date
+    if (original.getSeriesId() != null) {
+      newStart = original.getStartDateTime().toLocalDate()
+              .atTime(newStart.toLocalTime());
+    }
+    builder.startDateTime(newStart);
+
+    // Maintain the duration
+    long duration = java.time.Duration.between(
+            original.getStartDateTime(),
+            original.getEndDateTime()
+    ).toMinutes();
+    LocalDateTime newEnd = newStart.plusMinutes(duration);
+    builder.endDateTime(newEnd);
   }
 
   /**
@@ -440,13 +465,10 @@ public class CalendarModel implements ICalendarModel {
         eventsInInterval.add(event);
       }
     }
-
-    // Sort events by start time, then by subject if start times are equal
+    // Sort events by start time
     eventsInInterval.sort(
             Comparator.comparing(IEvent::getStartDateTime)
-                    .thenComparing(IEvent::getSubject)
     );
-
     return eventsInInterval;
   }
 
@@ -473,8 +495,6 @@ public class CalendarModel implements ICalendarModel {
     return !time.isBefore(event.getStartDateTime()) &&
             !time.isAfter(event.getEndDateTime());
   }
-
-  // ==================== PARSING HELPER METHODS ====================
 
   /**
    * Parses a string into a LocalDateTime.

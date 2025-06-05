@@ -1,4 +1,4 @@
-package controller.tests;
+package controller;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;

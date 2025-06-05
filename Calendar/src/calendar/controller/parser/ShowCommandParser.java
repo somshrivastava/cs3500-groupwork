@@ -10,6 +10,11 @@ import calendar.view.ICalendarView;
  * Checks if the user is busy at a specific time.
  */
 class ShowCommandParser extends AbstractCommandParser {
+  // Specific indices for show command structure
+  private static final int SHOW_COMMAND_LENGTH = 4;
+  private static final int STATUS_INDEX = 1;
+  private static final int ON_INDEX = 2;
+  private static final int DATETIME_INDEX = 3;
 
   public ShowCommandParser(ICalendarModel model, ICalendarView view) {
     super(model, view);
@@ -17,19 +22,18 @@ class ShowCommandParser extends AbstractCommandParser {
 
   @Override
   public void parse(String[] parts) throws IllegalArgumentException {
-    if (parts.length != 4) {
+    if (parts.length != SHOW_COMMAND_LENGTH) {
       throw new IllegalArgumentException("Show status requires exactly 4 parts. " +
               "Format: show status on YYYY-MM-DDThh:mm");
     }
 
-    // second word should be "status"
-    validateKeyword(parts[1], STATUS, "'show'");
-    // third word should be "on"
-    validateKeyword(parts[2], ON, "'show status'");
+    // Validate keywords in expected positions
+    validateKeyword(parts[STATUS_INDEX], STATUS, "'show'");
+    validateKeyword(parts[ON_INDEX], ON, "'show status'");
 
-    // fourth word is the date and time
-    LocalDateTime dateTime = parseDateTime(parts[3]);
+    // Parse and check the date/time
+    LocalDateTime dateTime = parseDateTime(parts[DATETIME_INDEX]);
     boolean isBusy = model.showStatus(dateTime);
-    view.displayStatus(parts[3], isBusy);
+    view.displayStatus(parts[DATETIME_INDEX], isBusy);
   }
 }

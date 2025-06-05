@@ -1,4 +1,4 @@
-package controller.tests;
+package controller;
 
 /**
  * An interaction with the user consists of some input to send the program

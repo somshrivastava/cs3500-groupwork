@@ -36,26 +36,23 @@ public class HeadlessController extends AbstractController {
 
   @Override
   public void go() {
-    Scanner sc;
-    try {
-      sc = new Scanner(this.file);
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    while (sc.hasNext()) {
-      String commandLine = sc.nextLine().trim();
-      if (commandLine.equals("exit") || commandLine.equals("q")) {
-        return;
-      } else {
-        try {
-          parseCommand(commandLine);
-        } catch (Exception e) {
-          this.calendarView.displayError(e.getMessage());
+    try (Scanner sc = new Scanner(this.file)) {
+      while (sc.hasNext()) {
+        String commandLine = sc.nextLine().trim();
+        if (commandLine.equals("exit") || commandLine.equals("q")) {
+          return;
+        } else {
+          try {
+            parseCommand(commandLine);
+          } catch (Exception e) {
+            this.calendarView.displayError(e.getMessage());
+          }
         }
       }
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException("File not found: " + e.getMessage(), e);
     }
+
     this.calendarView.displayError("No exit command.");
-    return;
   }
 }

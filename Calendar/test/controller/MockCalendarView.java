@@ -1,5 +1,7 @@
-package controller.tests;
+package controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,15 +40,14 @@ public class MockCalendarView implements ICalendarView {
     output.append(msg);
   }
 
-  /**
-   * Displays a success message to the user.
-   *
-   * @param message the success message to display
-   */
   @Override
-  public void displaySuccess(String message) {
-    String msg = "Success: " + message + "\n";
-    output.append(msg);
+  public void displayEventsForDate(LocalDate date, List<IEvent> events) {
+
+  }
+
+  @Override
+  public void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate, List<IEvent> events) {
+
   }
 
   public void displayEvent(String subject, ArrayList<String> details) {
@@ -74,20 +75,6 @@ public class MockCalendarView implements ICalendarView {
 
   public void displayBlankLine() {
     output.append("\n");
-  }
-
-  /**
-   * Displays a list of events with a header.
-   *
-   * @param header the header text for the event list
-   * @param events the list of events to display
-   */
-  @Override
-  public void displayEvents(String header, List<IEvent> events) {
-    output.append(header).append("\n");
-    for (IEvent e : events) {
-      output.append(e).append("\n");
-    }
   }
 
   @Override

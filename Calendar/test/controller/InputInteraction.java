@@ -1,4 +1,4 @@
-package controller.tests;
+package controller;
 
 /**
  * Represents a user providing the program with  an input
