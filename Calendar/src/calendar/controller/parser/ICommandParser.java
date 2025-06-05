@@ -1,4 +1,4 @@
-package calendar.controller;
+package calendar.controller.parser;
 
 /**
  * Interface for parsing and executing calendar commands.

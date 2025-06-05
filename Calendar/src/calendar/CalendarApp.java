@@ -38,7 +38,7 @@ public class CalendarApp {
     String mode = args[1];
     ICalendarController controller = createController(mode, args);
 
-    controller.go();
+    controller.execute();
   }
 
   /**

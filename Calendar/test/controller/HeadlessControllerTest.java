@@ -7,7 +7,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import calendar.controller.HeadlessController;
 import calendar.controller.ICalendarController;
@@ -65,7 +64,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
   public void testEmptyFile() {
     convertStringInput("");
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals("", logModel.toString());
     assertEquals("Error: No exit command.\n", logView.toString());
   }
@@ -74,7 +73,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
   public void testFileWithOnlyWhitespace() {
     convertStringInput("   \n\t\n  \n");
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals("", logModel.toString());
     assertEquals("Error: No exit command.\n", logView.toString());
   }
@@ -83,7 +82,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
   public void testFileWithOnlyExit() {
     convertStringInput("exit");
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals("", logModel.toString());
     assertEquals("", logView.toString());
   }
@@ -92,7 +91,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
   public void testFileWithOnlyQ() {
     convertStringInput("q");
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals("", logModel.toString());
     assertEquals("", logView.toString());
   }
@@ -104,9 +103,10 @@ public class HeadlessControllerTest extends AbstractControllerTest {
                    "create event Another from 2024-03-21T10:00 to 2024-03-21T11:00";
     convertStringInput(input);
     controller = createController();
-    controller.go();
+    controller.execute();
     
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
+            "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
     assertEquals("", logView.toString());
   }
@@ -118,9 +118,10 @@ public class HeadlessControllerTest extends AbstractControllerTest {
                    "exit";
     convertStringInput(input);
     controller = createController();
-    controller.go();
+    controller.execute();
     
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
+            "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
     assertEquals("", logView.toString());
   }
@@ -131,9 +132,10 @@ public class HeadlessControllerTest extends AbstractControllerTest {
                    "  exit  ";
     convertStringInput(input);
     controller = createController();
-    controller.go();
+    controller.execute();
     
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
+            "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
     assertEquals("", logView.toString());
   }
@@ -146,12 +148,15 @@ public class HeadlessControllerTest extends AbstractControllerTest {
                    "exit";
     convertStringInput(input);
     controller = createController();
-    controller.go();
+    controller.execute();
     
     assertEquals("", logModel.toString());
-    assertEquals("Error: Unknown command: 'invalid'. Valid commands are: create, edit, print, show\n" +
-                "Error: Unknown command: 'another'. Valid commands are: create, edit, print, show\n" +
-                "Error: Unknown command: 'delete'. Valid commands are: create, edit, print, show\n", 
+    assertEquals("Error: Unknown command: 'invalid'. Valid commands are: create, edit, " +
+                    "print, show\n" +
+                "Error: Unknown command: 'another'. Valid commands are: create, edit, print, " +
+                    "show\n" +
+                "Error: Unknown command: 'delete'. Valid commands are: create, edit, " +
+                    "print, show\n", 
                 logView.toString());
   }
 
@@ -163,7 +168,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
     String in = " ";
     convertStringInput(in);
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals("", logModel.toString());
     assertEquals("Error: No exit command.\n", logView.toString());
 

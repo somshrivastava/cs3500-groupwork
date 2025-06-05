@@ -35,7 +35,7 @@ public class HeadlessController extends AbstractController {
   }
 
   @Override
-  public void go() {
+  public void execute() {
     try (Scanner sc = new Scanner(this.file)) {
       while (sc.hasNext()) {
         String commandLine = sc.nextLine().trim();

@@ -1,7 +1,7 @@
 package controller;
 
 /**
- * Represents a user providing the program with  an input
+ * Represents a user providing the program with an input.
  */
 class InputInteraction implements Interaction {
   String input;

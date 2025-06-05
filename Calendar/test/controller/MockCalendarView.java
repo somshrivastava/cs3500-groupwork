@@ -40,43 +40,45 @@ public class MockCalendarView implements ICalendarView {
     output.append(msg);
   }
 
+  /**
+   * Display the events for a single date.
+   *
+   * @param date the date of the events
+   * @param events the list of events to display
+   */
   @Override
   public void displayEventsForDate(LocalDate date, List<IEvent> events) {
     output.append("Events on ").append(date.toString()).append("\n");
   }
 
+  /**
+   * Display the events between a date range.
+   *
+   * @param startDate the start date of the range
+   * @param endDate the end date of the range
+   * @param events the list of events to display
+   */
   @Override
-  public void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate, List<IEvent> events) {
-    output.append("Events from ").append(startDate.toString()).append(" to ").append(endDate.toString()).append("\n");
+  public void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate,
+                                        List<IEvent> events) {
+    output.append("Events from ").append(startDate.toString()).append(" to ")
+            .append(endDate.toString()).append("\n");
   }
 
-  public void displayEvent(String subject, ArrayList<String> details) {
-    output.append("Event: ").append(subject).append("\n");
-    for (String detail : details) {
-      output.append("  ").append(detail).append("\n");
-    }
-  }
-
-  public void displayEventList(String title, ArrayList<String> eventLines) {
-    output.append(title).append("\n");
-    for (String line : eventLines) {
-      output.append(line).append("\n");
-    }
-  }
-
-  public void displayStatus(String dateTime, String status) {
-    output.append("Status at ").append(dateTime).append(": ").append(status).append("\n");
-  }
-
+  /**
+   * Displays the prompt in the command line.
+   */
   @Override
   public void displayPrompt() {
     output.append("> \n");
   }
 
-  public void displayBlankLine() {
-    output.append("\n");
-  }
-
+  /**
+   * Displays the status of the event.
+   *
+   * @param dateTime the date/time to check
+   * @param isBusy true if the time is busy (has an event), false otherwise
+   */
   @Override
   public void displayStatus(String dateTime, boolean isBusy) {
     String msg = dateTime + "is busy: " + isBusy + "\n";

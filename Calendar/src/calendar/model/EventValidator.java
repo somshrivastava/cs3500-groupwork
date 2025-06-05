@@ -12,6 +12,7 @@ class EventValidator {
 
   /**
    * Validates that a subject is not null or empty.
+   *
    * @param subject the subject to validate
    * @throws IllegalArgumentException if invalid
    */
@@ -23,7 +24,8 @@ class EventValidator {
 
   /**
    * Validates that a date/time is not null.
-   * @param dateTime the date/time to validate
+   *
+   * @param dateTime  the date/time to validate
    * @param fieldName the name of the field (for error messages)
    * @throws IllegalArgumentException if null
    */
@@ -35,8 +37,9 @@ class EventValidator {
 
   /**
    * Validates that start time is before end time.
+   *
    * @param start the start time
-   * @param end the end time
+   * @param end   the end time
    * @throws IllegalArgumentException if end is not after start
    */
   void validateStartBeforeEnd(LocalDateTime start, LocalDateTime end) {
@@ -47,9 +50,10 @@ class EventValidator {
 
   /**
    * Validates parameters for a timed event.
-   * @param subject the event subject
+   *
+   * @param subject       the event subject
    * @param startDateTime the start time
-   * @param endDateTime the end time
+   * @param endDateTime   the end time
    * @throws IllegalArgumentException if any parameter is invalid
    */
   void validateTimedEvent(String subject, LocalDateTime startDateTime,
@@ -62,8 +66,9 @@ class EventValidator {
 
   /**
    * Validates parameters for an all-day event.
+   *
    * @param subject the event subject
-   * @param date the event date
+   * @param date    the event date
    * @throws IllegalArgumentException if any parameter is invalid
    */
   void validateAllDayEvent(String subject, LocalDateTime date) {
@@ -73,6 +78,7 @@ class EventValidator {
 
   /**
    * Validates that weekdays list is not null or empty.
+   *
    * @param weekdays the list to validate
    * @throws IllegalArgumentException if null or empty
    */
@@ -84,6 +90,7 @@ class EventValidator {
 
   /**
    * Validates that count is positive.
+   *
    * @param count the count to validate
    * @throws IllegalArgumentException if not positive
    */
@@ -95,6 +102,7 @@ class EventValidator {
 
   /**
    * Validates that until date is after start date.
+   *
    * @param startDate the start date
    * @param untilDate the until date
    * @throws IllegalArgumentException if until date is not after start date
@@ -108,8 +116,9 @@ class EventValidator {
 
   /**
    * Validates that an event starts and ends on the same day (for series events).
+   *
    * @param start the start time
-   * @param end the end time
+   * @param end   the end time
    * @throws IllegalArgumentException if not on the same day
    */
   void validateSingleDayEvent(LocalDateTime start, LocalDateTime end) {

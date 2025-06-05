@@ -32,6 +32,13 @@ public class CalendarModel implements ICalendarModel {
     this.validator = new EventValidator();
   }
 
+  /**
+   * Creates a single timed event.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createSingleTimedEvent(String subject, LocalDateTime startDateTime,
                                      LocalDateTime endDateTime) {
@@ -39,12 +46,27 @@ public class CalendarModel implements ICalendarModel {
     addTimedEvent(subject, startDateTime, endDateTime, null);
   }
 
+  /**
+   * Creates a single all-day event.
+   * @param subject the subject/title of the event
+   * @param date the date of the event
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createSingleAllDayEvent(String subject, LocalDateTime date) {
     validator.validateAllDayEvent(subject, date);
     addAllDayEvent(subject, date, null);
   }
 
+  /**
+   * Creates a recurring timed event with a count.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringTimedEvent(String subject, LocalDateTime startDateTime,
                                         LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
@@ -67,11 +89,22 @@ public class CalendarModel implements ICalendarModel {
     }
   }
 
+  /**
+   * Creates a recurring timed event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringTimedEventUntil(String subject, LocalDateTime startDateTime,
-                                             LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
+                                             LocalDateTime endDateTime, 
+                                             ArrayList<DayOfWeek> weekdays,
                                              LocalDateTime untilDate) {
-    validator.validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, weekdays, untilDate);
+    validator.validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, 
+                                               weekdays, untilDate);
     validator.validateSingleDayEvent(startDateTime, endDateTime);
 
     Integer seriesId = nextSeriesId++;
@@ -88,6 +121,14 @@ public class CalendarModel implements ICalendarModel {
     }
   }
 
+  /**
+   * Creates a recurring all-day event with a count.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringAllDayEvent(String subject, LocalDateTime startDate,
                                          ArrayList<DayOfWeek> weekdays, int count) {
@@ -106,9 +147,18 @@ public class CalendarModel implements ICalendarModel {
     }
   }
 
+  /**
+   * Creates a recurring all-day event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringAllDayEventUntil(String subject, LocalDateTime startDate,
-                                              ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
+                                              ArrayList<DayOfWeek> weekdays, 
+                                              LocalDateTime untilDate) {
     validator.validateRecurringAllDayEventUntil(subject, startDate, weekdays, untilDate);
 
     Integer seriesId = nextSeriesId++;
@@ -123,6 +173,15 @@ public class CalendarModel implements ICalendarModel {
     }
   }
 
+  /**
+   * Edits a single event's property.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param endDateTime the end date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
   public void editEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
                         String property, String newValue) {
@@ -130,6 +189,14 @@ public class CalendarModel implements ICalendarModel {
     updateEventProperty(eventToEdit, property, newValue, null);
   }
 
+  /**
+   * Edits all events in a series that start at or after the given date/time.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
   public void editEvents(String subject, LocalDateTime startDateTime, String property,
                          String newValue) {
@@ -137,6 +204,14 @@ public class CalendarModel implements ICalendarModel {
     editSeriesEvents(eventToEdit, property, newValue, true);
   }
 
+  /**
+   * Edits all events in a series.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
   public void editSeries(String subject, LocalDateTime startDateTime, String property,
                          String newValue) {
@@ -144,6 +219,11 @@ public class CalendarModel implements ICalendarModel {
     editSeriesEvents(eventToEdit, property, newValue, false);
   }
 
+  /**
+   * Gets all events that occur on a specific date.
+   * @param date the date to filter events for
+   * @return a list of events that occur on the given date
+   */
   @Override
   public List<IEvent> printEvents(LocalDateTime date) {
     LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
@@ -151,11 +231,22 @@ public class CalendarModel implements ICalendarModel {
     return getEventsInInterval(startOfDay, endOfDay);
   }
 
+  /**
+   * Gets all events that occur within a time interval.
+   * @param startDateTime the start of the interval (inclusive)
+   * @param endDateTime the end of the interval (inclusive)
+   * @return a list of events that overlap with the given interval
+   */
   @Override
   public List<IEvent> printEvents(LocalDateTime startDateTime, LocalDateTime endDateTime) {
     return getEventsInInterval(startDateTime, endDateTime);
   }
 
+  /**
+   * Checks if the given time is busy (has an event scheduled).
+   * @param dateTime the time to check
+   * @return true if there is an event at the given time, false otherwise
+   */
   @Override
   public boolean showStatus(LocalDateTime dateTime) {
     for (IEvent event : events) {
@@ -424,6 +515,9 @@ public class CalendarModel implements ICalendarModel {
         break;
       case "status":
         builder.status((EventStatus) newValue);
+        break;
+      default:
+        // No action needed - invalid properties are validated before reaching this method
         break;
     }
   }

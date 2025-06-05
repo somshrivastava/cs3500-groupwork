@@ -1,6 +1,5 @@
 package calendar.controller.parser;
 
-import calendar.controller.ICommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -18,6 +17,13 @@ public class CommandParser implements ICommandParser {
   private final PrintCommandParser printParser;
   private final ShowCommandParser showParser;
 
+  /**
+   * Constructs a new CommandParser with the given model and view.
+   * Creates instances of all specific command parsers.
+   *
+   * @param model the calendar model for processing commands
+   * @param view  the calendar view for displaying results
+   */
   public CommandParser(ICalendarModel model, ICalendarView view) {
     this.createParser = new CreateCommandParser(model, view);
     this.editParser = new EditCommandParser(model, view);

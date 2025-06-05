@@ -16,10 +16,23 @@ class ShowCommandParser extends AbstractCommandParser {
   private static final int ON_INDEX = 2;
   private static final int DATETIME_INDEX = 3;
 
+  /**
+   * Constructs a new ShowCommandParser with the given model and view.
+   *
+   * @param model the calendar model for checking status
+   * @param view  the calendar view for displaying results
+   */
   public ShowCommandParser(ICalendarModel model, ICalendarView view) {
     super(model, view);
   }
 
+  /**
+   * Parses and executes a show status command.
+   * Checks if a specific date/time is busy or available.
+   *
+   * @param parts the command parts array starting with "show"
+   * @throws IllegalArgumentException if the command syntax is invalid or execution fails
+   */
   @Override
   public void parse(String[] parts) throws IllegalArgumentException {
     if (parts.length != SHOW_COMMAND_LENGTH) {

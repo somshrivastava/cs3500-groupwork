@@ -30,7 +30,7 @@ public class InteractiveController extends AbstractController {
   }
 
   @Override
-  public void go() {
+  public void execute() {
     Scanner sc = new Scanner(in);
     boolean quit = false;
 
@@ -43,7 +43,7 @@ public class InteractiveController extends AbstractController {
     while (!quit && sc.hasNext()) { //continue until the user quits
       String commandLine = sc.nextLine().trim();
 
-      if (commandLine.equals("exit") || commandLine.equals("q")) {
+      if (commandLine.equals("exit")) {
         //after the user has quit, print farewell message
         this.calendarView.displayMessage("Goodbye");
         quit = true;

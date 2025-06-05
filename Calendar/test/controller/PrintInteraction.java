@@ -1,7 +1,7 @@
 package controller;
 
 /**
- * Represents the printing of a sequence of lines to output
+ * Represents the printing of a sequence of lines to output.
  */
 class PrintInteraction implements Interaction {
   String[] lines;

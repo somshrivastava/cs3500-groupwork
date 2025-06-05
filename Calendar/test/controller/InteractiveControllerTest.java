@@ -7,7 +7,6 @@ import java.io.StringReader;
 import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
 
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -40,10 +39,11 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testExitCommandCaseSensitive() {
     convertStringInput("EXIT\n");
     controller = createController();
-    controller.go();
-    
+    controller.execute();
+
     assertEquals("", logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Error: Unknown command: 'exit'. Valid commands are: create, edit, print, show\n" +
@@ -54,10 +54,11 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testExitWithTrailingText() {
     convertStringInput("exit now\n");
     controller = createController();
-    controller.go();
-    
+    controller.execute();
+
     assertEquals("", logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Error: Unknown command: 'exit'. Valid commands are: create, edit, print, show\n" +
@@ -71,10 +72,11 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testEmptyInputLines() {
     convertStringInput("\n\n\nexit\n");
     controller = createController();
-    controller.go();
-    
+    controller.execute();
+
     assertEquals("", logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Error: Command cannot be empty. Please enter a valid command.\n" +
@@ -90,10 +92,11 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testWhitespaceOnlyLines() {
     convertStringInput("   \n\t\n  \t  \nexit\n");
     controller = createController();
-    controller.go();
-    
+    controller.execute();
+
     assertEquals("", logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Error: Command cannot be empty. Please enter a valid command.\n" +
@@ -108,17 +111,19 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   @Test
   public void testMultipleCommandsWithEmptyLines() {
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                      "\n\n" +
-                      "show status on 2024-03-20T10:30\n" +
-                      "   \n" +
-                      "exit\n");
+            "\n\n" +
+            "show status on 2024-03-20T10:30\n" +
+            "   \n" +
+            "exit\n");
     controller = createController();
-    controller.go();
-    
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00" +
-                        "Checked if there is an event during 2024-03-20T10:30";
+    controller.execute();
+
+    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 " +
+            "until 2024-03-20T11:00" +
+            "Checked if there is an event during 2024-03-20T10:30";
     assertEquals(expectedLog, logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -139,15 +144,17 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     for (int i = 0; i < 100; i++) {
       longSubject.append("Word").append(i).append(" ");
     }
-    
-    convertStringInput("create event \"" + longSubject.toString().trim() + "\" from 2024-03-20T10:00 to 2024-03-20T11:00\nexit\n");
+
+    convertStringInput("create event \"" + longSubject.toString().trim() + "\" " +
+            "from 2024-03-20T10:00 to 2024-03-20T11:00\nexit\n");
     controller = createController();
-    controller.go();
-    
-    String expectedLog = "Created single timed event " + longSubject.toString().trim() + 
-                        " starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    controller.execute();
+
+    String expectedLog = "Created single timed event " + longSubject.toString().trim() +
+            " starting at 2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -158,11 +165,13 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testInputWithoutExit() {
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n");
     controller = createController();
-    controller.go();
-    
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    controller.execute();
+
+    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 " +
+            "until 2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n", logView.toString());
@@ -171,34 +180,38 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   @Test
   public void testRapidSuccessionOfCommands() {
     convertStringInput("create event Meeting1 from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                      "create event Meeting2 from 2024-03-20T11:00 to 2024-03-20T12:00\n" +
-                      "create event Meeting3 from 2024-03-20T12:00 to 2024-03-20T13:00\n" +
-                      "show status on 2024-03-20T10:30\n" +
-                      "print events on 2024-03-20\n" +
-                      "exit\n");
+            "create event Meeting2 from 2024-03-20T11:00 to 2024-03-20T12:00\n" +
+            "create event Meeting3 from 2024-03-20T12:00 to 2024-03-20T13:00\n" +
+            "show status on 2024-03-20T10:30\n" +
+            "print events on 2024-03-20\n" +
+            "exit\n");
     controller = createController();
-    controller.go();
-    
-    String expectedLog = "Created single timed event Meeting1 starting at 2024-03-20T10:00 until 2024-03-20T11:00" +
-                        "Created single timed event Meeting2 starting at 2024-03-20T11:00 until 2024-03-20T12:00" +
-                        "Created single timed event Meeting3 starting at 2024-03-20T12:00 until 2024-03-20T13:00" +
-                        "Checked if there is an event during 2024-03-20T10:30" +
-                        "Queried for all events that occur on 2024-03-20T00:00";
+    controller.execute();
+
+    String expectedLog = "Created single timed event Meeting1 starting at 2024-03-20T10:00 " +
+            "until 2024-03-20T11:00" +
+            "Created single timed event Meeting2 starting at 2024-03-20T11:00 until " +
+            "2024-03-20T12:00" +
+            "Created single timed event Meeting3 starting at 2024-03-20T12:00 until " +
+            "2024-03-20T13:00" +
+            "Checked if there is an event during 2024-03-20T10:30" +
+            "Queried for all events that occur on 2024-03-20T00:00";
     assertEquals(expectedLog, logModel.toString());
   }
 
   @Test
   public void testMultipleConsecutiveInvalidCommands() {
     convertStringInput("invalid1\n" +
-                      "invalid2\n" +
-                      "delete event Meeting\n" +
-                      "remove event Meeting\n" +
-                      "exit\n");
+            "invalid2\n" +
+            "delete event Meeting\n" +
+            "remove event Meeting\n" +
+            "exit\n");
     controller = createController();
-    controller.go();
-    
+    controller.execute();
+
     assertEquals("", logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application - " +
+            "Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Error: Unknown command: 'invalid1'. Valid commands are: create, edit, print, show\n" +
@@ -215,19 +228,21 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   @Test
   public void testMixedValidInvalidWithRecovery() {
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                      "invalid command\n" +
-                      "show status on 2024-03-20T10:30\n" +
-                      "delete event Meeting\n" +
-                      "print events on 2024-03-20\n" +
-                      "exit\n");
+            "invalid command\n" +
+            "show status on 2024-03-20T10:30\n" +
+            "delete event Meeting\n" +
+            "print events on 2024-03-20\n" +
+            "exit\n");
     controller = createController();
-    controller.go();
-    
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00" +
-                        "Checked if there is an event during 2024-03-20T10:30" +
-                        "Queried for all events that occur on 2024-03-20T00:00";
+    controller.execute();
+
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00" +
+            "Checked if there is an event during 2024-03-20T10:30" +
+            "Queried for all events that occur on 2024-03-20T00:00";
     assertEquals(expectedLog, logModel.toString());
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar " +
+            "Application - Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -243,12 +258,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   }
 
   // ----------------------------------------------------------------------------------------------
-  // Tests for invalid commands
-
-  @Test
-  public void testInvalidCommandFormat() {
-    super.testInvalidCommandFormat();
-  }
 
   // invalid date/time
 
@@ -256,7 +265,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateSingleTimedEvent() {
     super.testCreateSingleTimedEvent();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -267,7 +277,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateSingleAllDayEvent() {
     super.testCreateSingleAllDayEvent();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -278,7 +289,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateRecurringTimedEvent() {
     super.testCreateRecurringTimedEvent();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -289,7 +301,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateRecurringTimedEventUntil() {
     super.testCreateRecurringTimedEventUntil();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application" +
+            " - Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -300,7 +313,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateRecurringAllDayEvent() {
     super.testCreateRecurringAllDayEvent();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -311,7 +325,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testCreateRecurringAllDayEventUntil() {
     super.testCreateRecurringAllDayEventUntil();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -322,7 +337,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testEditEvent() {
     super.testEditEvent();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -333,7 +349,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testEditEvents() {
     super.testEditEvents();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -344,7 +361,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testEditSeries() {
     super.testEditSeries();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n" +
             "Message displayed: \n> \n" +
@@ -355,7 +373,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testPrintEvents() {
     super.testPrintEvents();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \nEvents on 2025-09-01\n" +
             "Message displayed: \n> \n" +
@@ -366,7 +385,8 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   public void testShowStatus() {
     super.testShowStatus();
 
-    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive Mode\n" +
+    assertEquals("Message displayed: Welcome to the Calendar Application " +
+            "- Interactive Mode\n" +
             "Message displayed: Type 'exit' to quit\n" +
             "Message displayed: \n> \n2025-02-20T10:30is busy: false\n" +
             "Message displayed: \n> \n" +
@@ -377,18 +397,21 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   // Tests for sequence of commands interactions
 
   @Test
-  public void testInteractionsView() {
+    public void testInteractionsView() {
     Interaction[] interactions = new Interaction[]{
-            new PrintInteraction("Message displayed: Welcome to the Calendar Application - Interactive Mode"),
-            new PrintInteraction("Message displayed: Type 'exit' to quit"),
-            new PrintInteraction("Message displayed: "),
-            new PrintInteraction("> "),
-            new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00\n"),
-            new InputInteraction("not a valid command\n"),
-            new PrintInteraction("Message displayed: \n> \nError: Unknown command: 'not'. Valid commands are: create, edit, print, show"),
-            new InputInteraction("q"),
-            new PrintInteraction("Message displayed: \n> "),
-            new PrintInteraction("Message displayed: Goodbye"),
+        new PrintInteraction("Message displayed: Welcome to the Calendar Application " +
+                "- Interactive Mode"),
+        new PrintInteraction("Message displayed: Type 'exit' to quit"),
+        new PrintInteraction("Message displayed: "),
+        new PrintInteraction("> "),
+        new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 " +
+                "to 2024-03-20T11:00\n"),
+        new InputInteraction("not a valid command\n"),
+        new PrintInteraction("Message displayed: \n> \nError: Unknown command: " +
+                "'not'. Valid commands are: create, edit, print, show"),
+        new InputInteraction("q"),
+        new PrintInteraction("Message displayed: \n> "),
+        new PrintInteraction("Message displayed: Goodbye"),
     };
 
     StringBuilder fakeUserInput = new StringBuilder();
@@ -400,7 +423,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
     input = new StringReader(fakeUserInput.toString());
     controller = createController();
-    controller.go();
+    controller.execute();
     assertEquals(expectedOutput.toString(), logView.toString());
   }
 

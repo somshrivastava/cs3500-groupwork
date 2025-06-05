@@ -23,10 +23,23 @@ class PrintCommandParser extends AbstractCommandParser {
   private static final int END_DATE_INDEX = 5;
   private static final int DATE_RANGE_LENGTH = 6;
 
+  /**
+   * Constructs a new PrintCommandParser with the given model and view.
+   *
+   * @param model the calendar model for querying events
+   * @param view  the calendar view for displaying results
+   */
   public PrintCommandParser(ICalendarModel model, ICalendarView view) {
     super(model, view);
   }
 
+  /**
+   * Parses and executes a print command.
+   * Supports printing events for a single date or date range.
+   *
+   * @param parts the command parts array starting with "print"
+   * @throws IllegalArgumentException if the command syntax is invalid or execution fails
+   */
   @Override
   public void parse(String[] parts) throws IllegalArgumentException {
     validateMinimumLength(parts, MIN_PRINT_COMMAND_LENGTH, "Incomplete print command. Use: " +

@@ -35,7 +35,8 @@ public interface ICalendarView {
    * @param endDate the end date of the range
    * @param events the list of events to display
    */
-  void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate, List<IEvent> events);
+  void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate,
+                                 List<IEvent> events);
 
   /**
    * Displays the current status of a specific date/time.

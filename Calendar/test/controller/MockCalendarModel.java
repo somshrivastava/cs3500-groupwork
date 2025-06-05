@@ -111,7 +111,8 @@ public class MockCalendarModel implements ICalendarModel {
   @Override
   public void editSeries(String subject, LocalDateTime startDateTime, String property,
                          String newValue) {
-    log.append("Edited all series of event's properties: ").append(subject).append(" with start time ")
+    log.append("Edited all series of event's properties: ").append(subject).append(" with " +
+                    "start time ")
             .append(startDateTime).append(". Changed ").append(property).append(" to ")
             .append(newValue);
   }
