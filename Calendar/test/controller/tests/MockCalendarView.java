@@ -25,7 +25,7 @@ public class MockCalendarView implements ICalendarView {
    */
   @Override
   public void displayMessage(String message) {
-    String msg = "Message displayed: " + message;
+    String msg = "Message displayed: " + message + "\n";
     output.append(msg);
   }
 
@@ -36,7 +36,7 @@ public class MockCalendarView implements ICalendarView {
    */
   @Override
   public void displayError(String error) {
-    String msg = "Error: " + error;
+    String msg = "Error: " + error + "\n";
     output.append(msg);
   }
 
@@ -70,7 +70,7 @@ public class MockCalendarView implements ICalendarView {
 
   @Override
   public void displayPrompt() {
-    output.append("> ");
+    output.append("> \n");
   }
 
   public void displayBlankLine() {
@@ -79,7 +79,7 @@ public class MockCalendarView implements ICalendarView {
 
   @Override
   public void displayStatus(String dateTime, boolean isBusy) {
-    String msg = dateTime + "is busy: " + isBusy;
+    String msg = dateTime + "is busy: " + isBusy + "\n";
     output.append(msg);
   }
 } 

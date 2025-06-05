@@ -38,18 +38,15 @@ public class HeadlessController extends AbstractController {
   public void go() {
     boolean exitFound = false;
 
-    try (Scanner sc = new Scanner(this.file)) {
-      while (sc.hasNext()) {
-        String commandLine = sc.nextLine().trim();
-        if (commandLine.equals("exit") || commandLine.equals("q")) {
-          exitFound = true;
-          return;
-        } else {
-          try {
-            parseCommand(commandLine);
-          } catch (Exception e) {
-            this.calendarView.displayError(e.getMessage());
-          }
+    while (sc.hasNext()) {
+      String commandLine = sc.nextLine().trim();
+      if (commandLine.equals("exit") || commandLine.equals("q")) {
+        return;
+      } else {
+        try {
+          parseCommand(commandLine);
+        } catch (Exception e) {
+          this.calendarView.displayError(e.getMessage());
         }
       }
     } catch (FileNotFoundException e) {
@@ -59,5 +56,7 @@ public class HeadlessController extends AbstractController {
     if (!exitFound) {
       this.calendarView.displayError("No exit command.");
     }
+    this.calendarView.displayError("No exit command.");
+    return;
   }
 }
