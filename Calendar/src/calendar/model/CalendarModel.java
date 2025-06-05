@@ -12,13 +12,24 @@ import java.util.Comparator;
 
 /**
  * Implementation of the calendar model that manages a collection of events.
- * This class handles the creation, editing, and querying of all calendar events.
+ * This class handles the creation, editing, and querying of calendar events,
+ * both single and recurring.
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>Single and recurring event creation</li>
+ *   <li>All-day events (8 AM to 5 PM)</li>
+ *   <li>Event series management with unique series IDs</li>
+ *   <li>Duplicate event prevention</li>
+ *   <li>Property-based event editing</li>
+ * </ul>
  */
 public class CalendarModel implements ICalendarModel {
   private final Set<IEvent> events;
+  private final EventValidator validator;
   private Integer nextSeriesId = 1;
 
-  // Constants for all-day events
+  // Constants for all-day events as per assignment requirements
   private static final LocalTime ALL_DAY_START = LocalTime.of(8, 0);  // 8 AM
   private static final LocalTime ALL_DAY_END = LocalTime.of(17, 0);   // 5 PM
 
@@ -27,18 +38,19 @@ public class CalendarModel implements ICalendarModel {
    */
   public CalendarModel() {
     this.events = new HashSet<IEvent>();
+    this.validator = new EventValidator();
   }
 
   @Override
   public void createSingleTimedEvent(String subject, LocalDateTime startDateTime,
                                      LocalDateTime endDateTime) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
+    validator.validateTimedEvent(subject, startDateTime, endDateTime);
     addTimedEvent(subject, startDateTime, endDateTime, null);
   }
 
   @Override
   public void createSingleAllDayEvent(String subject, LocalDateTime date) {
-    validateAllDayEvent(subject, date);
+    validator.validateAllDayEvent(subject, date);
     addAllDayEvent(subject, date, null);
   }
 
@@ -46,8 +58,8 @@ public class CalendarModel implements ICalendarModel {
   public void createRecurringTimedEvent(String subject, LocalDateTime startDateTime,
                                         LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
                                         int count) {
-    validateRecurringTimedEvent(subject, startDateTime, endDateTime, weekdays, count);
-    ensureSingleDayEvent(startDateTime, endDateTime);
+    validator.validateRecurringTimedEvent(subject, startDateTime, endDateTime, weekdays, count);
+    validator.validateSingleDayEvent(startDateTime, endDateTime);
 
     Integer seriesId = nextSeriesId++;
     LocalDateTime currentStart = startDateTime;
@@ -68,13 +80,14 @@ public class CalendarModel implements ICalendarModel {
   public void createRecurringTimedEventUntil(String subject, LocalDateTime startDateTime,
                                              LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
                                              LocalDateTime untilDate) {
-    validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, weekdays, untilDate);
-    ensureSingleDayEvent(startDateTime, endDateTime);
+    validator.validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, weekdays, untilDate);
+    validator.validateSingleDayEvent(startDateTime, endDateTime);
 
     Integer seriesId = nextSeriesId++;
     LocalDateTime currentStart = startDateTime;
     LocalDateTime currentEnd = endDateTime;
 
+    // Compare dates only, not times, for "until" logic (inclusive)
     while (!currentStart.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentStart.getDayOfWeek())) {
         addTimedEvent(subject, currentStart, currentEnd, seriesId);
@@ -87,7 +100,7 @@ public class CalendarModel implements ICalendarModel {
   @Override
   public void createRecurringAllDayEvent(String subject, LocalDateTime startDate,
                                          ArrayList<DayOfWeek> weekdays, int count) {
-    validateRecurringAllDayEvent(subject, startDate, weekdays, count);
+    validator.validateRecurringAllDayEvent(subject, startDate, weekdays, count);
 
     Integer seriesId = nextSeriesId++;
     LocalDateTime currentDate = startDate;
@@ -105,11 +118,12 @@ public class CalendarModel implements ICalendarModel {
   @Override
   public void createRecurringAllDayEventUntil(String subject, LocalDateTime startDate,
                                               ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
-    validateRecurringAllDayEventUntil(subject, startDate, weekdays, untilDate);
+    validator.validateRecurringAllDayEventUntil(subject, startDate, weekdays, untilDate);
 
     Integer seriesId = nextSeriesId++;
     LocalDateTime currentDate = startDate;
 
+    // Compare dates only, not times, for "until" logic (inclusive)
     while (!currentDate.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentDate.getDayOfWeek())) {
         addAllDayEvent(subject, currentDate, seriesId);
@@ -160,6 +174,8 @@ public class CalendarModel implements ICalendarModel {
     }
     return false;
   }
+
+  // ==================== HELPER METHODS ====================
 
   /**
    * Creates and adds a timed event without validation.
@@ -256,8 +272,8 @@ public class CalendarModel implements ICalendarModel {
    */
   private void editSeriesEvents(IEvent baseEvent, String property, String newValue,
                                 boolean fromThisEventForward) {
-    // if event is not part of series, just edit that single event
     if (baseEvent.getSeriesId() == null) {
+      // Single event, just edit it
       updateEventProperty(baseEvent, property, newValue, null);
       return;
     }
@@ -267,9 +283,14 @@ public class CalendarModel implements ICalendarModel {
 
     // Only create new series ID if start time is actually changing
     if (property.equals("start")) {
-      LocalDateTime newStart = parseDateTime(newValue);
-      if (!newStart.equals(baseEvent.getStartDateTime())) {
-        newSeriesId = nextSeriesId++;
+      try {
+        LocalDateTime newStart = parseDateTime(newValue);
+        // Only compare the time portion since all events in series have different dates
+        if (!newStart.toLocalTime().equals(baseEvent.getStartDateTime().toLocalTime())) {
+          newSeriesId = nextSeriesId++;
+        }
+      } catch (Exception e) {
+        // Let updateEventProperty handle the error
       }
     }
 
@@ -320,18 +341,27 @@ public class CalendarModel implements ICalendarModel {
   private Object parsePropertyValue(String property, String newValue, IEvent event) {
     switch (property.toLowerCase()) {
       case "subject":
-      case "description":
         return newValue;
+
       case "start":
-        return parseDateTime(newValue);
+        LocalDateTime newStart = parseDateTime(newValue);
+        // Don't validate - we'll adjust the end time to maintain duration
+        return newStart;
+
       case "end":
         LocalDateTime newEnd = parseDateTime(newValue);
-        validateStartBeforeEnd(event.getStartDateTime(), newEnd);
+        validator.validateStartBeforeEnd(event.getStartDateTime(), newEnd);
         return newEnd;
+
+      case "description":
+        return newValue;
+
       case "location":
         return parseLocation(newValue);
+
       case "status":
         return parseStatus(newValue);
+
       default:
         throw new IllegalArgumentException("Invalid property: " + property);
     }
@@ -356,17 +386,23 @@ public class CalendarModel implements ICalendarModel {
             .status(original.getStatus())
             .seriesId(newSeriesId != null ? newSeriesId : original.getSeriesId());
 
+    // Apply the property change
     switch (property.toLowerCase()) {
       case "subject":
         builder.subject((String) newValue);
         break;
       case "start":
         LocalDateTime newStart = (LocalDateTime) newValue;
+
+        // For series events, only change the time, keep the original date
         if (original.getSeriesId() != null) {
           newStart = original.getStartDateTime().toLocalDate()
                   .atTime(newStart.toLocalTime());
         }
+
         builder.startDateTime(newStart);
+
+        // Maintain the duration
         long duration = java.time.Duration.between(
                 original.getStartDateTime(),
                 original.getEndDateTime()
@@ -387,6 +423,7 @@ public class CalendarModel implements ICalendarModel {
         builder.status((EventStatus) newValue);
         break;
     }
+
     return builder.build();
   }
 
@@ -403,10 +440,13 @@ public class CalendarModel implements ICalendarModel {
         eventsInInterval.add(event);
       }
     }
+
     // Sort events by start time, then by subject if start times are equal
     eventsInInterval.sort(
             Comparator.comparing(IEvent::getStartDateTime)
+                    .thenComparing(IEvent::getSubject)
     );
+
     return eventsInInterval;
   }
 
@@ -434,18 +474,7 @@ public class CalendarModel implements ICalendarModel {
             !time.isAfter(event.getEndDateTime());
   }
 
-  /**
-   * Ensures that an event starts and ends on the same day (for series events).
-   * @param start the start time
-   * @param end the end time
-   * @throws IllegalArgumentException if not on the same day
-   */
-  private void ensureSingleDayEvent(LocalDateTime start, LocalDateTime end) {
-    if (!start.toLocalDate().equals(end.toLocalDate())) {
-      throw new IllegalArgumentException(
-              "Events in a series must start and end on the same day");
-    }
-  }
+  // ==================== PARSING HELPER METHODS ====================
 
   /**
    * Parses a string into a LocalDateTime.
@@ -489,144 +518,5 @@ public class CalendarModel implements ICalendarModel {
       throw new IllegalArgumentException(
               "Invalid status: " + statusStr + ". Valid values are: PUBLIC, PRIVATE");
     }
-  }
-
-  /**
-   * Validates that a subject is not null or empty.
-   * @param subject the subject to validate
-   * @throws IllegalArgumentException if invalid
-   */
-  private void validateSubject(String subject) {
-    if (subject == null || subject.trim().isEmpty()) {
-      throw new IllegalArgumentException("Subject cannot be empty");
-    }
-  }
-
-  /**
-   * Validates that a date/time is not null.
-   * @param dateTime the date/time to validate
-   * @param fieldName the name of the field (for error messages)
-   * @throws IllegalArgumentException if null
-   */
-  private void validateDateTime(LocalDateTime dateTime, String fieldName) {
-    if (dateTime == null) {
-      throw new IllegalArgumentException(fieldName + " cannot be null");
-    }
-  }
-
-  /**
-   * Validates that start time is before end time.
-   * @param start the start time
-   * @param end the end time
-   * @throws IllegalArgumentException if end is not after start
-   */
-  private void validateStartBeforeEnd(LocalDateTime start, LocalDateTime end) {
-    if (!end.isAfter(start)) {
-      throw new IllegalArgumentException("End time must be after start time");
-    }
-  }
-
-  /**
-   * Validates parameters for a timed event.
-   * @param subject the event subject
-   * @param startDateTime the start time
-   * @param endDateTime the end time
-   * @throws IllegalArgumentException if any parameter is invalid
-   */
-  private void validateTimedEvent(String subject, LocalDateTime startDateTime,
-                                  LocalDateTime endDateTime) {
-    validateSubject(subject);
-    validateDateTime(startDateTime, "Start time");
-    validateDateTime(endDateTime, "End time");
-    validateStartBeforeEnd(startDateTime, endDateTime);
-  }
-
-  /**
-   * Validates parameters for an all-day event.
-   * @param subject the event subject
-   * @param date the event date
-   * @throws IllegalArgumentException if any parameter is invalid
-   */
-  private void validateAllDayEvent(String subject, LocalDateTime date) {
-    validateSubject(subject);
-    validateDateTime(date, "Date");
-  }
-
-  /**
-   * Validates that weekdays list is not null or empty.
-   * @param weekdays the list to validate
-   * @throws IllegalArgumentException if null or empty
-   */
-  private void validateWeekdays(ArrayList<DayOfWeek> weekdays) {
-    if (weekdays == null || weekdays.isEmpty()) {
-      throw new IllegalArgumentException("At least one weekday must be specified");
-    }
-  }
-
-  /**
-   * Validates that count is positive.
-   * @param count the count to validate
-   * @throws IllegalArgumentException if not positive
-   */
-  private void validateCount(int count) {
-    if (count <= 0) {
-      throw new IllegalArgumentException("Count must be positive");
-    }
-  }
-
-  /**
-   * Validates that until date is after start date.
-   * @param startDate the start date
-   * @param untilDate the until date
-   * @throws IllegalArgumentException if until date is not after start date
-   */
-  private void validateUntilDate(LocalDateTime startDate, LocalDateTime untilDate) {
-    validateDateTime(untilDate, "Until date");
-    if (!untilDate.isAfter(startDate)) {
-      throw new IllegalArgumentException("Until date must be after start date");
-    }
-  }
-
-  /**
-   * Validates parameters for a recurring timed event with count.
-   */
-  private void validateRecurringTimedEvent(String subject, LocalDateTime startDateTime,
-                                           LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
-                                           int count) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
-    validateWeekdays(weekdays);
-    validateCount(count);
-  }
-
-  /**
-   * Validates parameters for a recurring timed event with until date.
-   */
-  private void validateRecurringTimedEventUntil(String subject, LocalDateTime startDateTime,
-                                                LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
-                                                LocalDateTime untilDate) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
-    validateWeekdays(weekdays);
-    validateUntilDate(startDateTime, untilDate);
-  }
-
-  /**
-   * Validates parameters for a recurring all-day event with count.
-   */
-  private void validateRecurringAllDayEvent(String subject, LocalDateTime startDate,
-                                            ArrayList<DayOfWeek> weekdays, int count) {
-    validateAllDayEvent(subject, startDate);
-    validateWeekdays(weekdays);
-    validateCount(count);
-  }
-
-  /**
-   * Validates parameters for a recurring all-day event with until date.
-   */
-  private void validateRecurringAllDayEventUntil(String subject, LocalDateTime startDate,
-                                                 ArrayList<DayOfWeek> weekdays,
-                                                 LocalDateTime untilDate) {
-    validateAllDayEvent(subject, startDate);
-    validateWeekdays(weekdays);
-    validateUntilDate(startDate, untilDate);
   }
 }

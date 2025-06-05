@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-import calendar.controller.CommandParser;
+import calendar.controller.parser.CommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
