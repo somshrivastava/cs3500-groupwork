@@ -29,7 +29,6 @@ public class MockCalendarView implements ICalendarView {
         output.append("Success: ").append(message).append("\n");
     }
 
-    @Override
     public void displayEvent(String subject, ArrayList<String> details) {
         output.append("Event: ").append(subject).append("\n");
         for (String detail : details) {
@@ -37,7 +36,6 @@ public class MockCalendarView implements ICalendarView {
         }
     }
 
-    @Override
     public void displayEventList(String title, ArrayList<String> eventLines) {
         output.append(title).append("\n");
         for (String line : eventLines) {
@@ -45,7 +43,6 @@ public class MockCalendarView implements ICalendarView {
         }
     }
 
-    @Override
     public void displayStatus(String dateTime, String status) {
         output.append("Status at ").append(dateTime).append(": ").append(status).append("\n");
     }
@@ -55,7 +52,6 @@ public class MockCalendarView implements ICalendarView {
         output.append("> ");
     }
 
-    @Override
     public void displayBlankLine() {
         output.append("\n");
     }
@@ -68,6 +64,11 @@ public class MockCalendarView implements ICalendarView {
      */
     @Override
     public void displayEvents(String header, List<IEvent> events) {
+
+    }
+
+    @Override
+    public void displayStatus(String dateTime, boolean isBusy) {
 
     }
 } 

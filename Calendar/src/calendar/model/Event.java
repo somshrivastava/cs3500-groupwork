@@ -4,30 +4,35 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Represents a calendar event with a subject, description, location, status,
- * start and end times, and an optional series ID for recurring events.
+ * Represents a calendar event with a subject, description, location (physical or online),
+ * status (public or private), start and end times, and an optional series ID for recurring events.
+ *
+ * This class is immutable. Use the {@code EventBuilder} to create instances of this class.
+ *
+ * Two events are considered equal if they have the same subject, start date/time, and end date/time.
  */
 public class Event implements IEvent {
   protected final String subject;
   protected final String description;
   protected final EventLocation location;
   protected final EventStatus status;
-
   protected final LocalDateTime startDateTime;
   protected final LocalDateTime endDateTime;
   protected final Integer seriesId;
 
   /**
-   * Constructs a new Event with the specified properties.
-   * @param subject the subject/title of the event
-   * @param description the description of the event
-   * @param location the location of the event
-   * @param status the status of the event
-   * @param startDateTime the start date and time
-   * @param endDateTime the end date and time
-   * @param seriesId the ID of the event series (null for single events)
+   * Constructs a new {@code Event} with the specified properties.
+   *
+   * @param subject the subject of the event (required)
+   * @param description the description of the event (can be null)
+   * @param location the location of the event (can be null)
+   * @param status the status of the event (can be null)
+   * @param startDateTime the start date and time (required)
+   * @param endDateTime the end date and time (can be null for all-day events)
+   * @param seriesId the ID of a recurring event (null for single events)
    */
-  protected Event(String subject, String description, EventLocation location, EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId) {
+  private Event(String subject, String description, EventLocation location, EventStatus status,
+                  LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId) {
     this.subject = subject;
     this.description = description;
     this.location = location;
@@ -79,16 +84,17 @@ public class Event implements IEvent {
     Event that = (Event) obj;
 
     return Objects.equals(this.subject, that.subject) &&
-            Objects.equals(this.startDateTime, that.startDateTime);
+            Objects.equals(this.startDateTime, that.startDateTime) &&
+            Objects.equals(this.endDateTime, that.endDateTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.subject, this.startDateTime);
+    return Objects.hash(this.subject, this.startDateTime, this.endDateTime);
   }
 
   /**
-   * Gets a new EventBuilder instance for constructing an Event.
+   * Gets a new EventBuilder instance for constructing an {@code Event}.
    * @return a new EventBuilder instance
    */
   public static EventBuilder getBuilder() {
@@ -96,7 +102,7 @@ public class Event implements IEvent {
   }
 
   /**
-   * Builder class for constructing Event instances.
+   * Builder class for constructing {@code Event} instances.
    */
   public static class EventBuilder {
     protected String subject;
@@ -109,7 +115,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the subject of the event.
-     * @param subject the subject to set
+     * @param subject the given subject
      * @return this builder instance
      */
     public EventBuilder subject(String subject) {
@@ -119,7 +125,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the description of the event.
-     * @param description the description to set
+     * @param description the given description
      * @return this builder instance
      */
     public EventBuilder description(String description) {
@@ -129,7 +135,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the location of the event.
-     * @param location the location to set
+     * @param location the given location
      * @return this builder instance
      */
     public EventBuilder location(EventLocation location) {
@@ -139,7 +145,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the status of the event.
-     * @param status the status to set
+     * @param status the given status
      * @return this builder instance
      */
     public EventBuilder status(EventStatus status) {
@@ -149,7 +155,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the start date and time of the event.
-     * @param startDateTime the start date and time to set
+     * @param startDateTime the given start date and time
      * @return this builder instance
      */
     public EventBuilder startDateTime(LocalDateTime startDateTime) {
@@ -159,7 +165,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the end date and time of the event.
-     * @param endDateTime the end date and time to set
+     * @param endDateTime the given end date and time
      * @return this builder instance
      */
     public EventBuilder endDateTime(LocalDateTime endDateTime) {
@@ -169,7 +175,7 @@ public class Event implements IEvent {
 
     /**
      * Sets the series ID of the event.
-     * @param seriesId the series ID to set
+     * @param seriesId the series ID to set (null for single events)
      * @return this builder instance
      */
     public EventBuilder seriesId(Integer seriesId) {
@@ -178,16 +184,9 @@ public class Event implements IEvent {
     }
 
     /**
-     * Gets this builder instance.
-     * @return this builder instance
-     */
-    public EventBuilder getBuilder() {
-      return this;
-    }
-
-    /**
-     * Builds a new Event instance with the current builder state.
-     * @return a new Event instance
+     * Builds a new {@code Event} instance with the current builder state.
+     *
+     * @return a new {@code Event} instance with the properties set in this builder
      */
     public IEvent build() {
       return new Event(

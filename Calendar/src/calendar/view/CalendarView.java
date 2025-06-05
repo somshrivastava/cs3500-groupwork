@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class CalendarView implements ICalendarView {
   private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
   private final Appendable out;
 
   /**
@@ -61,17 +63,33 @@ public class CalendarView implements ICalendarView {
 
       for (IEvent event : events) {
         StringBuilder eventLine = new StringBuilder();
-        eventLine.append(event.getSubject())
-                .append(" (")
-                .append(event.getStartDateTime().toLocalTime().format(TIME_FORMATTER))
-                .append(" - ")
-                .append(event.getEndDateTime().toLocalTime().format(TIME_FORMATTER))
-                .append(")");
-        
+
+        // Check if event spans multiple days
+        boolean isMultiDay = !event.getStartDateTime().toLocalDate()
+                .equals(event.getEndDateTime().toLocalDate());
+
+        eventLine.append(event.getSubject()).append(" (");
+
+        if (isMultiDay) {
+          // For multi-day events, show full date and time
+          eventLine.append(event.getStartDateTime().format(DATE_TIME_FORMATTER))
+                  .append(" - ")
+                  .append(event.getEndDateTime().format(DATE_TIME_FORMATTER));
+        } else {
+          // For single-day events, show date once and then times
+          eventLine.append(event.getStartDateTime().toLocalDate().format(DATE_FORMATTER))
+                  .append(" ")
+                  .append(event.getStartDateTime().toLocalTime().format(TIME_FORMATTER))
+                  .append(" - ")
+                  .append(event.getEndDateTime().toLocalTime().format(TIME_FORMATTER));
+        }
+
+        eventLine.append(")");
+
         if (event.getLocation() != null) {
           eventLine.append(" : ").append(event.getLocation());
         }
-        
+
         this.out.append(eventLine.toString()).append("\n");
       }
       this.out.append("\n");

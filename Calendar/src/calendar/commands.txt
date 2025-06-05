@@ -1,8 +1,8 @@
-create event "Team Meeting" from 2024-03-20T09:00 to 2024-03-20T10:00
-create event "Project Review" from 2024-03-21T14:30 to 2024-03-21T16:00
-create event "Lunch Break" on 2024-03-20
-create event "Company Holiday" on 2024-03-20
-edit event subject "Team Meeting" from 2024-03-20T09:00 to 2024-03-20T10:00 with "Project Kickoff"
-edit event description "Project Kickoff" from 2024-03-20T09:00 to 2024-03-20T10:00 with "Initial project planning session"
-print events on 2024-03-20
+create event "Daily Standup" from 2024-03-11T09:00 to 2024-03-11T09:30
+create event "OOD" from 2025-06-02T11:40 to 2025-06-02T12:40 repeats MWTR for 10 times
+edit event start "Daily Standup" from 2024-03-11T09:00 to 2024-03-11T09:30 with 2024-03-11T10:00
+print events on 2024-03-11
+print events from 2025-06-02T11:40 to 2025-06-30T11:40
+edit events start "OOD" from 2025-06-03T11:40 with 2025-06-03T13:00
+print events from 2025-06-02T11:40 to 2025-06-30T11:40
 exit

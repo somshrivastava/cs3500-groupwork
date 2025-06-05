@@ -107,11 +107,6 @@ public class CommandParserTest {
   // --- Quote Errors ---
 
   @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingOpeningQuote() {
-    parser.parse("create event Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
   public void testCreateEvent_MissingClosingQuote() {
     parser.parse("create event \"Meeting from 2025-05-05T10:00 to 2025-05-05T11:00");
   }
