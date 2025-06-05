@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/HeadlessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/HeadlessController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/MockCalendarView.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/MockCalendarView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +43,7 @@
     "JUnit.CalendarViewTest.executor": "Run",
     "JUnit.CalendarViewTest.testDisplayStatusBusy.executor": "Debug",
     "JUnit.CommandParserTest.executor": "Run",
+    "JUnit.ControllerIntegrationTest.executor": "Run",
     "JUnit.HeadlessControllerTest.executor": "Run",
     "JUnit.InteractiveControllerTest.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
