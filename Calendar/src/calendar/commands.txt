@@ -1,6 +1,6 @@
 create event "Daily Standup" from 2024-03-11T09:00 to 2024-03-11T09:30
 create event "OOD" from 2025-06-02T11:40 to 2025-06-02T12:40 repeats MWTR for 10 times
-edit event start "Daily Standup" from 2024-03-11T09:00 to 2024-03-11T09:30 with 2024-03-11T10:00
+edit event description "Daily Standup" from 2024-03-11T09:00 to 2024-03-11T09:30 with "hello"
 print events on 2024-03-11
 print events from 2025-06-02T11:40 to 2025-06-30T11:40
 edit events start "OOD" from 2025-06-03T11:40 with 2025-06-03T13:00

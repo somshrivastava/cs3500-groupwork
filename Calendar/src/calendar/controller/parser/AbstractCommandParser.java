@@ -17,6 +17,11 @@ import calendar.view.ICalendarView;
  * Contains common parsing logic shared by all command types.
  */
 abstract class AbstractCommandParser {
+  // Common array indices used across parsers
+  protected static final int COMMAND_TYPE_INDEX = 0;
+  protected static final int COMMAND_SUBTYPE_INDEX = 1;
+  protected static final int SUBJECT_START_INDEX = 2;
+
   // Formatters for parsing dates and times
   protected static final DateTimeFormatter DATE_TIME_FORMATTER =
           DateTimeFormatter.ISO_LOCAL_DATE_TIME;

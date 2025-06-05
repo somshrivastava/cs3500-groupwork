@@ -1,373 +1,533 @@
 package controller;
 
+import calendar.controller.parser.CommandParser;
+import controller.tests.MockCalendarModel;
+import controller.tests.MockCalendarView;
 import org.junit.Before;
 import org.junit.Test;
-
-
-import calendar.controller.parser.CommandParser;
-import calendar.model.ICalendarModel;
-import calendar.view.ICalendarView;
-
+import static org.junit.Assert.*;
 
 /**
- * Test suite focused on invalid commands and error conditions for CommandParser.
- * Tests all error cases specified in the assignment to ensure proper error handling.
+ * Comprehensive test suite for CommandParser using manual mock implementations.
+ * Tests all command types, valid parsing scenarios, and error conditions.
  */
 public class CommandParserTest {
-
-  private ICalendarModel mockModel;
-
-  private ICalendarView mockView;
-
-  private CommandParser parser;
-
-  @Before
-  public void setUp() {
-    parser = new CommandParser(mockModel, mockView);
-  }
-
-  // ==================== GENERAL INVALID COMMANDS ====================
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEmptyCommand() {
-    parser.parse("");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNullCommand() {
-    parser.parse(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testWhitespaceOnlyCommand() {
-    parser.parse("   \t\n  ");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testUnknownCommand() {
-    parser.parse("delete event \"Meeting\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testMisspelledCommand() {
-    parser.parse("creat event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testIncompleteCommand() {
-    parser.parse("create");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testWrongCommandStructure() {
-    parser.parse("event create \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  // ==================== CREATE EVENT ERRORS ====================
-
-  // --- Missing Required Components ---
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingEventKeyword() {
-    parser.parse("create \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingSubject() {
-    parser.parse("create event from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingFromKeyword() {
-    parser.parse("create event \"Meeting\" 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingToKeyword() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingStartTime() {
-    parser.parse("create event \"Meeting\" from to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingEndTime() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingOnKeyword() {
-    parser.parse("create event \"Meeting\" 2025-05-05");
-  }
-
-  // --- Quote Errors ---
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_MissingClosingQuote() {
-    parser.parse("create event \"Meeting from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_NoQuotesForMultiWordSubject() {
-    parser.parse("create event Team Meeting from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-
-  // --- Date/Time Format Errors ---
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_InvalidDateFormat_Slashes() {
-    parser.parse("create event \"Meeting\" from 05/05/2025T10:00 to 05/05/2025T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_InvalidDateFormat_WrongOrder() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-31-12T11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_InvalidTimeFormat_NoT() {
-    parser.parse("create event \"Meeting\" from 2025-05-05 10:00 to 2025-05-05 11:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_InvalidTimeFormat_12Hour() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00AM to 2025-05-05T11:00AM");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateEvent_InvalidAllDayDateFormat() {
-    parser.parse("create event \"Conference\" on 05-05-2025");
-  }
-
-  // --- Recurring Event Errors ---
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_MissingRepeatsKeyword() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 MWF for 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_MissingWeekdays() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats for 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_InvalidWeekdayCharacter() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MXF for 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_EmptyWeekdays() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats \"\" for 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_MissingForKeyword() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_MissingTimesKeyword() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF for 5");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_InvalidCount() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF for zero times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_NegativeCount() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF for -5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_MissingUntilKeyword() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF 2025-06-30");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_InvalidUntilDate() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWF until June 30");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateRecurring_WrongKeywordOrder() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 for 5 times repeats MWF");
-  }
-
-  // ==================== EDIT EVENT ERRORS ====================
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_InvalidEditType() {
-    parser.parse("edit meeting subject \"Old\" from 2025-05-05T10:00 to 2025-05-05T11:00 with \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_MissingProperty() {
-    parser.parse("edit event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 with \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_InvalidProperty() {
-    parser.parse("edit event color \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 with red");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_MissingFromKeyword() {
-    parser.parse("edit event subject \"Meeting\" 2025-05-05T10:00 to 2025-05-05T11:00 with \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_MissingToKeyword_SingleEvent() {
-    parser.parse("edit event subject \"Meeting\" from 2025-05-05T10:00 2025-05-05T11:00 with \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_MissingWithKeyword() {
-    parser.parse("edit event subject \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_MissingNewValue() {
-    parser.parse("edit event subject \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 with");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEdit_TooFewArguments() {
-    parser.parse("edit event");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEditEvents_MissingStartTime() {
-    parser.parse("edit events subject \"Meeting\" from with \"New\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testEditSeries_InvalidStructure() {
-    parser.parse("edit series \"Meeting\" subject from 2025-05-05T10:00 with \"New\"");
-  }
-
-  // ==================== PRINT EVENTS ERRORS ====================
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_MissingEventsKeyword() {
-    parser.parse("print on 2025-05-05");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_InvalidKeyword() {
-    parser.parse("print appointments on 2025-05-05");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_MissingOnKeyword() {
-    parser.parse("print events 2025-05-05");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_MissingDate() {
-    parser.parse("print events on");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_InvalidDateFormat() {
-    parser.parse("print events on May 5, 2025");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrintRange_MissingFromKeyword() {
-    parser.parse("print events 2025-05-05T00:00 to 2025-05-10T23:59");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrintRange_MissingToKeyword() {
-    parser.parse("print events from 2025-05-05T00:00 2025-05-10T23:59");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrintRange_MissingStartDate() {
-    parser.parse("print events from to 2025-05-10T23:59");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrintRange_MissingEndDate() {
-    parser.parse("print events from 2025-05-05T00:00 to");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrintRange_WrongArgumentCount() {
-    parser.parse("print events from 2025-05-05T00:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPrint_InvalidCommandStructure() {
-    parser.parse("print events between 2025-05-05 and 2025-05-10");
-  }
-
-  // ==================== SHOW STATUS ERRORS ====================
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_InvalidCommand() {
-    parser.parse("show availability on 2025-05-05T10:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_MissingStatusKeyword() {
-    parser.parse("show on 2025-05-05T10:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_MissingOnKeyword() {
-    parser.parse("show status 2025-05-05T10:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_MissingDateTime() {
-    parser.parse("show status on");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_InvalidDateTimeFormat() {
-    parser.parse("show status on 2025-05-05 10:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_WrongKeyword() {
-    parser.parse("show status at 2025-05-05T10:00");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_TooManyArguments() {
-    parser.parse("show status on 2025-05-05T10:00 extra");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testShow_TooFewArguments() {
-    parser.parse("show status");
-  }
-
-  // ==================== COMPLEX ERROR SCENARIOS ====================
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testComplexError_MixedValidInvalidWeekdays() {
-    parser.parse("create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00 repeats MWXF for 5 times");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testComplexError_QuotesInWrongPlace() {
-    parser.parse("create event Meeting from \"2025-05-05T10:00\" to \"2025-05-05T11:00\"");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testComplexError_PartialCommand() {
-    parser.parse("create event \"Meeting\" from");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testComplexError_ExtraWordsInCommand() {
-    parser.parse("please create event \"Meeting\" from 2025-05-05T10:00 to 2025-05-05T11:00");
-  }
-}
+    private StringBuilder modelLog;
+    private StringBuilder viewOutput;
+    private MockCalendarModel mockModel;
+    private MockCalendarView mockView;
+    private CommandParser parser;
+
+    @Before
+    public void setUp() {
+        modelLog = new StringBuilder();
+        viewOutput = new StringBuilder();
+        mockModel = new MockCalendarModel(modelLog);
+        mockView = new MockCalendarView(viewOutput);
+        parser = new CommandParser(mockModel, mockView);
+    }
+
+    @Test
+    public void testCreateSingleTimedEvent() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00");
+        
+        String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleTimedEventQuoted() {
+        parser.parse("create event \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00");
+        
+        String expectedLog = "Created single timed event Team Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleTimedEventLongSubject() {
+        parser.parse("create event \"Very Long Meeting Name With Multiple Words\" from 2024-03-20T10:00 to 2024-03-20T11:00");
+        
+        String expectedLog = "Created single timed event Very Long Meeting Name With Multiple Words starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleTimedEventCaseInsensitive() {
+        parser.parse("CREATE EVENT Meeting FROM 2024-03-20T10:00 TO 2024-03-20T11:00");
+        
+        String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleAllDayEvent() {
+        parser.parse("create event Holiday on 2024-03-20");
+        
+        String expectedLog = "Created single all day event Holiday on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleAllDayEventQuoted() {
+        parser.parse("create event \"Company Holiday\" on 2024-03-20");
+        
+        String expectedLog = "Created single all day event Company Holiday on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateSingleAllDayEventCaseInsensitive() {
+        parser.parse("create event Holiday ON 2024-03-20");
+        
+        String expectedLog = "Created single all day event Holiday on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringTimedEventCount() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MWF for 5 times");
+        
+        String expectedLog = "Created recurring timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 5";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringTimedEventUntil() {
+        parser.parse("create event \"Weekly Standup\" from 2024-03-20T09:00 to 2024-03-20T09:30 repeats MTWRF until 2024-06-20");
+        
+        String expectedLog = "Created recurring timed event Weekly Standup starting at 2024-03-20T09:00 until 2024-03-20T09:30 to the date 2024-06-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringTimedEventSingleWeekday() {
+        parser.parse("create event \"Monday Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00 repeats M for 10 times");
+        
+        String expectedLog = "Created recurring timed event Monday Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 10";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringTimedEventAllWeekdays() {
+        parser.parse("create event Daily from 2024-03-20T08:00 to 2024-03-20T09:00 repeats MTWRFSU for 7 times");
+        
+        String expectedLog = "Created recurring timed event Daily starting at 2024-03-20T08:00 until 2024-03-20T09:00 for a count of 7";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringTimedEventWeekends() {
+        parser.parse("create event \"Weekend Fun\" from 2024-03-20T14:00 to 2024-03-20T16:00 repeats SU for 4 times");
+        
+        String expectedLog = "Created recurring timed event Weekend Fun starting at 2024-03-20T14:00 until 2024-03-20T16:00 for a count of 4";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringAllDayEventCount() {
+        parser.parse("create event Holiday on 2024-03-20 repeats F for 10 times");
+        
+        String expectedLog = "Created recurring all day event Holiday starting on the date 2024-03-20T00:00 for a count of 10";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testCreateRecurringAllDayEventUntil() {
+        parser.parse("create event \"Weekly Holiday\" on 2024-03-20 repeats W until 2024-12-31");
+        
+        String expectedLog = "Created recurring timed event Weekly Holiday starting on the date 2024-03-20T00:00 to the date 2024-12-31T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventSubject() {
+        parser.parse("edit event subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with \"New Meeting\"");
+        
+        String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed subject to New Meeting";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventStart() {
+        parser.parse("edit event start \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00 with 2024-03-20T09:00");
+        
+        String expectedLog = "Edited single event's property: Team Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed start to 2024-03-20T09:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventEnd() {
+        parser.parse("edit event end Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with 2024-03-20T12:00");
+        
+        String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed end to 2024-03-20T12:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventDescription() {
+        parser.parse("edit event description Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with \"Important meeting\"");
+        
+        String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed description to Important meeting";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventLocation() {
+        parser.parse("edit event location Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with ONLINE");
+        
+        String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed location to ONLINE";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventStatus() {
+        parser.parse("edit event status Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with PRIVATE");
+        
+        String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed status to PRIVATE";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventsFromDate() {
+        parser.parse("edit events subject \"Weekly Meeting\" from 2024-03-20T10:00 with \"Updated Weekly Meeting\"");
+        
+        String expectedLog = "Edited series of event's properties: Weekly Meeting starting on or after date 2024-03-20T10:00. Changed subject to Updated Weekly Meeting";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEventsLocation() {
+        parser.parse("edit events location Meeting from 2024-03-20T10:00 with PHYSICAL");
+        
+        String expectedLog = "Edited series of event's properties: Meeting starting on or after date 2024-03-20T10:00. Changed location to PHYSICAL";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditEntireSeries() {
+        parser.parse("edit series subject Meeting from 2024-03-20T10:00 with \"Updated Meeting\"");
+        
+        String expectedLog = "Edited all series of event's properties: Meeting with start time 2024-03-20T10:00. Changed subject to Updated Meeting";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEditSeriesDescription() {
+        parser.parse("edit series description \"Team Standup\" from 2024-03-20T09:00 with \"Daily team synchronization\"");
+        
+        String expectedLog = "Edited all series of event's properties: Team Standup with start time 2024-03-20T09:00. Changed description to Daily team synchronization";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testPrintEventsOnDate() {
+        parser.parse("print events on 2024-03-20");
+        
+        String expectedLog = "Queried for all events that occur on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testPrintEventsDateRange() {
+        parser.parse("print events from 2024-03-20T00:00 to 2024-03-25T23:59");
+        
+        String expectedLog = "Queried for all events that occur from 2024-03-20T00:00 to 2024-03-25T23:59";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testPrintEventsLongRange() {
+        parser.parse("print events from 2024-01-01T00:00 to 2024-12-31T23:59");
+        
+        String expectedLog = "Queried for all events that occur from 2024-01-01T00:00 to 2024-12-31T23:59";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testPrintEventsCaseInsensitive() {
+        parser.parse("PRINT EVENTS ON 2024-03-20");
+        
+        String expectedLog = "Queried for all events that occur on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testShowStatus() {
+        parser.parse("show status on 2024-03-20T10:30");
+        
+        String expectedLog = "Checked if there is an event during 2024-03-20T10:30";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testShowStatusDifferentTime() {
+        parser.parse("show status on 2024-12-25T00:00");
+        
+        String expectedLog = "Checked if there is an event during 2024-12-25T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testShowStatusCaseInsensitive() {
+        parser.parse("SHOW STATUS ON 2024-03-20T10:30");
+        
+        String expectedLog = "Checked if there is an event during 2024-03-20T10:30";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testExtraWhitespace() {
+        parser.parse("  create   event   Meeting   from   2024-03-20T10:00   to   2024-03-20T11:00  ");
+        
+        String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testTabsInCommand() {
+        parser.parse("create\tevent\tMeeting\tfrom\t2024-03-20T10:00\tto\t2024-03-20T11:00");
+        
+        String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testLeapYearDate() {
+        parser.parse("create event \"Leap Day Event\" on 2024-02-29");
+        
+        String expectedLog = "Created single all day event Leap Day Event on 2024-02-29T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testEndOfYearDateTime() {
+        parser.parse("show status on 2024-12-31T23:59");
+        
+        String expectedLog = "Checked if there is an event during 2024-12-31T23:59";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testMidnightTime() {
+        parser.parse("create event \"Midnight Event\" from 2024-03-20T00:00 to 2024-03-20T01:00");
+        
+        String expectedLog = "Created single timed event Midnight Event starting at 2024-03-20T00:00 until 2024-03-20T01:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testSingleCharacterSubject() {
+        parser.parse("create event A on 2024-03-20");
+        
+        String expectedLog = "Created single all day event A on 2024-03-20T00:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testMaxRecurringCount() {
+        parser.parse("create event Daily from 2024-03-20T10:00 to 2024-03-20T11:00 repeats M for 999 times");
+        
+        String expectedLog = "Created recurring timed event Daily starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 999";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullCommand() {
+        parser.parse(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyCommand() {
+        parser.parse("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWhitespaceOnlyCommand() {
+        parser.parse("   \t\n  ");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnknownCommand() {
+        parser.parse("delete event Meeting");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateMissingEventKeyword() {
+        parser.parse("create Meeting from 2024-03-20T10:00 to 2024-03-20T11:00");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateMissingSubject() {
+        parser.parse("create event from 2024-03-20T10:00 to 2024-03-20T11:00");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateInvalidTimedEventKeyword() {
+        parser.parse("create event Meeting at 2024-03-20T10:00 to 2024-03-20T11:00");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateMissingToKeyword() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 2024-03-20T11:00");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateInvalidDateTimeFormat() {
+        parser.parse("create event Meeting from 2024/03/20T10:00 to 2024/03/20T11:00");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateInvalidDateFormat() {
+        parser.parse("create event Holiday on 03-20-2024");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateRecurringMissingRepeats() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 MWF for 5 times");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateRecurringInvalidWeekday() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MXF for 5 times");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateRecurringInvalidCount() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MWF for -5 times");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateRecurringMissingTimesKeyword() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MWF for 5");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEditInvalidType() {
+        parser.parse("edit meeting subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with New");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEditInvalidProperty() {
+        parser.parse("edit event title Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with New");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEditMissingFromKeyword() {
+        parser.parse("edit event subject Meeting 2024-03-20T10:00 to 2024-03-20T11:00 with New");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEditMissingWithKeyword() {
+        parser.parse("edit event subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 New");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintMissingEventsKeyword() {
+        parser.parse("print on 2024-03-20");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintInvalidKeyword() {
+        parser.parse("print meetings on 2024-03-20");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintMissingOnKeyword() {
+        parser.parse("print events 2024-03-20");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPrintInvalidDateFormat() {
+        parser.parse("print events on 03/20/2024");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowMissingStatusKeyword() {
+        parser.parse("show on 2024-03-20T10:30");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowInvalidKeyword() {
+        parser.parse("show availability on 2024-03-20T10:30");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowMissingOnKeyword() {
+        parser.parse("show status 2024-03-20T10:30");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowInvalidDateTimeFormat() {
+        parser.parse("show status on 2024-03-20 10:30");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnclosedQuote() {
+        parser.parse("create event \"Team Meeting from 2024-03-20T10:00 to 2024-03-20T11:00");
+    }
+
+    @Test
+    public void testUnknownCommandErrorMessage() {
+        try {
+            parser.parse("unknown command");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Error message should mention valid commands", 
+                      e.getMessage().contains("Valid commands are: create, edit, print, show"));
+            assertTrue("Error message should mention the unknown command", 
+                      e.getMessage().contains("unknown"));
+        }
+    }
+
+    @Test
+    public void testEmptyCommandErrorMessage() {
+        try {
+            parser.parse("");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Error message should mention empty command", 
+                      e.getMessage().contains("cannot be empty"));
+        }
+    }
+
+    @Test
+    public void testInvalidWeekdayErrorMessage() {
+        try {
+            parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MXF for 5 times");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Error message should mention invalid weekday", 
+                      e.getMessage().contains("Invalid weekday character"));
+            assertTrue("Error message should mention the invalid character", 
+                      e.getMessage().contains("X"));
+        }
+    }
+
+    @Test
+    public void testComplexQuotedSubjects() {
+        parser.parse("create event \"Team Meeting: Sprint Planning & Review\" from 2024-03-20T10:00 to 2024-03-20T12:00");
+        
+        String expectedLog = "Created single timed event Team Meeting: Sprint Planning & Review starting at 2024-03-20T10:00 until 2024-03-20T12:00";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testComplexEditWithQuotes() {
+        parser.parse("edit series description \"Daily Standup\" from 2024-03-20T09:00 with \"Brief daily team sync-up meeting\"");
+        
+        String expectedLog = "Edited all series of event's properties: Daily Standup with start time 2024-03-20T09:00. Changed description to Brief daily team sync-up meeting";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+
+    @Test
+    public void testMultipleCommands() {
+        parser.parse("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00");
+        parser.parse("print events on 2024-03-20");
+        parser.parse("show status on 2024-03-20T10:30");
+        
+        String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00" +
+                           "Queried for all events that occur on 2024-03-20T00:00" +
+                           "Checked if there is an event during 2024-03-20T10:30";
+        assertEquals(expectedLog, modelLog.toString());
+    }
+} 

@@ -10,6 +10,11 @@ import calendar.view.ICalendarView;
  * Handles editing single events, event series from a point, and entire series.
  */
 class EditCommandParser extends AbstractCommandParser {
+  // Specific indices for edit command structure
+  private static final int MIN_EDIT_COMMAND_LENGTH = 7;
+  private static final int EDIT_TYPE_INDEX = 1;
+  private static final int PROPERTY_INDEX = 2;
+  private static final int SUBJECT_INDEX = 3;
 
   public EditCommandParser(ICalendarModel model, ICalendarView view) {
     super(model, view);
@@ -17,15 +22,15 @@ class EditCommandParser extends AbstractCommandParser {
 
   @Override
   public void parse(String[] parts) throws IllegalArgumentException {
-    validateMinimumLength(parts, 7, "Incomplete edit command. Format: " +
+    validateMinimumLength(parts, MIN_EDIT_COMMAND_LENGTH, "Incomplete edit command. Format: " +
             "edit event [property] \"subject\" from [start] to [end] with [value]");
 
-    String editType = validateEditType(parts[1]);
-    String property = validateProperty(parts[2]);
+    String editType = validateEditType(parts[EDIT_TYPE_INDEX]);
+    String property = validateProperty(parts[PROPERTY_INDEX]);
 
     // Get the subject
-    int subjectEndIndex = extractQuotedText(parts, 3);
-    String subject = buildQuotedText(parts, 3, subjectEndIndex);
+    int subjectEndIndex = extractQuotedText(parts, SUBJECT_INDEX);
+    String subject = buildQuotedText(parts, SUBJECT_INDEX, subjectEndIndex);
 
     // Ensure "from" keyword follows the subject
     validateKeyword(parts[subjectEndIndex], FROM, "subject");
@@ -79,25 +84,25 @@ class EditCommandParser extends AbstractCommandParser {
 
   /**
    * Parses single event edit command.
-   *
-   * This method is called after we've parsed:
-   * - "edit event [property] [subject] from [startTime]"
    */
   private void parseEditSingleEvent(String[] parts, int index, String subject,
                                     LocalDateTime startTime, String property) {
+    final int TO_OFFSET = 0;
+    final int END_TIME_OFFSET = 1;
+    final int WITH_OFFSET = 2;
+    final int VALUE_OFFSET = 3;
+
     // Validate we have the "to" keyword where expected
-    validateKeyword(parts[index], TO, "start time in single event edit");
+    validateKeyword(parts[index + TO_OFFSET], TO, "start time in single event edit");
 
     // Parse the end time
-    LocalDateTime endTime = parseDateTime(parts[index + 1]);
+    LocalDateTime endTime = parseDateTime(parts[index + END_TIME_OFFSET]);
 
     // Validate the "with" keyword appears before the new value
-    validateKeyword(parts[index + 2], WITH, "new value");
+    validateKeyword(parts[index + WITH_OFFSET], WITH, "new value");
 
     // Extract the new value
-    int valueIndex = index + 3;
-    int valueEndIndex = extractQuotedText(parts, valueIndex);
-    String newValue = buildQuotedText(parts, valueIndex, valueEndIndex);
+    String newValue = extractNewValue(parts, index + VALUE_OFFSET);
 
     // Call model to edit this specific single event
     model.editEvent(subject, startTime, endTime, property, newValue);
@@ -105,20 +110,17 @@ class EditCommandParser extends AbstractCommandParser {
 
   /**
    * Parses series event edit command.
-   *
-   * This method handles both:
-   * 1. "edit events" - edits from a specific occurrence forward in the series
-   * 2. "edit series" - edits all occurrences in the series
    */
   private void parseEditSeriesEvent(String[] parts, int index, String subject,
                                     LocalDateTime startTime, String property, String editType) {
+    final int WITH_OFFSET = 0;
+    final int VALUE_OFFSET = 1;
+
     // Validate the "with" keyword appears where expected
-    validateKeyword(parts[index], WITH, "new value");
+    validateKeyword(parts[index + WITH_OFFSET], WITH, "new value");
 
     // Extract the new value
-    int valueIndex = index + 1;
-    int valueEndIndex = extractQuotedText(parts, valueIndex);
-    String newValue = buildQuotedText(parts, valueIndex, valueEndIndex);
+    String newValue = extractNewValue(parts, index + VALUE_OFFSET);
 
     // Route to the appropriate model method based on edit scope
     if (editType.equals(EVENTS)) {
@@ -128,5 +130,16 @@ class EditCommandParser extends AbstractCommandParser {
       // "edit series" - changes ALL occurrences in the series
       model.editSeries(subject, startTime, property, newValue);
     }
+  }
+
+  /**
+   * Extracts the new value from the command parts.
+   * @param parts the command parts
+   * @param valueIndex the starting index of the value
+   * @return the extracted value
+   */
+  private String extractNewValue(String[] parts, int valueIndex) {
+    int valueEndIndex = extractQuotedText(parts, valueIndex);
+    return buildQuotedText(parts, valueIndex, valueEndIndex);
   }
 }

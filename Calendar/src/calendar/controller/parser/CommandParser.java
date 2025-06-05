@@ -51,6 +51,7 @@ public class CommandParser implements ICommandParser {
     }
   }
 
+  // Check if the command line is empty, throw an exception if it is
   private void validateCommandNotEmpty(String commandLine) {
     if (commandLine == null || commandLine.trim().isEmpty()) {
       throw new IllegalArgumentException("Command cannot be empty. Please enter a valid command.");

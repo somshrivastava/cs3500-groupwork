@@ -1,6 +1,8 @@
 package calendar.view;
 
 import calendar.model.IEvent;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,17 +23,19 @@ public interface ICalendarView {
   void displayError(String error);
 
   /**
-   * Displays a success message to the user.
-   * @param message the success message to display
-   */
-  void displaySuccess(String message);
-
-  /**
-   * Displays a list of events with a header.
-   * @param header the header text for the event list
+   * Displays events for a specific date.
+   * @param date the date of the events
    * @param events the list of events to display
    */
-  void displayEvents(String header, List<IEvent> events);
+  void displayEventsForDate(LocalDate date, List<IEvent> events);
+
+  /**
+   * Displays events for a date range.
+   * @param startDate the start date of the range
+   * @param endDate the end date of the range
+   * @param events the list of events to display
+   */
+  void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate, List<IEvent> events);
 
   /**
    * Displays the current status of a specific date/time.
