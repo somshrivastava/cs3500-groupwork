@@ -2,7 +2,6 @@ package controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import calendar.model.IEvent;

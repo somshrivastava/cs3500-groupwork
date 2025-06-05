@@ -443,10 +443,14 @@ public class CalendarModelTest {
 
     for (IEvent event : allEvents) {
       if (event.getStartDateTime().toLocalDate().isBefore(editFromDate.toLocalDate())) {
-        if (originalSeriesId == null) originalSeriesId = event.getSeriesId();
+        if (originalSeriesId == null) {
+          originalSeriesId = event.getSeriesId();
+        };
         assertEquals(originalSeriesId, event.getSeriesId());
       } else {
-        if (newSeriesId == null) newSeriesId = event.getSeriesId();
+        if (newSeriesId == null) {
+          newSeriesId = event.getSeriesId();
+        };
         assertEquals(newSeriesId, event.getSeriesId());
         assertNotEquals("Should have different series ID", originalSeriesId, newSeriesId);
       }
