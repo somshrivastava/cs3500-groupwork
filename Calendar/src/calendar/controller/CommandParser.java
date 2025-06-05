@@ -18,9 +18,10 @@ import calendar.view.ICalendarView;
 /**
  * Parser for calendar commands. Handles parsing user input and calling appropriate model methods.
  */
-public class CommandParser {
+public class CommandParser implements ICommandParser {
   // Formatters for parsing dates and times in ISO format
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+          DateTimeFormatter.ISO_LOCAL_DATE_TIME;
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
   // Mapping of character codes to days of week
@@ -59,8 +60,9 @@ public class CommandParser {
 
   /**
    * Constructs a new CommandParser with the given calendar model and view.
+   *
    * @param model the calendar model to use for event operations
-   * @param view the calendar view to use for displaying events and messages
+   * @param view  the calendar view to use for displaying events and messages
    */
   public CommandParser(ICalendarModel model, ICalendarView view) {
     this.model = model;
@@ -109,7 +111,8 @@ public class CommandParser {
 
     String eventType = getEventTypeKeyword(commandParts, subjectEndIndex);
 
-    String[] remainingParts = Arrays.copyOfRange(commandParts, subjectEndIndex + 1, commandParts.length);
+    String[] remainingParts = Arrays.copyOfRange(commandParts, subjectEndIndex + 1,
+            commandParts.length);
 
     if (eventType.equals(FROM)) {
       parseTimedEvent(subject, remainingParts);
@@ -121,8 +124,10 @@ public class CommandParser {
   /**
    * Parses a timed event (has start and end times).
    */
-  private void parseTimedEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
-    validateMinimumLength(remainingParts, 3, "Incomplete timed event. Format: " +
+  private void parseTimedEvent(String subject, String[] remainingParts) throws
+          IllegalArgumentException {
+    validateMinimumLength(remainingParts, 3, "Incomplete timed " +
+            "event. Format: " +
             "from YYYY-MM-DDThh:mm to YYYY-MM-DDThh:mm");
 
     LocalDateTime startTime = parseDateTime(remainingParts[0]);
@@ -139,8 +144,10 @@ public class CommandParser {
   /**
    * Parses an all-day event.
    */
-  private void parseAllDayEvent(String subject, String[] remainingParts) throws IllegalArgumentException {
-    validateMinimumLength(remainingParts, 1, "Missing date for all-day event. Format: on YYYY-MM-DD");
+  private void parseAllDayEvent(String subject, String[] remainingParts) throws
+          IllegalArgumentException {
+    validateMinimumLength(remainingParts, 1, "Missing date for " +
+            "all-day event. Format: on YYYY-MM-DD");
 
     LocalDateTime eventDate = parseDate(remainingParts[0]);
 
@@ -159,7 +166,8 @@ public class CommandParser {
     validateKeyword(parts[3], REPEATS, "end time");
 
     int weekdaysIndex = 3 + 1;
-    validateMinimumLength(parts, weekdaysIndex + 3, "Incomplete recurring event");
+    validateMinimumLength(parts, weekdaysIndex + 3, "Incomplete " +
+            "recurring event");
 
     ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[weekdaysIndex]);
     String recurType = parts[weekdaysIndex + 1].toLowerCase();
@@ -185,7 +193,8 @@ public class CommandParser {
     validateKeyword(parts[1], REPEATS, "date");
 
     int weekdaysIndex = 1 + 1;
-    validateMinimumLength(parts, weekdaysIndex + 3, "Incomplete recurring event");
+    validateMinimumLength(parts, weekdaysIndex + 3, "Incomplete " +
+            "recurring event");
 
     ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[weekdaysIndex]);
     String recurType = parts[weekdaysIndex + 1].toLowerCase();
@@ -223,7 +232,8 @@ public class CommandParser {
     if (editType.equals(EVENT)) {
       parseEditSingleEvent(parts, subjectEndIndex + 2, subject, startTime, property);
     } else {
-      parseEditSeriesEvent(parts, subjectEndIndex + 2, subject, startTime, property, editType);
+      parseEditSeriesEvent(parts, subjectEndIndex + 2, subject, startTime, property,
+              editType);
     }
   }
 
@@ -344,7 +354,8 @@ public class CommandParser {
    * Validates the basic structure of a create command.
    */
   private void validateCreateCommandFormat(String[] commandParts) {
-    validateMinimumLength(commandParts, 4, "Invalid create command. Format should be: " +
+    validateMinimumLength(commandParts, 4, "Invalid create command. " +
+            "Format should be: " +
             "create event \"subject\" from/on [date/time]");
 
     validateKeyword(commandParts[0], CREATE, "commands");
@@ -376,7 +387,8 @@ public class CommandParser {
    */
   private String getEventTypeKeyword(String[] parts, int index) {
     if (index >= parts.length) {
-      throw new IllegalArgumentException("Incomplete command. After the event subject, specify either " +
+      throw new IllegalArgumentException("Incomplete command. After the event subject, " +
+              "specify either " +
               "'from' for timed events or 'on' for all-day events.");
     }
 
@@ -427,7 +439,8 @@ public class CommandParser {
 
   /**
    * Finds the end index of quoted text starting at the given index.
-   * @param parts the command parts
+   *
+   * @param parts      the command parts
    * @param startIndex the starting index
    * @return the index after the closing quote, or startIndex+1 if not quoted
    */
@@ -456,9 +469,10 @@ public class CommandParser {
 
   /**
    * Builds the text content from parts array, handling quotes.
-   * @param parts the command parts
+   *
+   * @param parts      the command parts
    * @param startIndex the starting index
-   * @param endIndex the ending index (exclusive)
+   * @param endIndex   the ending index (exclusive)
    * @return the extracted text without quotes
    */
   private String buildQuotedText(String[] parts, int startIndex, int endIndex) {

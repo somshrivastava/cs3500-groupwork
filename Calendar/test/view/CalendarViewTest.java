@@ -1,3 +1,5 @@
+package view;
+
 import calendar.model.Event;
 import calendar.model.EventLocation;
 import calendar.model.EventStatus;

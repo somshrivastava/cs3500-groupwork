@@ -1,3 +1,5 @@
+package model;
+
 import calendar.model.CalendarModel;
 import calendar.model.ICalendarModel;
 import calendar.model.IEvent;
@@ -6,7 +8,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;

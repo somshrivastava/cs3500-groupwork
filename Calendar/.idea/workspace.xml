@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/res/sample1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/calendar/controller/ICommandParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/CommandParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/CalendarModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CalendarViewTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/view/CalendarViewTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CommandParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/CommandParserTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +21,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>

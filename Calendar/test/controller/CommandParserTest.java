@@ -1,4 +1,4 @@
-
+package controller;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,8 +7,6 @@ import org.junit.Test;
 import calendar.controller.CommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
-
-import static org.junit.Assert.*;
 
 
 /**
