@@ -8,66 +8,73 @@ import calendar.view.ICalendarView;
  * This class is a mock CalendarView used for testing the CalendarController.
  */
 public class MockCalendarView implements ICalendarView {
-    private final StringBuilder output;
+  private final StringBuilder output;
 
-    public MockCalendarView(StringBuilder output) {
-        this.output = output;
-    }
+  public MockCalendarView(StringBuilder output) {
+    this.output = output;
+  }
 
-    @Override
-    public void displayMessage(String message) {
-        output.append(message).append("\n");
-    }
+  /**
+   * Displays a general message to the user.
+   *
+   * @param message the message to display
+   */
+  @Override
+  public void displayMessage(String message) {
+    output.append(message);
+  }
 
-    @Override
-    public void displayError(String error) {
-        output.append("Error: ").append(error).append("\n");
-    }
+  /**
+   * Displays an error message to the user.
+   *
+   * @param error the error message to display
+   */
+  @Override
+  public void displayError(String error) {
+    String msg = "Error: " + error;
+    output.append(msg);
+  }
 
-    @Override
-    public void displaySuccess(String message) {
-        output.append("Success: ").append(message).append("\n");
-    }
+  /**
+   * Displays a success message to the user.
+   *
+   * @param message the success message to display
+   */
+  @Override
+  public void displaySuccess(String message) {
+    String msg = "Success: " + message;
+    output.append(msg);
+  }
 
-    @Override
-    public void displayEvent(String subject, ArrayList<String> details) {
-        output.append("Event: ").append(subject).append("\n");
-        for (String detail : details) {
-            output.append("  ").append(detail).append("\n");
-        }
-    }
+  /**
+   * Displays a list of events with a header.
+   *
+   * @param header the header text for the event list
+   * @param events the list of events to display
+   */
+  @Override
+  public void displayEvents(String header, List<IEvent> events) {
+    String msg = "Success: ";
+    output.append(msg);
+  }
 
-    @Override
-    public void displayEventList(String title, ArrayList<String> eventLines) {
-        output.append(title).append("\n");
-        for (String line : eventLines) {
-            output.append(line).append("\n");
-        }
-    }
+  /**
+   * Displays the current status of a specific date/time.
+   *
+   * @param dateTime the date/time to check
+   * @param isBusy   true if the time is busy (has an event), false otherwise
+   */
+  @Override
+  public void displayStatus(String dateTime, boolean isBusy) {
 
-    @Override
-    public void displayStatus(String dateTime, String status) {
-        output.append("Status at ").append(dateTime).append(": ").append(status).append("\n");
-    }
+  }
 
-    @Override
-    public void displayPrompt() {
-        output.append("> ");
-    }
-
-    @Override
-    public void displayBlankLine() {
-        output.append("\n");
-    }
-
-    /**
-     * Displays a list of events with a header.
-     *
-     * @param header the header text for the event list
-     * @param events the list of events to display
-     */
-    @Override
-    public void displayEvents(String header, List<IEvent> events) {
-
-    }
+  /**
+   * Displays the command prompt.
+   */
+  @Override
+  public void displayPrompt() {
+    String msg = "Success: ";
+    output.append(msg);
+  }
 } 
