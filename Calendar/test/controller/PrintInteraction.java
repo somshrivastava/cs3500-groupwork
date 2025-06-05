@@ -1,4 +1,4 @@
-package controller.tests;
+package controller;
 
 /**
  * Represents the printing of a sequence of lines to output

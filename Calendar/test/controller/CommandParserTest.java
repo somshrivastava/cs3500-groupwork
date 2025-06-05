@@ -1,8 +1,7 @@
 package controller;
 
 import calendar.controller.parser.CommandParser;
-import controller.tests.MockCalendarModel;
-import controller.tests.MockCalendarView;
+
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
