@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class HeadlessControllerTest extends AbstractControllerTest {
   File file;
   FileWriter writer;
+  protected Readable input;
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
