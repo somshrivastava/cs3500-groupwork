@@ -42,14 +42,12 @@ public class MockCalendarView implements ICalendarView {
 
   @Override
   public void displayEventsForDate(LocalDate date, List<IEvent> events) {
-    String msg = "Events on " + date + "\n";
-    output.append(msg);
+    output.append("Events on ").append(date.toString()).append("\n");
   }
 
   @Override
   public void displayEventsForDateRange(LocalDateTime startDate, LocalDateTime endDate, List<IEvent> events) {
-    String msg = "Events from " + startDate + " to " + endDate + "\n";
-    output.append(msg);
+    output.append("Events from ").append(startDate.toString()).append(" to ").append(endDate.toString()).append("\n");
   }
 
   public void displayEvent(String subject, ArrayList<String> details) {
