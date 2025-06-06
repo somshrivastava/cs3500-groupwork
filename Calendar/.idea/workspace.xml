@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/AbstractCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/AbstractCommandParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/CreateCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/CreateCommandParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/CommandParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/CommandParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/EditCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/EditCommandParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

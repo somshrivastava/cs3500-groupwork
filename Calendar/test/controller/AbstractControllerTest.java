@@ -340,7 +340,7 @@ public abstract class AbstractControllerTest {
                     "Edited single event's property: Club starting on 2025-02-20T10:30 until " +
                     "2025-02-20T12:30. Changed subject to Free";
 
-    controller.go();
+    controller.execute();
 
     assertEquals(expectedOut, logModel.toString());
   }
