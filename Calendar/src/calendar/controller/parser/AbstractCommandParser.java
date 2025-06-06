@@ -17,7 +17,7 @@ import calendar.view.ICalendarView;
  * Abstract base class for command parsers.
  * Contains common parsing logic shared by all command types.
  */
-abstract class AbstractCommandParser implements ICommandParser {
+public abstract class AbstractCommandParser implements ICommandParser {
   // Common array indices used across parsers
   protected static final int COMMAND_TYPE_INDEX = 0;
   protected static final int COMMAND_SUBTYPE_INDEX = 1;

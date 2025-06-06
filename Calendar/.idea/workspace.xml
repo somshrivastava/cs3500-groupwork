@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Archive.zip" beforeDir="false" afterPath="$PROJECT_DIR$/Archive.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/CommandParserFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/CommandParserFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/CommandParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/CommandParserTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/EventTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/EventTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

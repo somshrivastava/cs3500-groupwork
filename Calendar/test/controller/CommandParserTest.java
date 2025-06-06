@@ -709,7 +709,7 @@ public class CommandParserTest {
       fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       assertTrue("Error message should mention invalid weekday",
-              e.getMessage().contains("Invalid weekday: X"));
+              e.getMessage().contains("Invalid weekday character: 'X'"));
     }
   }
 
