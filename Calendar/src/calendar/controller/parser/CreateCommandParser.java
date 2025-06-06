@@ -35,7 +35,7 @@ class CreateCommandParser extends AbstractCommandParser {
    * Parses and executes a create command.
    * Supports creating single and recurring events, both timed and all-day.
    *
-   * @param commandParts the command parts array starting with "create"
+   * @param commandLine the command line
    * @throws IllegalArgumentException if the command syntax is invalid or execution fails
    */
   @Override

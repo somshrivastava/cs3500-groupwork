@@ -1,6 +1,6 @@
 package controller;
 
-import calendar.controller.ICommandParser;
+import calendar.controller.parser.ICommandParser;
 import calendar.controller.parser.CommandParserFactory;
 
 import org.junit.Before;
