@@ -181,3 +181,4 @@ before going into any implementation, and once a design was agreed upon then we 
 Elaine primarily focused on the development of the controller and view and it's corresponding test coverage which involved creating
 mocks for controller testing. Som focused on the development of the command parser and model
 which involved the business logic behind creating, editing, and querying events.
+

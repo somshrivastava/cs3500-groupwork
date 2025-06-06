@@ -14,9 +14,6 @@ import static org.junit.Assert.*;
  */
 public class CommandParserTest {
   private StringBuilder modelLog;
-  private StringBuilder viewOutput;
-  private MockCalendarModel mockModel;
-  private MockCalendarView mockView;
   private CommandParserFactory factory;
   private ICommandParser parser;
   private String input;
@@ -24,9 +21,9 @@ public class CommandParserTest {
   @Before
   public void setUp() {
     modelLog = new StringBuilder();
-    viewOutput = new StringBuilder();
-    mockModel = new MockCalendarModel(modelLog);
-    mockView = new MockCalendarView(viewOutput);
+    StringBuilder viewOutput = new StringBuilder();
+    MockCalendarModel mockModel = new MockCalendarModel(modelLog);
+    MockCalendarView mockView = new MockCalendarView(viewOutput);
     factory = new CommandParserFactory(mockModel, mockView);
   }
 
@@ -36,7 +33,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -46,17 +44,20 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Team Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Team Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testCreateSingleTimedEventLongSubject() {
-    input = "create event \"Very Long Meeting Name With Multiple Words\" from 2024-03-20T10:00 to 2024-03-20T11:00";
+    input = "create event \"Very Long Meeting Name With Multiple Words\" " +
+            "from 2024-03-20T10:00 to 2024-03-20T11:00";
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Very Long Meeting Name With Multiple Words starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Very Long Meeting Name With " +
+            "Multiple Words starting at 2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -67,7 +68,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -106,55 +108,65 @@ public class CommandParserTest {
 
   @Test
   public void testCreateRecurringTimedEventCount() {
-    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MWF for 5 times";
+    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+            "repeats MWF for 5 times";
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 5";
+    String expectedLog = "Created recurring timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00 for a count of 5";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testCreateRecurringTimedEventUntil() {
-    input = "create event \"Weekly Standup\" from 2024-03-20T09:00 to 2024-03-20T09:30 repeats MTWRF until 2024-06-20";
+    input = "create event \"Weekly Standup\" from 2024-03-20T09:00 to " +
+            "2024-03-20T09:30 repeats MTWRF until 2024-06-20";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Weekly Standup starting at 2024-03-20T09:00 until 2024-03-20T09:30 to the date 2024-06-20T00:00";
+    String expectedLog = "Created recurring timed event Weekly Standup starting at " +
+            "2024-03-20T09:00 until 2024-03-20T09:30 to the date 2024-06-20T00:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testCreateRecurringTimedEventSingleWeekday() {
-    input = "create event \"Monday Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00 repeats M for 10 times";
+    input = "create event \"Monday Meeting\" from 2024-03-20T10:00 to " +
+            "2024-03-20T11:00 repeats M for 10 times";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Monday Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 10";
+    String expectedLog = "Created recurring timed event Monday Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00 for a count of 10";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testCreateRecurringTimedEventAllWeekdays() {
-    input = "create event Daily from 2024-03-20T08:00 to 2024-03-20T09:00 repeats MTWRFSU for 7 times";
+    input = "create event Daily from 2024-03-20T08:00 to 2024-03-20T09:00 " +
+            "repeats MTWRFSU for 7 times";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Daily starting at 2024-03-20T08:00 until 2024-03-20T09:00 for a count of 7";
+    String expectedLog = "Created recurring timed event Daily starting at " +
+            "2024-03-20T08:00 until 2024-03-20T09:00 for a count of 7";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testCreateRecurringTimedEventWeekends() {
-    input = "create event \"Weekend Fun\" from 2024-03-20T14:00 to 2024-03-20T16:00 repeats SU for 4 times";
+    input = "create event \"Weekend Fun\" from 2024-03-20T14:00 to " +
+            "2024-03-20T16:00 repeats SU for 4 times";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Weekend Fun starting at 2024-03-20T14:00 until 2024-03-20T16:00 for a count of 4";
+    String expectedLog = "Created recurring timed event Weekend Fun starting at " +
+            "2024-03-20T14:00 until 2024-03-20T16:00 for a count of 4";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -165,7 +177,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring all day event Holiday starting on the date 2024-03-20T00:00 for a count of 10";
+    String expectedLog = "Created recurring all day event Holiday starting on " +
+            "the date 2024-03-20T00:00 for a count of 10";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -176,60 +189,72 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Weekly Holiday starting on the date 2024-03-20T00:00 to the date 2024-12-31T00:00";
+    String expectedLog = "Created recurring timed event Weekly Holiday starting on " +
+            "the date 2024-03-20T00:00 to the date 2024-12-31T00:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventSubject() {
-    input = "edit event subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with \"New Meeting\"";
+    input = "edit event subject Meeting from 2024-03-20T10:00 to " +
+            "2024-03-20T11:00 with \"New Meeting\"";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed subject to New Meeting";
+    String expectedLog = "Edited single event's property: Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed subject to New Meeting";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventStart() {
-    input = "edit event start \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00 with 2024-03-20T09:00";
+    input = "edit event start \"Team Meeting\" from 2024-03-20T10:00 to " +
+            "2024-03-20T11:00 with 2024-03-20T09:00";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Team Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed start to 2024-03-20T09:00";
+    String expectedLog = "Edited single event's property: Team Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed start to 2024-03-20T09:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventEnd() {
-    input = "edit event end Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with 2024-03-20T12:00";
+    input = "edit event end Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+            "with 2024-03-20T12:00";
+
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed end to 2024-03-20T12:00";
+    String expectedLog = "Edited single event's property: Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed end to 2024-03-20T12:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventDescription() {
-    input = "edit event description Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with \"Important meeting\"";
+    input = "edit event description Meeting from 2024-03-20T10:00 to " +
+            "2024-03-20T11:00 with \"Important meeting\"";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed description to Important meeting";
+    String expectedLog = "Edited single event's property: Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed description to Important meeting";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventLocation() {
     input = "edit event location Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with ONLINE";
+
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed location to ONLINE";
+    String expectedLog = "Edited single event's property: Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed location to ONLINE";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -240,18 +265,21 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited single event's property: Meeting starting on 2024-03-20T10:00 until 2024-03-20T11:00. Changed status to PRIVATE";
+    String expectedLog = "Edited single event's property: Meeting starting on " +
+            "2024-03-20T10:00 until 2024-03-20T11:00. Changed status to PRIVATE";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditEventsFromDate() {
-    input = "edit events subject \"Weekly Meeting\" from 2024-03-20T10:00 with \"Updated Weekly Meeting\"";
+    input = "edit events subject \"Weekly Meeting\" from 2024-03-20T10:00 " +
+            "with \"Updated Weekly Meeting\"";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited series of event's properties: Weekly Meeting starting on or after date 2024-03-20T10:00. Changed subject to Updated Weekly Meeting";
+    String expectedLog = "Edited series of event's properties: Weekly Meeting starting on " +
+            "or after date 2024-03-20T10:00. Changed subject to Updated Weekly Meeting";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -262,7 +290,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited series of event's properties: Meeting starting on or after date 2024-03-20T10:00. Changed location to PHYSICAL";
+    String expectedLog = "Edited series of event's properties: Meeting starting on " +
+            "or after date 2024-03-20T10:00. Changed location to PHYSICAL";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -273,18 +302,21 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited all series of event's properties: Meeting with start time 2024-03-20T10:00. Changed subject to Updated Meeting";
+    String expectedLog = "Edited all series of event's properties: Meeting with " +
+            "start time 2024-03-20T10:00. Changed subject to Updated Meeting";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testEditSeriesDescription() {
-    input = "edit series description \"Team Standup\" from 2024-03-20T09:00 with \"Daily team synchronization\"";
+    input = "edit series description \"Team Standup\" from 2024-03-20T09:00 " +
+            "with \"Daily team synchronization\"";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited all series of event's properties: Team Standup with start time 2024-03-20T09:00. Changed description to Daily team synchronization";
+    String expectedLog = "Edited all series of event's properties: Team Standup with " +
+            "start time 2024-03-20T09:00. Changed description to Daily team synchronization";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -306,7 +338,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Queried for all events that occur from 2024-03-20T00:00 to 2024-03-25T23:59";
+    String expectedLog = "Queried for all events that occur from " +
+            "2024-03-20T00:00 to 2024-03-25T23:59";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -317,7 +350,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Queried for all events that occur from 2024-01-01T00:00 to 2024-12-31T23:59";
+    String expectedLog = "Queried for all events that occur from " +
+            "2024-01-01T00:00 to 2024-12-31T23:59";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -372,18 +406,20 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testTabsInCommand() {
-    input = "create\tevent\tMeeting\tfrom\t2024-03-20T10:00\tto\t2024-03-20T11:00";
+    input = "\tcreate\tevent\tMeeting\tfrom\t2024-03-20T10:00\tto\t2024-03-20T11:00\t";
 
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00";
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -416,7 +452,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Midnight Event starting at 2024-03-20T00:00 until 2024-03-20T01:00";
+    String expectedLog = "Created single timed event Midnight Event starting at " +
+            "2024-03-20T00:00 until 2024-03-20T01:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -438,7 +475,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created recurring timed event Daily starting at 2024-03-20T10:00 until 2024-03-20T11:00 for a count of 999";
+    String expectedLog = "Created recurring timed event Daily starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00 for a count of 999";
     assertEquals(expectedLog, modelLog.toString());
   }
 
@@ -521,14 +559,16 @@ public class CommandParserTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreateRecurringInvalidWeekday() {
-    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MXF for 5 times";
+    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+            "repeats MXF for 5 times";
     parser = factory.createParser(input);
     parser.parse(input);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreateRecurringInvalidCount() {
-    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MWF for -5 times";
+    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+            "repeats MWF for -5 times";
     parser = factory.createParser(input);
     parser.parse(input);
   }
@@ -662,40 +702,44 @@ public class CommandParserTest {
   @Test
   public void testInvalidWeekdayErrorMessage() {
     try {
-      input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 repeats MXF for 5 times";
+      input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+              "repeats MXF for 5 times";
       parser = factory.createParser(input);
       parser.parse(input);
       fail("Expected IllegalArgumentException");
     } catch (IllegalArgumentException e) {
       assertTrue("Error message should mention invalid weekday",
-              e.getMessage().contains("Invalid weekday character"));
-      assertTrue("Error message should mention the invalid character",
-              e.getMessage().contains("X"));
+              e.getMessage().contains("Invalid weekday: X"));
     }
   }
 
   @Test
   public void testComplexQuotedSubjects() {
-    input = "create event \"Team Meeting: Sprint Planning & Review\" from 2024-03-20T10:00 to 2024-03-20T12:00";
+    input = "create event \"Team Meeting: Sprint Planning & Review\" " +
+            "from 2024-03-20T10:00 to 2024-03-20T12:00";
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Team Meeting: Sprint Planning & Review starting at 2024-03-20T10:00 until 2024-03-20T12:00";
+    String expectedLog = "Created single timed event Team Meeting: Sprint Planning & " +
+            "Review starting at 2024-03-20T10:00 until 2024-03-20T12:00";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testComplexEditWithQuotes() {
-    input = "edit series description \"Daily Standup\" from 2024-03-20T09:00 with \"Brief daily team sync-up meeting\"";
+    input = "edit series description \"Daily Standup\" from 2024-03-20T09:00 " +
+            "with \"Brief daily team sync-up meeting\"";
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Edited all series of event's properties: Daily Standup with start time 2024-03-20T09:00. Changed description to Brief daily team sync-up meeting";
+    String expectedLog = "Edited all series of event's properties: Daily Standup with " +
+            "start time 2024-03-20T09:00. Changed description to Brief daily team sync-up meeting";
     assertEquals(expectedLog, modelLog.toString());
   }
 
   @Test
   public void testMultipleCommands() {
+    // First command
     input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00";
     parser = factory.createParser(input);
     parser.parse(input);
@@ -708,9 +752,10 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
 
-    String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until 2024-03-20T11:00" +
+    String expectedLog = "Created single timed event Meeting starting at " +
+            "2024-03-20T10:00 until 2024-03-20T11:00" +
             "Queried for all events that occur on 2024-03-20T00:00" +
             "Checked if there is an event during 2024-03-20T10:30";
     assertEquals(expectedLog, modelLog.toString());
   }
-} 
+}

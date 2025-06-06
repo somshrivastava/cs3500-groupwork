@@ -80,19 +80,19 @@ class CreateCommandParser extends AbstractCommandParser {
    * Parses a timed event.
    */
   private void parseTimedEvent(String subject, String[] remainingParts) {
-    final int START_TIME_INDEX = 0;
-    final int TO_KEYWORD_INDEX = 1;
-    final int END_TIME_INDEX = 2;
-    final int MIN_TIMED_EVENT_LENGTH = 3;
+    final int startTimeIndex = 0;
+    final int toKeywordIndex = 1;
+    final int endTimeIndex = 2;
+    final int minTimedEventLength = 3;
 
-    validateMinimumLength(remainingParts, MIN_TIMED_EVENT_LENGTH, "Incomplete timed event. Format: " +
+    validateMinimumLength(remainingParts, minTimedEventLength, "Incomplete timed event. Format: " +
             "from YYYY-MM-DDThh:mm to YYYY-MM-DDThh:mm");
 
-    LocalDateTime startTime = parseDateTime(remainingParts[START_TIME_INDEX]);
-    validateKeyword(remainingParts[TO_KEYWORD_INDEX], TO, "start and end times");
-    LocalDateTime endTime = parseDateTime(remainingParts[END_TIME_INDEX]);
+    LocalDateTime startTime = parseDateTime(remainingParts[startTimeIndex]);
+    validateKeyword(remainingParts[toKeywordIndex], TO, "start and end times");
+    LocalDateTime endTime = parseDateTime(remainingParts[endTimeIndex]);
 
-    if (remainingParts.length == MIN_TIMED_EVENT_LENGTH) {
+    if (remainingParts.length == minTimedEventLength) {
       model.createSingleTimedEvent(subject, startTime, endTime);
     } else {
       parseRecurringTimedEvent(subject, startTime, endTime, remainingParts);
@@ -103,15 +103,15 @@ class CreateCommandParser extends AbstractCommandParser {
    * Parses an all-day event.
    */
   private void parseAllDayEvent(String subject, String[] remainingParts) {
-    final int DATE_INDEX = 0;
-    final int MIN_ALL_DAY_LENGTH = 1;
+    final int dateIndex = 0;
+    final int minAllDayLength = 1;
 
-    validateMinimumLength(remainingParts, MIN_ALL_DAY_LENGTH, "Missing date for all-day event. " +
+    validateMinimumLength(remainingParts, minAllDayLength, "Missing date for all-day event. " +
             "Format: on YYYY-MM-DD");
 
-    LocalDateTime eventDate = parseDate(remainingParts[DATE_INDEX]);
+    LocalDateTime eventDate = parseDate(remainingParts[dateIndex]);
 
-    if (remainingParts.length == MIN_ALL_DAY_LENGTH) {
+    if (remainingParts.length == minAllDayLength) {
       model.createSingleAllDayEvent(subject, eventDate);
     } else {
       parseRecurringAllDayEvent(subject, eventDate, remainingParts);
@@ -164,37 +164,37 @@ class CreateCommandParser extends AbstractCommandParser {
    */
   private void parseRecurringAllDayEvent(String subject, LocalDateTime eventDate,
                                          String[] parts) {
-    final int REPEATS_INDEX = 1;
-    final int WEEKDAYS_INDEX = 2;
-    final int RECUR_TYPE_INDEX = 3;
-    final int RECUR_VALUE_INDEX = 4;
-    final int TIMES_INDEX = 5;
+    final int repeatsIndex = 1;
+    final int weekdaysIndex = 2;
+    final int recurTypeIndex = 3;
+    final int recurValueIndex = 4;
+    final int timesIndex = 5;
 
     // Confirm the "repeats" keyword is where we expect it
-    validateKeyword(parts[REPEATS_INDEX], REPEATS, "date");
+    validateKeyword(parts[repeatsIndex], REPEATS, "date");
 
     // Need at least 3 more elements after weekdays
-    validateMinimumLength(parts, WEEKDAYS_INDEX + 3, "Incomplete recurring event");
+    validateMinimumLength(parts, weekdaysIndex + 3, "Incomplete recurring event");
 
     // Parse which days of the week this event repeats on
-    ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[WEEKDAYS_INDEX]);
+    ArrayList<DayOfWeek> weekdays = parseWeekdays(parts[weekdaysIndex]);
 
     // Next word determines recurrence type: "for" (count) or "until" (date)
-    String recurType = parts[RECUR_TYPE_INDEX].toLowerCase();
+    String recurType = parts[recurTypeIndex].toLowerCase();
 
     if (recurType.equals(FOR)) {
       // Parse the count number
-      int count = parseCount(parts[RECUR_VALUE_INDEX]);
+      int count = parseCount(parts[recurValueIndex]);
 
       // Verify the word "times" appears after the count
-      validateTimesKeyword(parts, TIMES_INDEX);
+      validateTimesKeyword(parts, timesIndex);
 
       // Create the recurring all-day events with specified count
       model.createRecurringAllDayEvent(subject, eventDate, weekdays, count);
 
     } else if (recurType.equals(UNTIL)) {
       // Parse the end date
-      LocalDateTime untilDate = parseDate(parts[RECUR_VALUE_INDEX]);
+      LocalDateTime untilDate = parseDate(parts[recurValueIndex]);
 
       // Create recurring all-day events until the specified date
       model.createRecurringAllDayEventUntil(subject, eventDate, weekdays, untilDate);
@@ -202,7 +202,7 @@ class CreateCommandParser extends AbstractCommandParser {
     } else {
       // Neither "for" nor "until" - invalid syntax
       throw new IllegalArgumentException("Expected 'for' or 'until' after weekdays but found '" +
-              parts[RECUR_TYPE_INDEX] + "'. Use 'for [count] times' or 'until [date]'");
+              parts[recurTypeIndex] + "'. Use 'for [count] times' or 'until [date]'");
     }
   }
 }

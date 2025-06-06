@@ -88,22 +88,22 @@ class EditCommandParser extends AbstractCommandParser {
    */
   private void parseEditSingleEvent(String[] parts, int index, String subject,
                                     LocalDateTime startTime, String property) {
-    final int TO_OFFSET = 0;
-    final int END_TIME_OFFSET = 1;
-    final int WITH_OFFSET = 2;
-    final int VALUE_OFFSET = 3;
+    final int toOffset = 0;
+    final int endTimeOffset = 1;
+    final int withOffset = 2;
+    final int valueOffset = 3;
 
     // Validate we have the "to" keyword where expected
-    validateKeyword(parts[index + TO_OFFSET], TO, "start time in single event edit");
+    validateKeyword(parts[index + toOffset], TO, "start time in single event edit");
 
     // Parse the end time
-    LocalDateTime endTime = parseDateTime(parts[index + END_TIME_OFFSET]);
+    LocalDateTime endTime = parseDateTime(parts[index + endTimeOffset]);
 
     // Validate the "with" keyword appears before the new value
-    validateKeyword(parts[index + WITH_OFFSET], WITH, "new value");
+    validateKeyword(parts[index + withOffset], WITH, "new value");
 
     // Extract the new value
-    String newValue = extractNewValue(parts, index + VALUE_OFFSET);
+    String newValue = extractNewValue(parts, index + valueOffset);
 
     // Call model to edit this specific single event
     model.editEvent(subject, startTime, endTime, property, newValue);
@@ -114,14 +114,14 @@ class EditCommandParser extends AbstractCommandParser {
    */
   private void parseEditSeriesEvent(String[] parts, int index, String subject,
                                     LocalDateTime startTime, String property, String editType) {
-    final int WITH_OFFSET = 0;
-    final int VALUE_OFFSET = 1;
+    final int withOffset = 0;
+    final int valueOffset = 1;
 
     // Validate the "with" keyword appears where expected
-    validateKeyword(parts[index + WITH_OFFSET], WITH, "new value");
+    validateKeyword(parts[index + withOffset], WITH, "new value");
 
     // Extract the new value
-    String newValue = extractNewValue(parts, index + VALUE_OFFSET);
+    String newValue = extractNewValue(parts, index + valueOffset);
 
     // Route to the appropriate model method based on edit scope
     if (editType.equals(EVENTS)) {

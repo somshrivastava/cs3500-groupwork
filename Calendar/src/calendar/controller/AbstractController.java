@@ -20,7 +20,8 @@ public abstract class AbstractController implements ICalendarController {
   }
 
   /**
-   * Takes a command line and parses it, creating the corresponding command or throwing an exception.
+   * Takes a command line and parses it, creating the corresponding command or throwing an
+   * exception.
    *
    * @param commandLine the line to parse
    */

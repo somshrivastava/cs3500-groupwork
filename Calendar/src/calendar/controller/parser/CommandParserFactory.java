@@ -21,6 +21,13 @@ public class CommandParserFactory {
     this.view = view;
   }
 
+  /**
+   * Creates a parser based on the action that the user is trying to take.
+   *
+   * @param commandLine the command line prompt from the user
+   * @return an instance of the command parser based on what action the user is trying to take
+   * @throws IllegalArgumentException if the command is unknown
+   */
   public ICommandParser createParser(String commandLine) throws IllegalArgumentException {
     validateCommandNotEmpty(commandLine);
     ICommandParser parser;

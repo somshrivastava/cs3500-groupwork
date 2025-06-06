@@ -11,10 +11,8 @@ import calendar.model.EventStatus;
 import calendar.model.IEvent;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for the Event class.
@@ -107,7 +105,8 @@ public class EventTest {
             .location(EventLocation.PHYSICAL)
             .build();
 
-    assertEquals("Events with same subject, start, and end should be equal", event1, event2);
+    assertEquals("Events with same subject, start, and end should be equal", event1,
+            event2);
   }
 
   @Test
@@ -141,7 +140,8 @@ public class EventTest {
             .endDateTime(baseEnd)
             .build();
 
-    assertNotEquals("Events with different start times should not be equal", event1, event2);
+    assertNotEquals("Events with different start times should not be equal", event1,
+            event2);
   }
 
   @Test
@@ -179,7 +179,8 @@ public class EventTest {
             .seriesId(null)
             .build();
 
-    assertEquals("Events should be equal regardless of null optional fields", event1, event2);
+    assertEquals("Events should be equal regardless of null optional fields", event1,
+            event2);
   }
 
   @Test
