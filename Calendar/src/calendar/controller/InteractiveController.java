@@ -43,7 +43,7 @@ public class InteractiveController extends AbstractController {
     while (!quit && sc.hasNext()) { //continue until the user quits
       String commandLine = sc.nextLine().trim();
 
-      if (commandLine.equals("exit")) {
+      if (commandLine.equals("exit") || commandLine.equals("q")) {
         //after the user has quit, print farewell message
         this.calendarView.displayMessage("Goodbye");
         quit = true;
