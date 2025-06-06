@@ -9,6 +9,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import calendar.model.CalendarModel;
 import calendar.model.EventLocation;
@@ -683,6 +685,235 @@ public class CalendarModelTest {
     Integer seriesId = events.get(0).getSeriesId();
     for (IEvent event : events) {
       assertEquals(seriesId, event.getSeriesId());
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------------
+  // Additional Edge Case and Boundary Tests
+
+  @Test
+  public void testLeapYearHandling() {
+    LocalDateTime leapDay = LocalDateTime.of(2024, 2, 29, 10, 0);
+    model.createSingleTimedEvent("Leap Day Meeting", leapDay, leapDay.plusHours(1));
+    
+    List<IEvent> events = model.printEvents(leapDay);
+    assertEquals(1, events.size());
+    assertEquals("Leap Day Meeting", events.get(0).getSubject());
+  }
+
+  @Test
+  public void testYearBoundaryRecurring() {
+    LocalDateTime yearEnd = LocalDateTime.of(2024, 12, 30, 10, 0);
+    model.createRecurringTimedEvent("New Year Meeting", yearEnd, yearEnd.plusHours(1),
+            new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)), 5);
+
+    List<IEvent> events = model.printEvents(yearEnd, LocalDateTime.of(2025, 1, 15, 0, 0));
+    assertTrue("Should create events across year boundary", events.size() > 0);
+  }
+
+  @Test
+  public void testMidnightBoundaryEvents() {
+    LocalDateTime almostMidnight = LocalDateTime.of(2024, 3, 20, 23, 59);
+    LocalDateTime pastMidnight = LocalDateTime.of(2024, 3, 21, 0, 1);
+    model.createSingleTimedEvent("Midnight Spanning", almostMidnight, pastMidnight);
+
+    List<IEvent> events = model.printEvents(LocalDateTime.of(2024, 3, 20, 0, 0));
+    assertEquals(1, events.size());
+  }
+
+  @Test
+  public void testAllDayEventTimeBoundariesPrecise() {
+    LocalDateTime date = LocalDateTime.of(2024, 3, 20, 12, 0);
+    model.createSingleAllDayEvent("Holiday", date);
+
+    // Test exact boundary times
+    assertTrue("Should be busy at 8:00 AM start", 
+            model.showStatus(date.toLocalDate().atTime(8, 0)));
+    assertTrue("Should be busy at 5:00 PM end", 
+            model.showStatus(date.toLocalDate().atTime(17, 0)));
+    assertFalse("Should be free at 7:59 AM", 
+            model.showStatus(date.toLocalDate().atTime(7, 59)));
+    assertFalse("Should be free at 5:01 PM", 
+            model.showStatus(date.toLocalDate().atTime(17, 1)));
+  }
+
+  @Test
+  public void testSeriesIdIncrementing() {
+    model.createRecurringTimedEvent("Series1", baseDateTime, endDateTime,
+            mondayWednesdayFriday, 2);
+    model.createRecurringTimedEvent("Series2", nextDay, nextDay.plusHours(1),
+            weekends, 2);
+
+    List<IEvent> allEvents = model.printEvents(baseDateTime, baseDateTime.plusWeeks(2));
+    Set<Integer> seriesIds = new HashSet<>();
+    for (IEvent event : allEvents) {
+      if (event.getSeriesId() != null) {
+        seriesIds.add(event.getSeriesId());
+      }
+    }
+    assertEquals("Should have exactly 2 distinct series IDs", 2, seriesIds.size());
+  }
+
+  @Test
+  public void testEditEventWithIdenticalTimes() {
+    model.createSingleTimedEvent("Meeting A", baseDateTime, endDateTime);
+    model.createSingleTimedEvent("Meeting B", baseDateTime, endDateTime);
+
+    model.editEvent("Meeting A", baseDateTime, endDateTime, "subject", "Updated A");
+
+    List<IEvent> events = model.printEvents(baseDateTime);
+    boolean foundUpdatedA = false;
+    boolean foundMeetingB = false;
+    
+    for (IEvent event : events) {
+      if (event.getSubject().equals("Updated A")) {
+        foundUpdatedA = true;
+      } else if (event.getSubject().equals("Meeting B")) {
+        foundMeetingB = true;
+      }
+    }
+    
+    assertTrue("Should find Updated A", foundUpdatedA);
+    assertTrue("Should still find Meeting B unchanged", foundMeetingB);
+  }
+
+  @Test
+  public void testSubjectWithSpecialCharacters() {
+    String specialSubject = "Meeting with \"quotes\" & symbols!";
+    model.createSingleTimedEvent(specialSubject, baseDateTime, endDateTime);
+    
+    List<IEvent> events = model.printEvents(baseDateTime);
+    assertEquals(1, events.size());
+    assertEquals(specialSubject, events.get(0).getSubject());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSubjectWithWhitespaceOnly() {
+    model.createSingleTimedEvent("   ", baseDateTime, endDateTime);
+  }
+
+  @Test
+  public void testEditPropertyCaseSensitivity() {
+    model.createSingleTimedEvent("Meeting", baseDateTime, endDateTime);
+    model.editEvent("Meeting", baseDateTime, endDateTime, "SUBJECT", "New Name");
+    
+    List<IEvent> events = model.printEvents(baseDateTime);
+    assertEquals("New Name", events.get(0).getSubject());
+  }
+
+  @Test
+  public void testVeryLongTimeRanges() {
+    LocalDateTime start = LocalDateTime.of(2020, 1, 1, 0, 0);
+    LocalDateTime end = LocalDateTime.of(2025, 12, 31, 23, 59);
+    
+    model.createSingleTimedEvent("Long Range Test", start, start.plusHours(1));
+    List<IEvent> events = model.printEvents(start, end);
+    assertEquals(1, events.size());
+  }
+
+  @Test
+  public void testMaxStringLengths() {
+    StringBuilder longSubject = new StringBuilder();
+    for (int i = 0; i < 100; i++) {
+      longSubject.append("A");
+    }
+    
+    model.createSingleTimedEvent(longSubject.toString(), baseDateTime, endDateTime);
+    List<IEvent> events = model.printEvents(baseDateTime);
+    assertEquals(1, events.size());
+    assertEquals(longSubject.toString(), events.get(0).getSubject());
+  }
+
+  @Test
+  public void testRecurringEventUntilExactBoundary() {
+    LocalDateTime until = baseDateTime.plusWeeks(2);
+    model.createRecurringTimedEventUntil("Weekly", baseDateTime, endDateTime,
+            new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY)), until);
+
+    List<IEvent> events = model.printEvents(baseDateTime, until.plusDays(1));
+    for (IEvent event : events) {
+      assertFalse("Event should not be after until date",
+              event.getStartDateTime().toLocalDate().isAfter(until.toLocalDate()));
+    }
+  }
+
+  @Test
+  public void testEventAtExactMidnight() {
+    LocalDateTime midnight = LocalDateTime.of(2024, 3, 21, 0, 0);
+    model.createSingleTimedEvent("Midnight Event", midnight, midnight.plusHours(1));
+    
+    List<IEvent> events = model.printEvents(midnight);
+    assertEquals(1, events.size());
+    assertTrue("Should be busy at midnight", model.showStatus(midnight));
+  }
+
+  @Test
+  public void testMultipleSeriesEditing() {
+    // Create multiple series
+    model.createRecurringTimedEvent("Daily", baseDateTime, endDateTime,
+            new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)), 4);
+    model.createRecurringTimedEvent("Weekly", baseDateTime.plusHours(2), 
+            baseDateTime.plusHours(3),
+            new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY)), 3);
+
+    // Edit one series
+    model.editSeries("Daily", baseDateTime, "subject", "Updated Daily");
+
+    List<IEvent> events = model.printEvents(baseDateTime, baseDateTime.plusWeeks(3));
+    
+    boolean foundUpdatedDaily = false;
+    boolean foundWeekly = false;
+    for (IEvent event : events) {
+      if (event.getSubject().equals("Updated Daily")) {
+        foundUpdatedDaily = true;
+      } else if (event.getSubject().equals("Weekly")) {
+        foundWeekly = true;
+      }
+    }
+    
+    assertTrue("Should find updated daily events", foundUpdatedDaily);
+    assertTrue("Should find unchanged weekly events", foundWeekly);
+  }
+
+  @Test
+  public void testPrintEventsWithOverlappingRanges() {
+    model.createSingleTimedEvent("Event1", 
+            LocalDateTime.of(2024, 3, 20, 9, 0),
+            LocalDateTime.of(2024, 3, 20, 11, 0));
+    model.createSingleTimedEvent("Event2",
+            LocalDateTime.of(2024, 3, 20, 10, 0),
+            LocalDateTime.of(2024, 3, 20, 12, 0));
+
+    List<IEvent> events = model.printEvents(
+            LocalDateTime.of(2024, 3, 20, 9, 30),
+            LocalDateTime.of(2024, 3, 20, 10, 30));
+    
+    assertEquals("Both events should overlap with query range", 2, events.size());
+  }
+
+  @Test
+  public void testShowStatusWithZeroDurationEvent() {
+    // Edge case: what happens with very short events
+    LocalDateTime start = baseDateTime;
+    LocalDateTime end = baseDateTime.plusMinutes(1);
+    model.createSingleTimedEvent("Short Event", start, end);
+    
+    assertTrue("Should be busy during short event", model.showStatus(start));
+    assertTrue("Should be busy at end of short event", model.showStatus(end));
+  }
+
+  @Test
+  public void testRecurringAllDayEventMultipleWeekdays() {
+    model.createRecurringAllDayEvent("Multi-day Holiday", baseDateTime,
+            new ArrayList<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)), 4);
+
+    List<IEvent> events = model.printEvents(baseDateTime, baseDateTime.plusWeeks(3));
+    assertEquals(4, events.size());
+    
+    for (IEvent event : events) {
+      assertTrue("Should only occur on weekends",
+              event.getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY ||
+              event.getStartDateTime().getDayOfWeek() == DayOfWeek.SUNDAY);
     }
   }
 }

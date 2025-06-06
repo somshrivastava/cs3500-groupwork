@@ -174,7 +174,7 @@ The application provides detailed error messages for:
 - File I/O errors (headless mode)
 - Event scheduling conflicts
 
-## Division of work
+## Division of Work
 
 Som and Elaine worked together on this Calendar application. Together, we came up with a solid design
 before going into any implementation, and once a design was agreed upon then we divided the work.
