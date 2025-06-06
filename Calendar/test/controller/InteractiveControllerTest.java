@@ -7,7 +7,6 @@ import java.io.StringReader;
 import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
 
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -261,11 +260,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   // ----------------------------------------------------------------------------------------------
   // Tests for invalid commands
 
-  @Test
-  public void testInvalidCommandFormat() {
-    super.testInvalidCommandFormat();
-  }
-
   // invalid date/time
 
   @Override
@@ -405,20 +399,20 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testInteractionsView() {
-    Interaction[] interactions = new Interaction[]{
-            new PrintInteraction("Message displayed: Welcome to the Calendar " +
-                    "Application - Interactive Mode"),
-            new PrintInteraction("Message displayed: Type 'exit' to quit"),
-            new PrintInteraction("Message displayed: "),
-            new PrintInteraction("> "),
-            new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 " +
-                    "to 2024-03-20T11:00\n"),
-            new InputInteraction("not a valid command\n"),
-            new PrintInteraction("Message displayed: \n> \nError: Unknown command: " +
-                    "'not'. Valid commands are: create, edit, print, show"),
-            new InputInteraction("q"),
-            new PrintInteraction("Message displayed: \n> "),
-            new PrintInteraction("Message displayed: Goodbye"),
+    Interaction[] interactions = new Interaction[] {
+      new PrintInteraction("Message displayed: Welcome to the Calendar " +
+              "Application - Interactive Mode"),
+      new PrintInteraction("Message displayed: Type 'exit' to quit"),
+      new PrintInteraction("Message displayed: "),
+      new PrintInteraction("> "),
+      new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 " +
+              "to 2024-03-20T11:00\n"),
+      new InputInteraction("not a valid command\n"),
+      new PrintInteraction("Message displayed: \n> \nError: Unknown command: " +
+              "'not'. Valid commands are: create, edit, print, show"),
+      new InputInteraction("q"),
+      new PrintInteraction("Message displayed: \n> "),
+      new PrintInteraction("Message displayed: Goodbye"),
     };
 
     StringBuilder fakeUserInput = new StringBuilder();
