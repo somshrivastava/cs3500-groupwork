@@ -21,7 +21,8 @@ class EditCommandParser extends AbstractCommandParser {
   }
 
   @Override
-  public void parse(String[] parts) throws IllegalArgumentException {
+  public void parse(String commandLine) throws IllegalArgumentException {
+    String[] parts = commandLine.trim().split("\\s+");
     validateMinimumLength(parts, MIN_EDIT_COMMAND_LENGTH, "Incomplete edit command. Format: " +
             "edit event [property] \"subject\" from [start] to [end] with [value]");
 
