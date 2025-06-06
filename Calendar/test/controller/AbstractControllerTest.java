@@ -218,8 +218,8 @@ public abstract class AbstractControllerTest {
   public void testSequenceCommandsValid() {
     String in = "create event \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
             "create event \"Club\" on 2025-05-19\n" +
-            "create event \"OOD Lecture\" from 2025-05-05T11:40 to 2025-06-20T01:20 repeats " +
-            "MTWR for 10 times\n" +
+            "create event \"OOD Lecture\" from 2025-05-05T11:40 to 2025-06-20T01:20 repeats MTWR " +
+            "for 10 times\n" +
             "create event \"Brunch with Friends\" from 2025-02-20T10:30 to 2025-02-20T12:45 " +
             "repeats SU until 2025-06-01\n" +
             "create event \"Tournament\" on 2026-04-15 repeats SU for 2 times\n" +
@@ -307,7 +307,42 @@ public abstract class AbstractControllerTest {
     assertEquals(expectedOut, logModel.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
-  // Integration tests
+  @Test
+  public void testExitNotAtEnd() {
+    String in = "create event \"Team Meeting\" from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
+            "create event \"Club\" on 2025-05-19\n" +
+            "create event \"OOD Lecture\" from 2025-05-05T11:40 to 2025-06-20T01:20 repeats MTWR " +
+            "for 10 times\n" +
+            "create event \"Brunch with Friends\" from 2025-02-20T10::30 to 2025-02-20T12:45 " +
+            "repeats SU until 2025-06-01\n" +
+            "create event \"Tournament\" on 2026-04-15 repeats SU for 2 times\n" +
+            "create event \"Class\" on 2025-09-01 repeats MWRF until 2026-05-10\n" +
+            "edit event subject Club from 2025-02-20T10:30 to 2025-02-20T12:30 with Free\n" +
+            "exit\n" +
+            "edit events subject Classes from 2025-02-20T10:30 with Free\n" +
+            "edit series location Club from 2025-02-20T10:30 with Bar\n" +
+            "print events on 2025-02-20::00\n" +
+            "print events from 2025-02-20T10:30 to 2025-02-20T12:30\n" +
+            "show status on 2025-02-20T12:30\n";
+    convertStringInput(in);
+    controller = createController();
+
+    String expectedOut =
+            "Created single timed event Team Meeting starting at 2024-03-20T10:00 until " +
+                    "2024-03-20T11:00" +
+                    "Created single all day event Club on 2025-05-19T00:00" +
+                    "Created recurring timed event OOD Lecture starting at 2025-05-05T11:40 " +
+                    "until 2025-06-20T01:20 for a count of 10" +
+                    "Created recurring all day event Tournament starting on the date " +
+                    "2026-04-15T00:00 for a count of 2" +
+                    "Created recurring timed event Class starting on the date 2025-09-01T00:00 " +
+                    "to the date 2026-05-10T00:00" +
+                    "Edited single event's property: Club starting on 2025-02-20T10:30 until " +
+                    "2025-02-20T12:30. Changed subject to Free";
+
+    controller.go();
+
+    assertEquals(expectedOut, logModel.toString());
+  }
 
 }

@@ -1,6 +1,6 @@
 package calendar.controller;
 
-import calendar.controller.parser.CommandParser;
+import calendar.controller.parser.CommandParserFactory;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -10,12 +10,12 @@ import calendar.view.ICalendarView;
 public abstract class AbstractController implements ICalendarController {
   protected final ICalendarModel calendarModel;
   protected final ICalendarView calendarView;
-  private final CommandParser commandParser;
+  protected final CommandParserFactory factory;
 
   protected AbstractController(ICalendarModel calendarModel, ICalendarView calendarView) {
     this.calendarModel = calendarModel;
     this.calendarView = calendarView;
-    this.commandParser = new CommandParser(calendarModel, calendarView);
+    this.factory = new CommandParserFactory(calendarModel, calendarView);
   }
 
   /**
@@ -25,6 +25,7 @@ public abstract class AbstractController implements ICalendarController {
    * @param commandLine the line to parse
    */
   protected void parseCommand(String commandLine) {
-    this.commandParser.parse(commandLine);
+    ICommandParser parser = factory.createParser(commandLine);
+    parser.parse(commandLine);
   }
 }

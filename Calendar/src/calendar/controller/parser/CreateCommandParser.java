@@ -39,7 +39,9 @@ class CreateCommandParser extends AbstractCommandParser {
    * @throws IllegalArgumentException if the command syntax is invalid or execution fails
    */
   @Override
-  public void parse(String[] commandParts) throws IllegalArgumentException {
+  public void parse(String commandLine) throws IllegalArgumentException {
+    String[] commandParts = commandLine.trim().split("\\s+");
+
     validateCreateCommandFormat(commandParts);
 
     // Extract subject

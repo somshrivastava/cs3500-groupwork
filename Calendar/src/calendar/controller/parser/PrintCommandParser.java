@@ -41,7 +41,8 @@ class PrintCommandParser extends AbstractCommandParser {
    * @throws IllegalArgumentException if the command syntax is invalid or execution fails
    */
   @Override
-  public void parse(String[] parts) throws IllegalArgumentException {
+  public void parse(String commandLine) throws IllegalArgumentException {
+    String[] parts = commandLine.trim().split("\\s+");
     validateMinimumLength(parts, MIN_PRINT_COMMAND_LENGTH, "Incomplete print command. Use: " +
             "print events on YYYY-MM-DD OR print events from [start] to [end]");
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import calendar.controller.ICommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -16,7 +17,7 @@ import calendar.view.ICalendarView;
  * Abstract base class for command parsers.
  * Contains common parsing logic shared by all command types.
  */
-abstract class AbstractCommandParser {
+abstract class AbstractCommandParser implements ICommandParser {
   // Common array indices used across parsers
   protected static final int COMMAND_TYPE_INDEX = 0;
   protected static final int COMMAND_SUBTYPE_INDEX = 1;
@@ -72,7 +73,7 @@ abstract class AbstractCommandParser {
    * @param commandParts the split command parts
    * @throws IllegalArgumentException if parsing fails
    */
-  public abstract void parse(String[] commandParts) throws IllegalArgumentException;
+  public abstract void parse(String commandParts) throws IllegalArgumentException;
 
   /**
    * Validates that an array has at least the specified length.

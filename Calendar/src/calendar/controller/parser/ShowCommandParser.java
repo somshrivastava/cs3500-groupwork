@@ -34,7 +34,8 @@ class ShowCommandParser extends AbstractCommandParser {
    * @throws IllegalArgumentException if the command syntax is invalid or execution fails
    */
   @Override
-  public void parse(String[] parts) throws IllegalArgumentException {
+  public void parse(String commandLine) throws IllegalArgumentException {
+    String[] parts = commandLine.trim().split("\\s+");
     if (parts.length != SHOW_COMMAND_LENGTH) {
       throw new IllegalArgumentException("Show status requires exactly 4 parts. " +
               "Format: show status on YYYY-MM-DDThh:mm");
