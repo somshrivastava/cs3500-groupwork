@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import calendar.controller.parser.CommandParserFactory;
+import calendar.controller.parser.ICommandFactory;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -13,8 +15,6 @@ import calendar.view.ICalendarView;
  * executes the file instructions.
  */
 public class HeadlessController extends AbstractController {
-  private final ICalendarModel calendarModel;
-  private final ICalendarView calendarView;
   private final File file;
 
   /**
@@ -27,38 +27,43 @@ public class HeadlessController extends AbstractController {
    */
   public HeadlessController(ICalendarModel model, ICalendarView view, File file)
           throws FileNotFoundException {
+    super(model, view);
     if ((model == null) || (view == null) || (file == null)) {
       throw new IllegalArgumentException("model, view or readable is null");
     } else if (!file.exists() || !file.canRead()) {
       throw new FileNotFoundException("File does not exist or cannot be read.");
     }
-    this.calendarModel = model;
-    this.calendarView = view;
     this.file = file;
   }
 
   @Override
-  public void go() {
-    Scanner sc;
-    try {
-      sc = new Scanner(this.file);
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
-    }
+  protected ICommandFactory createFactory() {
+    // as of now, the factory still intakes these parameters to support backward compatibility
+    // if the user wants to use the former app, it still works
+    // BEWARE, model is null if app2 is run, however, it should never call the method in this class
+    // in that case.
+    return new CommandParserFactory(this.calendarModel, this.calendarView);
+  }
 
-    while (sc.hasNext()) {
-      String commandLine = sc.nextLine().trim();
-      if (commandLine.equals("exit") || commandLine.equals("q")) {
-        System.exit(0);
-      } else {
-        try {
-          parseCommand(commandLine);
-        } catch (Exception e) {
-          this.calendarView.displayError(e.getMessage());
+  @Override
+  public void execute() {
+    try (Scanner sc = new Scanner(this.file)) {
+      while (sc.hasNext()) {
+        String commandLine = sc.nextLine().trim();
+        if (commandLine.equals("exit") || commandLine.equals("q")) {
+          return;
+        } else {
+          try {
+            parseCommand(commandLine);
+          } catch (Exception e) {
+            this.calendarView.displayError(e.getMessage());
+          }
         }
       }
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException("File not found: " + e.getMessage(), e);
     }
+
     this.calendarView.displayError("No exit command.");
-    System.exit(1);
   }
 }

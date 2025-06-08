@@ -3,73 +3,85 @@ package calendar.model;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Comparator;
 
 /**
  * Implementation of the calendar model that manages a collection of events.
- * This class handles the creation and storage of calendar events, both single and recurring.
+ * This class handles the creation, editing, and querying of calendar events,
+ * both single and recurring.
  */
 public class CalendarModel implements ICalendarModel {
   private final Set<IEvent> events;
-  private static Integer nextSeriesId = 1;
+  private final EventValidator validator;
+  private Integer nextSeriesId = 1;
+
+  // Constants for all-day events as per assignment requirements
+  private static final LocalTime ALL_DAY_START = LocalTime.of(8, 0);  // 8 AM
+  private static final LocalTime ALL_DAY_END = LocalTime.of(17, 0);   // 5 PM
 
   /**
    * Constructs a new CalendarModel with an empty set of events.
    */
   public CalendarModel() {
     this.events = new HashSet<IEvent>();
+    this.validator = new EventValidator();
   }
 
+  /**
+   * Creates a single timed event.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
-  public void createSingleTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
-    checkForDuplicateEvent(subject, startDateTime, endDateTime);
-    
-    IEvent newEvent = Event.getBuilder()
-            .subject(subject)
-            .startDateTime(startDateTime)
-            .endDateTime(endDateTime)
-            .build();
-    this.events.add(newEvent);
+  public void createSingleTimedEvent(String subject, LocalDateTime startDateTime,
+                                     LocalDateTime endDateTime) {
+    validator.validateTimedEvent(subject, startDateTime, endDateTime);
+    addTimedEvent(subject, startDateTime, endDateTime, null);
   }
 
+  /**
+   * Creates a single all-day event.
+   * @param subject the subject/title of the event
+   * @param date the date of the event
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createSingleAllDayEvent(String subject, LocalDateTime date) {
-    validateAllDayEvent(subject, date);
-    
-    LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-    LocalDateTime endOfDay = date.toLocalDate().atTime(LocalTime.MAX);
-    
-    IEvent newEvent = Event.getBuilder()
-            .subject(subject)
-            .startDateTime(startOfDay)
-            .endDateTime(endOfDay)
-            .build();
-    this.events.add(newEvent);
+    validator.validateAllDayEvent(subject, date);
+    addAllDayEvent(subject, date, null);
   }
 
+  /**
+   * Creates a recurring timed event with a count.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
-  public void createRecurringTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                      ArrayList<DayOfWeek> weekdays, int count) {
-    validateRecurringTimedEvent(subject, startDateTime, endDateTime, weekdays, count);
+  public void createRecurringTimedEvent(String subject, LocalDateTime startDateTime,
+                                        LocalDateTime endDateTime, ArrayList<DayOfWeek> weekdays,
+                                        int count) {
+    validator.validateRecurringTimedEvent(subject, startDateTime, endDateTime, weekdays, count);
+    validator.validateSingleDayEvent(startDateTime, endDateTime);
+
     Integer seriesId = nextSeriesId++;
-    
     LocalDateTime currentStart = startDateTime;
     LocalDateTime currentEnd = endDateTime;
     int occurrences = 0;
-    
+
     while (occurrences < count) {
       if (weekdays.contains(currentStart.getDayOfWeek())) {
-        IEvent newEvent = Event.getBuilder()
-                .subject(subject)
-                .startDateTime(currentStart)
-                .endDateTime(currentEnd)
-                .seriesId(seriesId)
-                .build();
-        this.events.add(newEvent);
+        addTimedEvent(subject, currentStart, currentEnd, seriesId);
         occurrences++;
       }
       currentStart = currentStart.plusDays(1);
@@ -77,183 +89,253 @@ public class CalendarModel implements ICalendarModel {
     }
   }
 
+  /**
+   * Creates a recurring timed event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
-  public void createRecurringTimedEventUntil(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                           ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
-    validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, weekdays, untilDate);
+  public void createRecurringTimedEventUntil(String subject, LocalDateTime startDateTime,
+                                             LocalDateTime endDateTime, 
+                                             ArrayList<DayOfWeek> weekdays,
+                                             LocalDateTime untilDate) {
+    validator.validateRecurringTimedEventUntil(subject, startDateTime, endDateTime, 
+                                               weekdays, untilDate);
+    validator.validateSingleDayEvent(startDateTime, endDateTime);
+
     Integer seriesId = nextSeriesId++;
-    
     LocalDateTime currentStart = startDateTime;
     LocalDateTime currentEnd = endDateTime;
-    
-    while (!currentStart.isAfter(untilDate)) {
+
+    // Compare dates only, not times, for "until" logic
+    while (!currentStart.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentStart.getDayOfWeek())) {
-        IEvent newEvent = Event.getBuilder()
-                .subject(subject)
-                .startDateTime(currentStart)
-                .endDateTime(currentEnd)
-                .seriesId(seriesId)
-                .build();
-        this.events.add(newEvent);
+        addTimedEvent(subject, currentStart, currentEnd, seriesId);
       }
       currentStart = currentStart.plusDays(1);
       currentEnd = currentEnd.plusDays(1);
     }
   }
 
+  /**
+   * Creates a recurring all-day event with a count.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param count the number of occurrences
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringAllDayEvent(String subject, LocalDateTime startDate,
-                                       ArrayList<DayOfWeek> weekdays, int count) {
-    validateRecurringAllDayEvent(subject, startDate, weekdays, count);
+                                         ArrayList<DayOfWeek> weekdays, int count) {
+    validator.validateRecurringAllDayEvent(subject, startDate, weekdays, count);
+
     Integer seriesId = nextSeriesId++;
-    
     LocalDateTime currentDate = startDate;
     int occurrences = 0;
-    
+
     while (occurrences < count) {
       if (weekdays.contains(currentDate.getDayOfWeek())) {
-        LocalDateTime startOfDay = currentDate.toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = currentDate.toLocalDate().atTime(LocalTime.MAX);
-        
-        IEvent newEvent = Event.getBuilder()
-                .subject(subject)
-                .startDateTime(startOfDay)
-                .endDateTime(endOfDay)
-                .seriesId(seriesId)
-                .build();
-        this.events.add(newEvent);
+        addAllDayEvent(subject, currentDate, seriesId);
         occurrences++;
       }
       currentDate = currentDate.plusDays(1);
     }
   }
 
+  /**
+   * Creates a recurring all-day event until a specific date.
+   * @param subject the subject/title of the event
+   * @param startDate the start date of the event
+   * @param weekdays the days of the week when the event occurs
+   * @param untilDate the date until which the event should recur
+   * @throws IllegalArgumentException if the parameters are invalid
+   */
   @Override
   public void createRecurringAllDayEventUntil(String subject, LocalDateTime startDate,
-                                            ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
-    validateRecurringAllDayEventUntil(subject, startDate, weekdays, untilDate);
+                                              ArrayList<DayOfWeek> weekdays, 
+                                              LocalDateTime untilDate) {
+    validator.validateRecurringAllDayEventUntil(subject, startDate, weekdays, untilDate);
+
     Integer seriesId = nextSeriesId++;
-    
     LocalDateTime currentDate = startDate;
-    
-    while (!currentDate.isAfter(untilDate)) {
+
+    // Compare dates only, not times, for "until" logic
+    while (!currentDate.toLocalDate().isAfter(untilDate.toLocalDate())) {
       if (weekdays.contains(currentDate.getDayOfWeek())) {
-        LocalDateTime startOfDay = currentDate.toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = currentDate.toLocalDate().atTime(LocalTime.MAX);
-        
-        IEvent newEvent = Event.getBuilder()
-                .subject(subject)
-                .startDateTime(startOfDay)
-                .endDateTime(endOfDay)
-                .seriesId(seriesId)
-                .build();
-        this.events.add(newEvent);
+        addAllDayEvent(subject, currentDate, seriesId);
       }
       currentDate = currentDate.plusDays(1);
     }
   }
 
+  /**
+   * Edits a single event's property.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param endDateTime the end date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
   public void editEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                       String property, String newValue) {
+                        String property, String newValue) {
     IEvent eventToEdit = findEvent(subject, startDateTime, endDateTime);
-    updateEventProperty(eventToEdit, property, newValue);
+    updateEventProperty(eventToEdit, property, newValue, null);
   }
 
+  /**
+   * Edits all events in a series that start at or after the given date/time.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
-  public void editEvents(String subject, LocalDateTime startDateTime, String property, String newValue) {
+  public void editEvents(String subject, LocalDateTime startDateTime, String property,
+                         String newValue) {
     IEvent eventToEdit = findEvent(subject, startDateTime, null);
-    Integer seriesId = eventToEdit.getSeriesId();
-    
-    if (seriesId == null) {
-      editEvent(subject, startDateTime, null, property, newValue);
-      return;
-    }
-
-    // Create a copy of events to avoid concurrent modification
-    Set<IEvent> eventsCopy = new HashSet<>(events);
-    for (IEvent event : eventsCopy) {
-      if (event.getSeriesId() != null && 
-          event.getSeriesId().equals(seriesId) && 
-          !event.getStartDateTime().isBefore(startDateTime)) {
-        updateEventProperty(event, property, newValue);
-      }
-    }
+    editSeriesEvents(eventToEdit, property, newValue, true);
   }
 
+  /**
+   * Edits all events in a series.
+   * @param subject the subject of the event to edit
+   * @param startDateTime the start date/time of the event to edit
+   * @param property the property to edit (subject, start, end, description, location, status)
+   * @param newValue the new value for the property
+   * @throws IllegalArgumentException if the event is not found or the property is invalid
+   */
   @Override
-  public void editSeries(String subject, LocalDateTime startDateTime, String property, String newValue) {
+  public void editSeries(String subject, LocalDateTime startDateTime, String property,
+                         String newValue) {
     IEvent eventToEdit = findEvent(subject, startDateTime, null);
-    Integer seriesId = eventToEdit.getSeriesId();
-    
-    if (seriesId == null) {
-      editEvent(subject, startDateTime, null, property, newValue);
-      return;
-    }
-
-    // Create a copy of events to avoid concurrent modification
-    Set<IEvent> eventsCopy = new HashSet<>(events);
-    for (IEvent event : eventsCopy) {
-      if (event.getSeriesId() != null && event.getSeriesId().equals(seriesId)) {
-        updateEventProperty(event, property, newValue);
-      }
-    }
+    editSeriesEvents(eventToEdit, property, newValue, false);
   }
 
+  /**
+   * Gets all events that occur on a specific date.
+   * @param date the date to filter events for
+   * @return a list of events that occur on the given date
+   */
   @Override
   public List<IEvent> printEvents(LocalDateTime date) {
     LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-    LocalDateTime endOfDay = date.toLocalDate().atTime(LocalTime.MAX);
+    LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59);
     return getEventsInInterval(startOfDay, endOfDay);
   }
 
+  /**
+   * Gets all events that occur within a time interval.
+   * @param startDateTime the start of the interval (inclusive)
+   * @param endDateTime the end of the interval (inclusive)
+   * @return a list of events that overlap with the given interval
+   */
   @Override
   public List<IEvent> printEvents(LocalDateTime startDateTime, LocalDateTime endDateTime) {
     return getEventsInInterval(startDateTime, endDateTime);
   }
 
+  /**
+   * Checks if the given time is busy (has an event scheduled).
+   * @param dateTime the time to check
+   * @return true if there is an event at the given time, false otherwise
+   */
   @Override
   public boolean showStatus(LocalDateTime dateTime) {
     for (IEvent event : events) {
-      if (!dateTime.isBefore(event.getStartDateTime()) && !dateTime.isAfter(event.getEndDateTime())) {
+      if (isTimeWithinEvent(dateTime, event)) {
         return true;
       }
     }
     return false;
   }
 
-  private void checkForDuplicateEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-    for (IEvent event : events) {
-      if (event.getSubject().equals(subject) && 
-          event.getStartDateTime().equals(startDateTime) && 
-          event.getEndDateTime().equals(endDateTime)) {
-        throw new IllegalArgumentException("An event with the same subject, start time, and end time already exists");
-      }
+  /**
+   * Creates and adds a timed event without validation.
+   * Handles duplicate checking and event creation.
+   */
+  private void addTimedEvent(String subject, LocalDateTime startDateTime,
+                             LocalDateTime endDateTime, Integer seriesId) {
+    checkForDuplicateEvent(subject, startDateTime, endDateTime);
+
+    IEvent newEvent = Event.getBuilder()
+            .subject(subject)
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .seriesId(seriesId)
+            .build();
+    this.events.add(newEvent);
+  }
+
+  /**
+   * Creates and adds an all-day event without validation.
+   * Handles time conversion, duplicate checking, and event creation.
+   */
+  private void addAllDayEvent(String subject, LocalDateTime date, Integer seriesId) {
+    LocalDateTime startOfDay = getAllDayStart(date);
+    LocalDateTime endOfDay = getAllDayEnd(date);
+
+    checkForDuplicateEvent(subject, startOfDay, endOfDay);
+
+    IEvent newEvent = Event.getBuilder()
+            .subject(subject)
+            .startDateTime(startOfDay)
+            .endDateTime(endOfDay)
+            .seriesId(seriesId)
+            .build();
+    this.events.add(newEvent);
+  }
+
+  /**
+   * Gets the start time for an all-day event on the given date.
+   */
+  private LocalDateTime getAllDayStart(LocalDateTime date) {
+    return date.toLocalDate().atTime(ALL_DAY_START);
+  }
+
+  /**
+   * Gets the end time for an all-day event on the given date.
+   */
+  private LocalDateTime getAllDayEnd(LocalDateTime date) {
+    return date.toLocalDate().atTime(ALL_DAY_END);
+  }
+
+  /**
+   * Checks if a duplicate event exists with the same subject, start, and end times.
+   * @throws IllegalArgumentException if a duplicate is found
+   */
+  private void checkForDuplicateEvent(String subject, LocalDateTime startDateTime,
+                                      LocalDateTime endDateTime) {
+    IEvent tempEvent = Event.getBuilder()
+            .subject(subject)
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .build();
+
+    if (events.contains(tempEvent)) {
+      throw new IllegalArgumentException(
+              "An event with the same subject, start time, and end time already exists");
     }
   }
 
-  private IEvent findEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-    if (endDateTime == null) {
-      // For series edits, find the first event that matches the subject and is on or after startDateTime
-      IEvent nextEvent = null;
-      for (IEvent event : events) {
-        if (event.getSubject().equals(subject) && 
-            (event.getStartDateTime().equals(startDateTime) || 
-             event.getStartDateTime().isAfter(startDateTime))) {
-          if (nextEvent == null || event.getStartDateTime().isBefore(nextEvent.getStartDateTime())) {
-            nextEvent = event;
-          }
-        }
-      }
-      if (nextEvent != null) {
-        return nextEvent;
-      }
-    } else {
-      // For single event edits, find exact match
-      for (IEvent event : events) {
-        if (event.getSubject().equals(subject) &&
-            event.getStartDateTime().equals(startDateTime) &&
-            event.getEndDateTime().equals(endDateTime)) {
+  /**
+   * Finds an event by subject and start time, optionally matching end time.
+   * @return the matching event
+   * @throws IllegalArgumentException if no event is found
+   */
+  private IEvent findEvent(String subject, LocalDateTime startDateTime,
+                           LocalDateTime endDateTime) {
+    for (IEvent event : events) {
+      if (event.getSubject().equals(subject) &&
+              event.getStartDateTime().equals(startDateTime)) {
+        if (endDateTime == null || event.getEndDateTime().equals(endDateTime)) {
           return event;
         }
       }
@@ -261,182 +343,294 @@ public class CalendarModel implements ICalendarModel {
     throw new IllegalArgumentException("Event not found");
   }
 
-  private void updateEventProperty(IEvent event, String property, String newValue) {
+  /**
+   * Edits events in a series based on the given criteria.
+   * @param baseEvent the event used as reference for the edit
+   * @param property the property to edit
+   * @param newValue the new value for the property
+   * @param fromThisEventForward if true, only edits events from the base event forward
+   */
+  private void editSeriesEvents(IEvent baseEvent, String property, String newValue,
+                                boolean fromThisEventForward) {
+    if (baseEvent.getSeriesId() == null) {
+      // Single event, just edit it
+      updateEventProperty(baseEvent, property, newValue, null);
+      return;
+    }
+
+    Integer seriesId = baseEvent.getSeriesId();
+    Integer newSeriesId = determineNewSeriesId(baseEvent, property, newValue);
+
+    // Create a copy of events to avoid concurrent modification
+    Set<IEvent> eventsCopy = new HashSet<>(events);
+    LocalDateTime baseDate = baseEvent.getStartDateTime();
+
+    for (IEvent event : eventsCopy) {
+      if (shouldEditEvent(event, seriesId, baseDate, fromThisEventForward)) {
+        updateEventProperty(event, property, newValue, newSeriesId);
+      }
+    }
+  }
+
+  /**
+   * Determines if a new series ID is needed based on the property being changed.
+   * @param baseEvent the base event being edited
+   * @param property the property being changed
+   * @param newValue the new value for the property
+   * @return new series ID if needed, null otherwise
+   */
+  private Integer determineNewSeriesId(IEvent baseEvent, String property, String newValue) {
+    if (property.equals("start")) {
+      LocalDateTime newStart = parseDateTime(newValue);
+      // Only compare the time portion since all events in series have different dates
+      if (!newStart.toLocalTime().equals(baseEvent.getStartDateTime().toLocalTime())) {
+        return nextSeriesId++;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Determines if an event should be edited based on series criteria.
+   * @param event the event to check
+   * @param seriesId the series ID to match
+   * @param baseDate the base date for forward editing
+   * @param fromThisEventForward if true, only edit from base date forward
+   * @return true if the event should be edited
+   */
+  private boolean shouldEditEvent(IEvent event, Integer seriesId, LocalDateTime baseDate,
+                                  boolean fromThisEventForward) {
+    if (event.getSeriesId() == null || !event.getSeriesId().equals(seriesId)) {
+      return false;
+    }
+
+    return !fromThisEventForward ||
+            !event.getStartDateTime().toLocalDate().isBefore(baseDate.toLocalDate());
+  }
+
+  /**
+   * Updates a single property of an event, creating a new event instance.
+   * @param event the event to update
+   * @param property the property name to update
+   * @param newValue the new value as a string
+   * @param newSeriesId the new series ID (if changing series membership)
+   */
+  private void updateEventProperty(IEvent event, String property, String newValue,
+                                   Integer newSeriesId) {
+    // Parse and validate the new value based on property type
+    Object parsedValue = parsePropertyValue(property, newValue, event);
+
+    // Create a copy of the event with the property changed
+    IEvent updatedEvent = copyEventWithChange(event, property, parsedValue, newSeriesId);
+
+    // Replace the old event with the updated one
+    events.remove(event);
+    events.add(updatedEvent);
+  }
+
+  /**
+   * Parses a property value from string format to the appropriate type.
+   * @param property the property name
+   * @param newValue the string value to parse
+   * @param event the original event (for validation context)
+   * @return the parsed value as the appropriate type
+   * @throws IllegalArgumentException if the value is invalid
+   */
+  private Object parsePropertyValue(String property, String newValue, IEvent event) {
     switch (property.toLowerCase()) {
       case "subject":
-        IEvent updatedEvent = Event.getBuilder()
-                .subject(newValue)
-                .startDateTime(event.getStartDateTime())
-                .endDateTime(event.getEndDateTime())
-                .seriesId(event.getSeriesId())
-                .description(event.getDescription())
-                .location(event.getLocation())
-                .status(event.getStatus())
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
-      case "start":
-        LocalDateTime newStart = LocalDateTime.parse(newValue);
-        if (!newStart.isBefore(event.getEndDateTime())) {
-          throw new IllegalArgumentException("New start time must be before end time");
-        }
-        updatedEvent = Event.getBuilder()
-                .subject(event.getSubject())
-                .startDateTime(newStart)
-                .endDateTime(event.getEndDateTime())
-                .seriesId(event.getSeriesId())
-                .description(event.getDescription())
-                .location(event.getLocation())
-                .status(event.getStatus())
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
-      case "end":
-        LocalDateTime newEnd = LocalDateTime.parse(newValue);
-        if (!newEnd.isAfter(event.getStartDateTime())) {
-          throw new IllegalArgumentException("New end time must be after start time");
-        }
-        updatedEvent = Event.getBuilder()
-                .subject(event.getSubject())
-                .startDateTime(event.getStartDateTime())
-                .endDateTime(newEnd)
-                .seriesId(event.getSeriesId())
-                .description(event.getDescription())
-                .location(event.getLocation())
-                .status(event.getStatus())
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
       case "description":
-        updatedEvent = Event.getBuilder()
-                .subject(event.getSubject())
-                .startDateTime(event.getStartDateTime())
-                .endDateTime(event.getEndDateTime())
-                .seriesId(event.getSeriesId())
-                .description(newValue)
-                .location(event.getLocation())
-                .status(event.getStatus())
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
+        return newValue;
+      case "start":
+        return parseDateTime(newValue);
+      case "end":
+        LocalDateTime newEnd = parseDateTime(newValue);
+        validator.validateStartBeforeEnd(event.getStartDateTime(), newEnd);
+        return newEnd;
       case "location":
-        EventLocation newLocation = EventLocation.valueOf(newValue.toUpperCase());
-        updatedEvent = Event.getBuilder()
-                .subject(event.getSubject())
-                .startDateTime(event.getStartDateTime())
-                .endDateTime(event.getEndDateTime())
-                .seriesId(event.getSeriesId())
-                .description(event.getDescription())
-                .location(newLocation)
-                .status(event.getStatus())
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
+        return parseLocation(newValue);
       case "status":
-        EventStatus newStatus = EventStatus.valueOf(newValue.toUpperCase());
-        updatedEvent = Event.getBuilder()
-                .subject(event.getSubject())
-                .startDateTime(event.getStartDateTime())
-                .endDateTime(event.getEndDateTime())
-                .seriesId(event.getSeriesId())
-                .description(event.getDescription())
-                .location(event.getLocation())
-                .status(newStatus)
-                .build();
-        events.remove(event);
-        events.add(updatedEvent);
-        break;
+        return parseStatus(newValue);
       default:
         throw new IllegalArgumentException("Invalid property: " + property);
     }
   }
 
+  /**
+   * Creates a copy of an event with one property changed.
+   * @param original the original event
+   * @param property the property to change
+   * @param newValue the new value for the property
+   * @param newSeriesId the new series ID (or null to keep existing)
+   * @return a new event instance with the property changed
+   */
+  private IEvent copyEventWithChange(IEvent original, String property,
+                                     Object newValue, Integer newSeriesId) {
+    Event.EventBuilder builder = createBuilderFromEvent(original, newSeriesId);
+    applyPropertyChange(builder, original, property, newValue);
+    return builder.build();
+  }
+
+  /**
+   * Creates a builder initialized with values from an existing event.
+   * @param original the original event
+   * @param newSeriesId the new series ID (or null to keep existing)
+   * @return a builder with values from the original event
+   */
+  private Event.EventBuilder createBuilderFromEvent(IEvent original, Integer newSeriesId) {
+    return Event.getBuilder()
+            .subject(original.getSubject())
+            .startDateTime(original.getStartDateTime())
+            .endDateTime(original.getEndDateTime())
+            .description(original.getDescription())
+            .location(original.getLocation())
+            .status(original.getStatus())
+            .seriesId(newSeriesId != null ? newSeriesId : original.getSeriesId());
+  }
+
+  /**
+   * Applies a property change to an event builder.
+   * @param builder the builder to modify
+   * @param original the original event
+   * @param property the property to change
+   * @param newValue the new value for the property
+   */
+  private void applyPropertyChange(Event.EventBuilder builder, IEvent original,
+                                   String property, Object newValue) {
+    switch (property.toLowerCase()) {
+      case "subject":
+        builder.subject((String) newValue);
+        break;
+      case "start":
+        applyStartTimeChange(builder, original, (LocalDateTime) newValue);
+        break;
+      case "end":
+        builder.endDateTime((LocalDateTime) newValue);
+        break;
+      case "description":
+        builder.description((String) newValue);
+        break;
+      case "location":
+        builder.location((EventLocation) newValue);
+        break;
+      case "status":
+        builder.status((EventStatus) newValue);
+        break;
+      default:
+        // No action needed - invalid properties are validated before reaching this method
+        break;
+    }
+  }
+
+  /**
+   * Applies a start time change to an event, maintaining duration.
+   * @param builder the builder to modify
+   * @param original the original event
+   * @param newStart the new start time
+   */
+  private void applyStartTimeChange(Event.EventBuilder builder, IEvent original,
+                                    LocalDateTime newStart) {
+    // For series events, only change the time, keep the original date
+    if (original.getSeriesId() != null) {
+      newStart = original.getStartDateTime().toLocalDate()
+              .atTime(newStart.toLocalTime());
+    }
+    builder.startDateTime(newStart);
+
+    // Maintain the duration
+    long duration = java.time.Duration.between(
+            original.getStartDateTime(),
+            original.getEndDateTime()
+    ).toMinutes();
+    LocalDateTime newEnd = newStart.plusMinutes(duration);
+    builder.endDateTime(newEnd);
+  }
+
+  /**
+   * Gets all events that overlap with the given time interval, sorted by start time.
+   * @param startTime the start of the interval
+   * @param endTime the end of the interval
+   * @return a sorted list of events that overlap with the interval
+   */
   private List<IEvent> getEventsInInterval(LocalDateTime startTime, LocalDateTime endTime) {
     List<IEvent> eventsInInterval = new ArrayList<>();
     for (IEvent event : events) {
-      if (!event.getStartDateTime().isAfter(endTime) &&
-          !event.getEndDateTime().isBefore(startTime)) {
+      if (eventsOverlap(event, startTime, endTime)) {
         eventsInInterval.add(event);
       }
     }
+    // Sort events by start time
+    eventsInInterval.sort(
+            Comparator.comparing(IEvent::getStartDateTime)
+    );
     return eventsInInterval;
   }
 
-  private void validateSubject(String subject) {
-    if (subject == null || subject.trim().isEmpty()) {
-      throw new IllegalArgumentException("Subject cannot be empty");
+  /**
+   * Checks if an event overlaps with a time interval.
+   * @param event the event to check
+   * @param intervalStart the start of the interval
+   * @param intervalEnd the end of the interval
+   * @return true if the event overlaps with the interval
+   */
+  private boolean eventsOverlap(IEvent event, LocalDateTime intervalStart,
+                                LocalDateTime intervalEnd) {
+    return !event.getStartDateTime().isAfter(intervalEnd) &&
+            !event.getEndDateTime().isBefore(intervalStart);
+  }
+
+  /**
+   * Checks if a specific time falls within an event's duration.
+   * @param time the time to check
+   * @param event the event to check against
+   * @return true if the time is within the event's duration
+   */
+  private boolean isTimeWithinEvent(LocalDateTime time, IEvent event) {
+    return !time.isBefore(event.getStartDateTime()) &&
+            !time.isAfter(event.getEndDateTime());
+  }
+
+  /**
+   * Parses a string into a LocalDateTime.
+   * @param dateTimeStr the string to parse
+   * @return the parsed LocalDateTime
+   * @throws IllegalArgumentException if the format is invalid
+   */
+  private LocalDateTime parseDateTime(String dateTimeStr) {
+    try {
+      return LocalDateTime.parse(dateTimeStr);
+    } catch (DateTimeParseException e) {
+      throw new IllegalArgumentException("Invalid date-time format: " + dateTimeStr);
     }
   }
 
-  private void validateDateTime(LocalDateTime dateTime, String fieldName) {
-    if (dateTime == null) {
-      throw new IllegalArgumentException(fieldName + " cannot be null");
+  /**
+   * Parses a string into an EventLocation.
+   * @param locationStr the string to parse
+   * @return the parsed EventLocation
+   * @throws IllegalArgumentException if the value is invalid
+   */
+  private EventLocation parseLocation(String locationStr) {
+    try {
+      return EventLocation.valueOf(locationStr.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(
+              "Invalid location: " + locationStr + ". Valid values are: PHYSICAL, ONLINE");
     }
   }
 
-  private void validateTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-    validateSubject(subject);
-    validateDateTime(startDateTime, "Start time");
-    validateDateTime(endDateTime, "End time");
-    if (!endDateTime.isAfter(startDateTime)) {
-      throw new IllegalArgumentException("End time must be after start time");
+  /**
+   * Parses a string into an EventStatus.
+   * @param statusStr the string to parse
+   * @return the parsed EventStatus
+   * @throws IllegalArgumentException if the value is invalid
+   */
+  private EventStatus parseStatus(String statusStr) {
+    try {
+      return EventStatus.valueOf(statusStr.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(
+              "Invalid status: " + statusStr + ". Valid values are: PUBLIC, PRIVATE");
     }
-  }
-
-  private void validateAllDayEvent(String subject, LocalDateTime date) {
-    validateSubject(subject);
-    validateDateTime(date, "Date");
-  }
-
-  private void validateWeekdays(ArrayList<DayOfWeek> weekdays) {
-    if (weekdays == null || weekdays.isEmpty()) {
-      throw new IllegalArgumentException("At least one weekday must be specified");
-    }
-  }
-
-  private void validateCount(int count) {
-    if (count <= 0) {
-      throw new IllegalArgumentException("Count must be positive");
-    }
-  }
-
-  private void validateUntilDate(LocalDateTime startDate, LocalDateTime untilDate) {
-    validateDateTime(untilDate, "Until date");
-    if (!untilDate.isAfter(startDate)) {
-      throw new IllegalArgumentException("Until date must be after start date");
-    }
-  }
-
-  private void validateRecurringTimedEvent(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                         ArrayList<DayOfWeek> weekdays, int count) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
-    validateWeekdays(weekdays);
-    validateCount(count);
-  }
-
-  private void validateRecurringTimedEventUntil(String subject, LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                              ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
-    validateTimedEvent(subject, startDateTime, endDateTime);
-    validateWeekdays(weekdays);
-    validateUntilDate(startDateTime, untilDate);
-  }
-
-  private void validateRecurringAllDayEvent(String subject, LocalDateTime startDate,
-                                          ArrayList<DayOfWeek> weekdays, int count) {
-    validateAllDayEvent(subject, startDate);
-    validateWeekdays(weekdays);
-    validateCount(count);
-  }
-
-  private void validateRecurringAllDayEventUntil(String subject, LocalDateTime startDate,
-                                               ArrayList<DayOfWeek> weekdays, LocalDateTime untilDate) {
-    validateAllDayEvent(subject, startDate);
-    validateWeekdays(weekdays);
-    validateUntilDate(startDate, untilDate);
   }
 }

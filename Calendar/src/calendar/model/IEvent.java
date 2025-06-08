@@ -3,12 +3,12 @@ package calendar.model;
 import java.time.LocalDateTime;
 
 /**
- * Represents an event in the calendar system.
- * This interface defines the core properties and behaviors that all calendar events must have.
+ * Represents an event in the calendar. This interface defines the properties and behaviors that
+ * all calendar events must have.
  */
 public interface IEvent {
   /**
-   * Gets the subject/title of the event.
+   * Gets the subject of the event.
    * @return the subject of the event
    */
   String getSubject();
@@ -51,7 +51,8 @@ public interface IEvent {
 
   /**
    * Compares this event with another object for equality.
-   * Two events are considered equal if they have the same subject and start date/time.
+   * Two events are considered equal if they have the same subject, start date/time, and
+   * end date/time.
    * @param obj the object to compare with
    * @return true if the events are equal, false otherwise
    */
