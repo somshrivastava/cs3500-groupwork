@@ -1,13 +1,12 @@
 package calendar.controller.parser;
 
-import calendar.controller.parser.ICommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
 /**
- * Main command parser that delegates to specific command parsers.
+ * Factory that creates command parser objects for commands on an individual calendar.
  */
-public class CommandParserFactory {
+public class CommandParserFactory implements ICommandFactory {
   private static final String CREATE = "create";
   private static final String EDIT = "edit";
   private static final String PRINT = "print";
@@ -21,13 +20,7 @@ public class CommandParserFactory {
     this.view = view;
   }
 
-  /**
-   * Creates a parser based on the action that the user is trying to take.
-   *
-   * @param commandLine the command line prompt from the user
-   * @return an instance of the command parser based on what action the user is trying to take
-   * @throws IllegalArgumentException if the command is unknown
-   */
+  @Override
   public ICommandParser createParser(String commandLine) throws IllegalArgumentException {
     validateCommandNotEmpty(commandLine);
     ICommandParser parser;

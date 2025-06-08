@@ -2,13 +2,16 @@ package calendar.controller;
 
 import java.util.Scanner;
 
+import calendar.controller.parser.CommandParserFactory;
+import calendar.controller.parser.ICommandFactory;
+import calendar.controller.parser.SmartCommandParserFactory;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
 /**
  * This class represents the controller of a calendar application.
  * This controller offers a simple text interface in which it reads off commands from the user and
- * executes the file instructions.
+ * executes the instructions.
  */
 public class InteractiveController extends AbstractController {
   private final Readable in;
@@ -27,6 +30,15 @@ public class InteractiveController extends AbstractController {
       throw new IllegalArgumentException("model, view or readable is null");
     }
     this.in = in;
+  }
+
+  @Override
+  protected ICommandFactory createFactory() {
+    // as of now, the factory still intakes these parameters to support backward compatibility
+    // if the user wants to use the former app, it still works
+    // BEWARE, model is null if app2 is run, however, it should never call the method in this class
+    // in that case.
+    return new CommandParserFactory(this.calendarModel, this.calendarView);
   }
 
   @Override

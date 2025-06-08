@@ -1,6 +1,6 @@
 package calendar.controller;
 
-import calendar.controller.parser.CommandParserFactory;
+import calendar.controller.parser.ICommandFactory;
 import calendar.controller.parser.ICommandParser;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
@@ -11,13 +11,18 @@ import calendar.view.ICalendarView;
 public abstract class AbstractController implements ICalendarController {
   protected final ICalendarModel calendarModel;
   protected final ICalendarView calendarView;
-  protected final CommandParserFactory factory;
+  protected final ICommandFactory factory;
 
   protected AbstractController(ICalendarModel calendarModel, ICalendarView calendarView) {
     this.calendarModel = calendarModel;
     this.calendarView = calendarView;
-    this.factory = new CommandParserFactory(calendarModel, calendarView);
+    this.factory = createFactory();
   }
+
+  /**
+   * Creates the corresponding factory for the controller.
+   */
+  protected abstract ICommandFactory createFactory();
 
   /**
    * Takes a command line and parses it, creating the corresponding command or throwing an

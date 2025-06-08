@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import calendar.controller.parser.CommandParserFactory;
+import calendar.controller.parser.ICommandFactory;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -32,6 +34,15 @@ public class HeadlessController extends AbstractController {
       throw new FileNotFoundException("File does not exist or cannot be read.");
     }
     this.file = file;
+  }
+
+  @Override
+  protected ICommandFactory createFactory() {
+    // as of now, the factory still intakes these parameters to support backward compatibility
+    // if the user wants to use the former app, it still works
+    // BEWARE, model is null if app2 is run, however, it should never call the method in this class
+    // in that case.
+    return new CommandParserFactory(this.calendarModel, this.calendarView);
   }
 
   @Override
