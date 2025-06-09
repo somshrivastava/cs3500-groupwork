@@ -30,8 +30,9 @@ public class Event implements IEvent {
    * @param endDateTime   the end date and time (can be null for all-day events)
    * @param seriesId      the ID of a recurring event (null for single events)
    */
-  private Event(String subject, String description, EventLocation location, EventStatus status,
-                LocalDateTime startDateTime, LocalDateTime endDateTime, Integer seriesId) {
+  private Event(String subject, String description, EventLocation location, 
+                EventStatus status, LocalDateTime startDateTime, LocalDateTime endDateTime, 
+                Integer seriesId) {
     this.subject = subject;
     this.description = description;
     this.location = location;
@@ -132,6 +133,12 @@ public class Event implements IEvent {
   @Override
   public int hashCode() {
     return Objects.hash(this.subject, this.startDateTime, this.endDateTime);
+  }
+
+  @Override
+  public String toString() {
+    return "Event [subject=" + this.subject + ", startDateTime=" + this.startDateTime + 
+        ", endDateTime=" + this.endDateTime + "]";
   }
 
   /**
@@ -238,15 +245,8 @@ public class Event implements IEvent {
      * @return a new {@code Event} instance with the properties set in this builder
      */
     public IEvent build() {
-      return new Event(
-              subject,
-              description,
-              location,
-              status,
-              startDateTime,
-              endDateTime,
-              seriesId
-      );
+      return new Event(subject, description, location, status, startDateTime, 
+          endDateTime, seriesId);
     }
   }
 }

@@ -27,9 +27,15 @@ public class CalendarManager implements ICalendarManager {
   }
 
   @Override
+  public ISmartCalendarModel getCurrentCalendar() {
+    return this.currentCalendar;
+  }
+
+  @Override
   public void createCalendar(String calendarName, ZoneId timezone) {
     if (calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + " already exists");
+      throw new IllegalArgumentException("Calendar with name " + calendarName + 
+          " already exists");
     }
     ISmartCalendarModel newCalendar = new SmartCalendarModel(calendarName, timezone);
     this.calendars.put(calendarName, newCalendar);
@@ -38,7 +44,8 @@ public class CalendarManager implements ICalendarManager {
   @Override
   public void useCalendar(String calendarName) {
     if (!calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + " does not exist");
+      throw new IllegalArgumentException("Calendar with name " + calendarName + 
+          " does not exist");
     }
     this.currentCalendar = this.calendars.get(calendarName);
   }
@@ -46,13 +53,15 @@ public class CalendarManager implements ICalendarManager {
   @Override
   public void editCalendar(String calendarName, String property, String newValue) {
     if (!calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + " does not exist");
+      throw new IllegalArgumentException("Calendar with name " + calendarName + 
+          " does not exist");
     }
     ISmartCalendarModel calendarToEdit = this.calendars.get(calendarName);
     switch (property) {
       case "name":
         if (calendars.containsKey(newValue)) {
-          throw new IllegalArgumentException("Calendar with name " + calendarName + " already exists");
+          throw new IllegalArgumentException("Calendar with name " + calendarName + 
+              " already exists");
         }
         String oldCalendarName = calendarToEdit.getCalendarName();
         calendarToEdit.setCalendarName(newValue);
@@ -61,10 +70,11 @@ public class CalendarManager implements ICalendarManager {
         break;
       case "timezone":
         try {
-          ZoneId timezone = ZoneId.of(newValue);
-          calendarToEdit.setTimezone(timezone);
+          ZoneId newTimezone = ZoneId.of(newValue);
+          calendarToEdit.setTimezone(newTimezone);
         } catch (DateTimeException e) {
-          throw new IllegalArgumentException("Invalid timezone: " + newValue + ". IANA timezone format is expected.");
+          throw new IllegalArgumentException("Invalid timezone: " + newValue + 
+              ". IANA timezone format is expected.");
         }
         break;
       default:
@@ -73,23 +83,71 @@ public class CalendarManager implements ICalendarManager {
   }
 
   @Override
-  public void copyEvent(String eventName, LocalDateTime sourceDateTime, String targetCalendarName, LocalDateTime targetDateTime) {
+  public void copyEvent(String eventName, LocalDateTime sourceDateTime, 
+                       String targetCalendarName, LocalDateTime targetDateTime) {
     // Check that a current calendar is set
     if (currentCalendar == null) {
-      throw new IllegalArgumentException("No calendar is currently in use. Use 'use calendar' command first.");
+      throw new IllegalArgumentException("No calendar is currently in use. " + 
+          "Use 'use calendar' command first.");
     }
 
     // Check that the target calendar exists
     if (!calendars.containsKey(targetCalendarName)) {
-      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + "' does not exist");
+      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
+          "' does not exist");
     }
 
     ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
 
-    // Let the current calendar create the copied event with proper timezone handling
-    IEvent copiedEvent = currentCalendar.createCopiedEvent(eventName, sourceDateTime, targetCalendar.getTimezone(), targetDateTime);
+    // Let the current calendar create the copied event
+    IEvent copiedEvent = currentCalendar.createCopiedEvent(eventName, sourceDateTime, 
+        targetDateTime);
 
     // Add the copied event to the target calendar
-    targetCalendar.createSingleTimedEvent(copiedEvent.getSubject(), copiedEvent.getStartDateTime(), copiedEvent.getEndDateTime());
+    targetCalendar.createSingleTimedEvent(copiedEvent.getSubject(), 
+        copiedEvent.getStartDateTime(), copiedEvent.getEndDateTime());
+  }
+
+  @Override
+  public void copyEventsOnDate(LocalDateTime sourceDate, String targetCalendarName, 
+                               LocalDateTime targetDate) {
+    // Check that a current calendar is set
+    if (currentCalendar == null) {
+      throw new IllegalArgumentException("No calendar is currently in use. " + 
+          "Use 'use calendar' command first.");
+    }
+
+    // Check that the target calendar exists
+    if (!calendars.containsKey(targetCalendarName)) {
+      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
+          "' does not exist");
+    }
+
+    ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
+
+    // Copy all events from the source date to the target date with timezone conversion
+    currentCalendar.copyAllEventsToCalendar(sourceDate, targetCalendar, targetDate);
+  }
+
+  @Override
+  public void copyEventsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, 
+                                    String targetCalendarName, LocalDateTime targetStartDate) {
+    // Check that a current calendar is set
+    if (currentCalendar == null) {
+      throw new IllegalArgumentException("No calendar is currently in use. " + 
+          "Use 'use calendar' command first.");
+    }
+
+    // Check that the target calendar exists
+    if (!calendars.containsKey(targetCalendarName)) {
+      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
+          "' does not exist");
+    }
+
+    ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
+
+    // Copy all events in the date range to the target calendar with timezone conversion
+    currentCalendar.copyEventsInRangeToCalendar(startDate, endDate, targetCalendar, 
+        targetStartDate);
   }
 }
