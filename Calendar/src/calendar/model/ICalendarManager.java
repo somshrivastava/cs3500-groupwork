@@ -11,4 +11,6 @@ public interface ICalendarManager {
   void useCalendar(String calendarName);
 
   void editCalendar(String calendarName, String property, String newValue);
+
+  void copyEvent(String eventName, LocalDateTime sourceDateTime, String targetCalendarName, LocalDateTime targetDateTime);
 }

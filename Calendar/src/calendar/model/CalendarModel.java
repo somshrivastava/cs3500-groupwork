@@ -16,9 +16,9 @@ import java.util.Comparator;
  * both single and recurring.
  */
 public class CalendarModel implements ICalendarModel {
-  private final Set<IEvent> events;
+  protected final Set<IEvent> events;
   private final EventValidator validator;
-  private Integer nextSeriesId = 1;
+  protected Integer nextSeriesId = 1;
 
   // Constants for all-day events as per assignment requirements
   private static final LocalTime ALL_DAY_START = LocalTime.of(8, 0);  // 8 AM
