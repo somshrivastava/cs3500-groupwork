@@ -4,9 +4,11 @@ import java.time.ZoneId;
 
 public interface ISmartCalendarModel extends ICalendarModel {
 
-  void editCalendar(String calendarName, String property, String newValue);
-
   String getCalendarName();
 
   ZoneId getTimezone();
+
+  void setCalendarName(String calendarName);
+
+  void setTimezone(ZoneId timezone);
 }
