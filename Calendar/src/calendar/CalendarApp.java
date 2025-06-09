@@ -7,19 +7,19 @@ import java.io.InputStreamReader;
 import calendar.controller.HeadlessController;
 import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
-import calendar.model.CalendarModel;
-import calendar.model.ICalendarModel;
+import calendar.model.CalendarManager;
+import calendar.model.ICalendarManager;
 import calendar.view.CalendarView;
 import calendar.view.ICalendarView;
 
 /**
  * The driver of this application.
- * This application supports two modes:
+ * This application supports two modes as well as the management of multiple calendars:
  * - Interactive mode: User enters commands through the console
  * - Headless mode: Commands are read from a file
  * How to run each mode:
- * - Interactive: java CalendarApp --mode interactive
- * - Headless: java CalendarApp --mode headless {file name}
+ * - Interactive: java CalendarApp2 --mode interactive
+ * - Headless: java CalendarApp2 --mode headless {file name}
  */
 public class CalendarApp {
 
@@ -37,7 +37,6 @@ public class CalendarApp {
 
     String mode = args[1];
     ICalendarController controller = createController(mode, args);
-
     controller.execute();
   }
 
@@ -65,14 +64,14 @@ public class CalendarApp {
    * @throws RuntimeException         if file cannot be found in headless mode
    */
   private static ICalendarController createController(String mode, String[] args) {
-    ICalendarModel calendarModel = new CalendarModel();
+    ICalendarManager manager = new CalendarManager();
     ICalendarView calendarView = new CalendarView(System.out);
 
     switch (mode.toLowerCase()) {
       case "interactive":
-        return createInteractiveController(calendarModel, calendarView);
+        return createInteractiveController(manager, calendarView);
       case "headless":
-        return createHeadlessController(calendarModel, calendarView, args);
+        return createHeadlessController(manager, calendarView, args);
       default:
         throw new IllegalArgumentException("Mode must be 'interactive' or 'headless'");
     }
@@ -81,26 +80,26 @@ public class CalendarApp {
   /**
    * Creates an interactive controller.
    *
-   * @param model the calendar model
-   * @param view  the calendar view
+   * @param manager the calendar manager model
+   * @param view    the calendar view
    * @return an interactive controller
    */
-  private static ICalendarController createInteractiveController(ICalendarModel model,
+  private static ICalendarController createInteractiveController(ICalendarManager manager,
                                                                  ICalendarView view) {
     Readable readable = new InputStreamReader(System.in);
-    return new InteractiveController(model, view, readable);
+    return new InteractiveController(manager, view, readable);
   }
 
   /**
    * Creates a headless controller.
    *
-   * @param model the calendar model
-   * @param view  the calendar view
-   * @param args  the command line arguments containing the filename
+   * @param manager the calendar model manager
+   * @param view    the calendar view
+   * @param args    the command line arguments containing the filename
    * @return a headless controller
    * @throws RuntimeException if the file is not found or not enough arguments
    */
-  private static ICalendarController createHeadlessController(ICalendarModel model,
+  private static ICalendarController createHeadlessController(ICalendarManager manager,
                                                               ICalendarView view,
                                                               String[] args) {
     if (args.length < 3) {
@@ -112,7 +111,7 @@ public class CalendarApp {
     File file = new File(args[2]);
 
     try {
-      return new HeadlessController(model, view, file);
+      return new HeadlessController(manager, view, file);
     } catch (FileNotFoundException e) {
       throw new RuntimeException("File not found: " + args[2]);
     }

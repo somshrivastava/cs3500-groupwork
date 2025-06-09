@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import calendar.model.ICalendarManager;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -46,6 +47,7 @@ public abstract class AbstractCommandParser implements ICommandParser {
 
   protected final ICalendarModel model;
   protected final ICalendarView view;
+  protected final ICalendarManager manager;
 
   static {
     WEEKDAY_MAP.put('M', DayOfWeek.MONDAY);
@@ -63,6 +65,19 @@ public abstract class AbstractCommandParser implements ICommandParser {
   protected AbstractCommandParser(ICalendarModel model, ICalendarView view) {
     this.model = model;
     this.view = view;
+    this.manager = null;
+  }
+
+  /**
+   * Constructs an abstract command parser with the given calendar manager and view.
+   *
+   * @param manager the calendar manager
+   * @param view    the view
+   */
+  protected AbstractCommandParser(ICalendarManager manager, ICalendarView view) {
+    this.manager = manager;
+    this.view = view;
+    this.model = null;
   }
 
   /**
@@ -170,7 +185,7 @@ public abstract class AbstractCommandParser implements ICommandParser {
    * Finds the end index of quoted text starting at the given index.
    * Handles both quoted and unquoted text:
    *
-   * @param parts the command parts array
+   * @param parts      the command parts array
    * @param startIndex where to start looking
    * @return index after the text
    */

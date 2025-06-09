@@ -31,13 +31,13 @@ public class SmartCommandParserFactory implements ICommandFactory {
     String commandType2 = commandParts[1].toLowerCase();
 
     if (commandType.equals(USE)) {
-      // parser =
+      parser = new UseCalCommandParser(manager, view);
     }
     else if (commandType.equals(COPY)) {
       //
     }
     else if (commandType.equals(CREATE) && commandType2.equals("calendar")) {
-      //
+      parser = new CreateCalCommandParser(manager, view);
     }
     else if (commandType.equals(EDIT) && commandType2.equals("calendar")) {
       //

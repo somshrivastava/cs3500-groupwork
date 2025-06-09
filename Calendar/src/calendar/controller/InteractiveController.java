@@ -2,10 +2,7 @@ package calendar.controller;
 
 import java.util.Scanner;
 
-import calendar.controller.parser.CommandParserFactory;
-import calendar.controller.parser.ICommandFactory;
-import calendar.controller.parser.SmartCommandParserFactory;
-import calendar.model.ICalendarModel;
+import calendar.model.ICalendarManager;
 import calendar.view.ICalendarView;
 
 /**
@@ -20,25 +17,16 @@ public class InteractiveController extends AbstractController {
    * Create a controller to work with the specified calendar (model),
    * readable (to take inputs) and view.
    *
-   * @param model the calendar to work with (the model)
-   * @param view  the calendar view where results are displayed
-   * @param in    the readable to take inputs from
+   * @param manager the manager that manages all the calendars
+   * @param view    the calendar view where results are displayed
+   * @param in      the readable to take inputs from
    */
-  public InteractiveController(ICalendarModel model, ICalendarView view, Readable in) {
-    super(model, view);
-    if ((model == null) || (view == null) || (in == null)) {
+  public InteractiveController(ICalendarManager manager, ICalendarView view, Readable in) {
+    super(manager, view);
+    if ((manager == null) || (view == null) || (in == null)) {
       throw new IllegalArgumentException("model, view or readable is null");
     }
     this.in = in;
-  }
-
-  @Override
-  protected ICommandFactory createFactory() {
-    // as of now, the factory still intakes these parameters to support backward compatibility
-    // if the user wants to use the former app, it still works
-    // BEWARE, model is null if app2 is run, however, it should never call the method in this class
-    // in that case.
-    return new CommandParserFactory(this.calendarModel, this.calendarView);
   }
 
   @Override
