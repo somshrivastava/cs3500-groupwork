@@ -10,11 +10,9 @@ import calendar.view.ICalendarView;
  */
 class CreateCalCommandParser extends AbstractCommandParser {
   // Specific indices for use command structure
-  private static final int COMMAND_LENGTH = 6;
+  private static final int MIN_COMMAND_LENGTH = 6;
   private static final int NAME_COMMAND_INDEX = 2;
   private static final int CAL_NAME_INDEX = 3;
-  private static final int TIMEZONE_COMMAND_INDEX = 4;
-  private static final int TIMEZONE_INDEX = 5;
 
   public CreateCalCommandParser(ICalendarManager manager, ICalendarView view) {
     super(manager, view);
@@ -29,11 +27,14 @@ class CreateCalCommandParser extends AbstractCommandParser {
 
     validateFormat(commandParts);
 
-    // get calendar name
-    String calendarName = commandParts[CAL_NAME_INDEX];
+    // Extract calendar name
+    int nameEndIndex = extractQuotedText(commandParts, CAL_NAME_INDEX);
+    String calendarName = buildQuotedText(commandParts, CAL_NAME_INDEX, nameEndIndex);
+
+    validateKeyword(commandParts[nameEndIndex + 1], "--timezone", "'calendar name'");
 
     // get timezone
-    String timeZone = commandParts[TIMEZONE_INDEX];
+    String timeZone = commandParts[nameEndIndex + 2];
     if (!validateTimeZone(timeZone)) {
       throw new IllegalArgumentException("Invalid region time zone.");
     }
@@ -50,11 +51,10 @@ class CreateCalCommandParser extends AbstractCommandParser {
    * Validates create calendar command format.
    */
   private void validateFormat(String[] commandParts) {
-    validateMinimumLength(commandParts, COMMAND_LENGTH, "Invalid use command. " +
+    validateMinimumLength(commandParts, MIN_COMMAND_LENGTH, "Invalid create command. " +
             "Format should be: create calendar --name [calName] --timezone [area/location]");
     validateKeyword(commandParts[COMMAND_SUBTYPE_INDEX], "calendar", "'create'");
     validateKeyword(commandParts[NAME_COMMAND_INDEX], "--name", "'calendar'");
-    validateKeyword(commandParts[TIMEZONE_COMMAND_INDEX], "--timezone", "'calendar name'");
   }
 
   /**

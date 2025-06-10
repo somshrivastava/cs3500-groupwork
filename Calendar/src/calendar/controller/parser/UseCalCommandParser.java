@@ -8,7 +8,7 @@ import calendar.view.ICalendarView;
  */
 class UseCalCommandParser extends AbstractCommandParser {
   // Specific indices for use command structure
-  private static final int COMMAND_LENGTH = 4;
+  private static final int MIN_COMMAND_LENGTH = 4;
   private static final int NAME_COMMAND_INDEX = 2;
   private static final int CAL_NAME_INDEX = 3;
 
@@ -25,8 +25,13 @@ class UseCalCommandParser extends AbstractCommandParser {
 
     validateFormat(commandParts);
 
-    // get calendar name
-    String calendarName = commandParts[CAL_NAME_INDEX];
+    // Extract calendar name
+    int nameEndIndex = extractQuotedText(commandParts, CAL_NAME_INDEX);
+    String calendarName = buildQuotedText(commandParts, CAL_NAME_INDEX, nameEndIndex);
+    if (nameEndIndex + 1 != commandParts.length) {
+      throw new IllegalArgumentException("Invalid use command. " +
+              "Format should be: use calendar --name [name-of-calendar]");
+    }
 
     if (this.manager != null) {
       this.manager.useCalendar(calendarName);
@@ -39,7 +44,7 @@ class UseCalCommandParser extends AbstractCommandParser {
    * Validates use calendar command format.
    */
   private void validateFormat(String[] commandParts) {
-    validateMinimumLength(commandParts, COMMAND_LENGTH, "Invalid use command. " +
+    validateMinimumLength(commandParts, MIN_COMMAND_LENGTH, "Invalid use command. " +
             "Format should be: use calendar --name [name-of-calendar]");
     validateKeyword(commandParts[COMMAND_SUBTYPE_INDEX], "calendar", "'use'");
     validateKeyword(commandParts[NAME_COMMAND_INDEX], "--name", "'calendar'");
