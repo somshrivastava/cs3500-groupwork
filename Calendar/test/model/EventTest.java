@@ -199,7 +199,7 @@ public class EventTest {
             .location(EventLocation.ONLINE)
             .build();
 
-    assertEquals("Equal events should have same hash code", 
+    assertEquals("Equal events should have same hash code",
             event1.hashCode(), event2.hashCode());
   }
 
@@ -258,7 +258,7 @@ public class EventTest {
   @Test
   public void testBuilderReuse() {
     Event.EventBuilder sharedBuilder = Event.getBuilder();
-    
+
     IEvent event1 = sharedBuilder
             .subject("First Event")
             .startDateTime(baseStart)

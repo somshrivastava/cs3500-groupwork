@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import calendar.controller.ICalendarController;
+import calendar.model.CalendarManager;
+import calendar.model.ICalendarManager;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
 
@@ -16,6 +18,7 @@ public abstract class AbstractControllerTest {
 
   protected ICalendarController controller;
   protected ICalendarModel model;
+  protected ICalendarManager manager;
   protected ICalendarView view;
   protected StringBuilder logModel;
   protected StringBuilder logView;
@@ -25,6 +28,7 @@ public abstract class AbstractControllerTest {
     logModel = new StringBuilder();
     logView = new StringBuilder();
     model = new MockCalendarModel(logModel);
+    manager = new CalendarManager();
     view = new MockCalendarView(logView);
   }
 

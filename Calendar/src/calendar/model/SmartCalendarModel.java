@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Random;
 
 /**
  * Implementation of a smart calendar model that extends the basic calendar functionality
@@ -121,15 +120,7 @@ public class SmartCalendarModel extends CalendarModel implements ISmartCalendarM
     LocalDateTime targetEndTime = targetDateTime.plus(eventDuration);
     
     // Create and return the new event (copying all properties except timing and series)
-    return Event.getBuilder()
-        .subject(sourceEvent.getSubject())
-        .description(sourceEvent.getDescription())
-        .location(sourceEvent.getLocation())
-        .status(sourceEvent.getStatus())
-        .startDateTime(targetDateTime)
-        .endDateTime(targetEndTime)
-        .seriesId(null)
-                  .build();
+    return buildEventFromTemplate(sourceEvent, targetDateTime, targetEndTime, null);
   }
 
   /**
@@ -149,48 +140,21 @@ public class SmartCalendarModel extends CalendarModel implements ISmartCalendarM
     List<IEvent> eventsOnDate = printEvents(sourceDate);
     
     // Build series ID mapping for events being copied
-    Map<Integer, Integer> seriesIdMapping = new HashMap<>();
+    Map<Integer, Integer> seriesIdMapping = buildSeriesIdMapping(eventsOnDate, targetCalendar);
     
-    // First pass: identify all unique series IDs that need mapping
+    // Copy each event with mapped series IDs and timezone conversion
     for (IEvent event : eventsOnDate) {
-      if (event.getSeriesId() != null && 
-          !seriesIdMapping.containsKey(event.getSeriesId())) {
-        // Generate a new unique series ID for the target calendar
-        Integer newSeriesId = targetCalendar.generateUniqueSeriesId();
-        seriesIdMapping.put(event.getSeriesId(), newSeriesId);
-      }
-    }
-    
-    // Second pass: copy each event with mapped series IDs
-    for (IEvent event : eventsOnDate) {
-      // Convert event times from this calendar's timezone to target calendar's timezone
-      LocalDateTime convertedStartTime = convertTimeBetweenTimezones(
-          event.getStartDateTime(), this.timezone, targetCalendar.getTimezone());
-      LocalDateTime convertedEndTime = convertTimeBetweenTimezones(
-          event.getEndDateTime(), this.timezone, targetCalendar.getTimezone());
+      LocalDateTime[] convertedTimes = convertEventTimesToTargetTimezone(event, targetCalendar);
+      LocalDateTime convertedStartTime = convertedTimes[0];
+      LocalDateTime convertedEndTime = convertedTimes[1];
       
-      // Adjust the converted times to the target date day and year
-      LocalDateTime finalStartTime = convertedStartTime.withDayOfYear(targetDate.getDayOfYear())
-          .withYear(targetDate.getYear());
-      LocalDateTime finalEndTime = convertedEndTime.withDayOfYear(targetDate.getDayOfYear())
-          .withYear(targetDate.getYear());
+      // Adjust the converted times to the target date while preserving time
+      LocalDateTime finalStartTime = adjustTimeToTargetDate(targetDate, convertedStartTime);
+      LocalDateTime finalEndTime = adjustTimeToTargetDate(targetDate, convertedEndTime);
       
-      // Map the series ID to avoid conflicts
-      Integer mappedSeriesId = event.getSeriesId() != null ? 
-          seriesIdMapping.get(event.getSeriesId()) : null;
-      
-      // Create the event in the target calendar with mapped series ID
-      IEvent copiedEvent = Event.getBuilder()
-          .subject(event.getSubject())
-          .description(event.getDescription())
-          .location(event.getLocation())
-          .status(event.getStatus())
-          .startDateTime(finalStartTime)
-          .endDateTime(finalEndTime)
-          .seriesId(mappedSeriesId) // Use mapped series ID
-          .build();
-      
-      // Add the event to the target calendar using the proper interface method
+      // Create and add the copied event
+      Integer mappedSeriesId = mapSeriesId(event.getSeriesId(), seriesIdMapping);
+      IEvent copiedEvent = buildEventFromTemplate(event, finalStartTime, finalEndTime, mappedSeriesId);
       targetCalendar.addEvent(copiedEvent);
     }
   }
@@ -217,46 +181,21 @@ public class SmartCalendarModel extends CalendarModel implements ISmartCalendarM
         targetStartDate.toLocalDate());
     
     // Build series ID mapping for events being copied
-    Map<Integer, Integer> seriesIdMapping = new HashMap<>();
+    Map<Integer, Integer> seriesIdMapping = buildSeriesIdMapping(eventsInRange, targetCalendar);
     
-    // First pass: identify all unique series IDs that need mapping
+    // Copy each event with mapped series IDs and timezone conversion
     for (IEvent event : eventsInRange) {
-      if (event.getSeriesId() != null && 
-          !seriesIdMapping.containsKey(event.getSeriesId())) {
-        // Generate a new unique series ID for the target calendar
-        Integer newSeriesId = targetCalendar.generateUniqueSeriesId();
-        seriesIdMapping.put(event.getSeriesId(), newSeriesId);
-      }
-    }
-    
-    // Second pass: copy each event with mapped series IDs
-    for (IEvent event : eventsInRange) {
-      // Convert event times from this calendar's timezone to target calendar's timezone
-      LocalDateTime convertedStartTime = convertTimeBetweenTimezones(
-          event.getStartDateTime(), this.timezone, targetCalendar.getTimezone());
-      LocalDateTime convertedEndTime = convertTimeBetweenTimezones(
-          event.getEndDateTime(), this.timezone, targetCalendar.getTimezone());
+      LocalDateTime[] convertedTimes = convertEventTimesToTargetTimezone(event, targetCalendar);
+      LocalDateTime convertedStartTime = convertedTimes[0];
+      LocalDateTime convertedEndTime = convertedTimes[1];
       
       // Adjust the converted times by the day offset
       LocalDateTime finalStartTime = convertedStartTime.plusDays(daysBetween);
       LocalDateTime finalEndTime = convertedEndTime.plusDays(daysBetween);
       
-      // Map the series ID to avoid conflicts
-      Integer mappedSeriesId = event.getSeriesId() != null ? 
-          seriesIdMapping.get(event.getSeriesId()) : null;
-      
-      // Create the event in the target calendar with mapped series ID
-      IEvent copiedEvent = Event.getBuilder()
-          .subject(event.getSubject())
-          .description(event.getDescription())
-          .location(event.getLocation())
-          .status(event.getStatus())
-          .startDateTime(finalStartTime)
-          .endDateTime(finalEndTime)
-          .seriesId(mappedSeriesId) // Use mapped series ID
-          .build();
-      
-      // Add the event to the target calendar using the proper interface method
+      // Create and add the copied event
+      Integer mappedSeriesId = mapSeriesId(event.getSeriesId(), seriesIdMapping);
+      IEvent copiedEvent = buildEventFromTemplate(event, finalStartTime, finalEndTime, mappedSeriesId);
       targetCalendar.addEvent(copiedEvent);
     }
   }
@@ -296,18 +235,107 @@ public class SmartCalendarModel extends CalendarModel implements ISmartCalendarM
           oldTimezone, newTimezone);
       
       // Create new event with converted times
-      IEvent convertedEvent = Event.getBuilder()
-          .subject(event.getSubject())
-          .description(event.getDescription())
-          .location(event.getLocation())
-          .status(event.getStatus())
-          .startDateTime(convertedStart)
-          .endDateTime(convertedEnd)
-          .seriesId(event.getSeriesId())
-          .build();
-      
+      IEvent convertedEvent = buildEventFromTemplate(event, convertedStart, convertedEnd, 
+          event.getSeriesId());
       events.add(convertedEvent);
     }
+  }
+
+  /**
+   * Generates a unique series ID using the inherited nextSeriesId counter.
+   * 
+   * @return a new unique series ID
+   */
+  @Override
+  public Integer generateUniqueSeriesId() {
+    return nextSeriesId++;
+  }
+
+  /**
+   * Builds a series ID mapping for a list of events to avoid conflicts in the target calendar.
+   * 
+   * @param events the events to build mapping for
+   * @param targetCalendar the target calendar that will receive new series IDs
+   * @return a mapping from original series IDs to new series IDs
+   */
+  private Map<Integer, Integer> buildSeriesIdMapping(List<IEvent> events, 
+                                                     ISmartCalendarModel targetCalendar) {
+    Map<Integer, Integer> seriesIdMapping = new HashMap<>();
+    
+    for (IEvent event : events) {
+      if (event.getSeriesId() != null && 
+          !seriesIdMapping.containsKey(event.getSeriesId())) {
+        // Generate a new unique series ID for the target calendar
+        Integer newSeriesId = targetCalendar.generateUniqueSeriesId();
+        seriesIdMapping.put(event.getSeriesId(), newSeriesId);
+      }
+    }
+    
+    return seriesIdMapping;
+  }
+
+  /**
+   * Converts event times from this calendar's timezone to target calendar's timezone.
+   * 
+   * @param event the event whose times need conversion
+   * @param targetCalendar the target calendar with the destination timezone
+   * @return array with [convertedStartTime, convertedEndTime]
+   */
+  private LocalDateTime[] convertEventTimesToTargetTimezone(IEvent event, 
+                                                           ISmartCalendarModel targetCalendar) {
+    LocalDateTime convertedStartTime = convertTimeBetweenTimezones(
+        event.getStartDateTime(), this.timezone, targetCalendar.getTimezone());
+    LocalDateTime convertedEndTime = convertTimeBetweenTimezones(
+        event.getEndDateTime(), this.timezone, targetCalendar.getTimezone());
+    
+    return new LocalDateTime[]{convertedStartTime, convertedEndTime};
+  }
+
+  /**
+   * Adjusts a converted time to a target date while preserving the time components.
+   * 
+   * @param targetDate the target date
+   * @param convertedTime the converted time to adjust
+   * @return the time adjusted to the target date
+   */
+  private LocalDateTime adjustTimeToTargetDate(LocalDateTime targetDate, LocalDateTime convertedTime) {
+    return targetDate.withHour(convertedTime.getHour())
+        .withMinute(convertedTime.getMinute())
+        .withSecond(convertedTime.getSecond())
+        .withNano(convertedTime.getNano());
+  }
+
+  /**
+   * Maps a series ID using the provided mapping, returning null if the original ID is null.
+   * 
+   * @param originalSeriesId the original series ID
+   * @param seriesIdMapping the mapping to use
+   * @return the mapped series ID or null
+   */
+  private Integer mapSeriesId(Integer originalSeriesId, Map<Integer, Integer> seriesIdMapping) {
+    return originalSeriesId != null ? seriesIdMapping.get(originalSeriesId) : null;
+  }
+
+  /**
+   * Builds an event from a template event with new timing and series ID.
+   * 
+   * @param templateEvent the template event to copy properties from
+   * @param startDateTime the new start time
+   * @param endDateTime the new end time
+   * @param seriesId the new series ID (or null)
+   * @return a new event with the specified properties
+   */
+  private IEvent buildEventFromTemplate(IEvent templateEvent, LocalDateTime startDateTime, 
+                                       LocalDateTime endDateTime, Integer seriesId) {
+    return Event.getBuilder()
+        .subject(templateEvent.getSubject())
+        .description(templateEvent.getDescription())
+        .location(templateEvent.getLocation())
+        .status(templateEvent.getStatus())
+        .startDateTime(startDateTime)
+        .endDateTime(endDateTime)
+        .seriesId(seriesId)
+        .build();
   }
 
   /**
@@ -323,31 +351,5 @@ public class SmartCalendarModel extends CalendarModel implements ISmartCalendarM
     ZonedDateTime fromZoned = dateTime.atZone(fromTimezone);
     ZonedDateTime toZoned = fromZoned.withZoneSameInstant(toTimezone);
     return toZoned.toLocalDateTime();
-  }
-
-  /**
-   * Generates a unique series ID that doesn't conflict with existing series in this calendar.
-   * 
-   * @return a new unique series ID
-   */
-  @Override
-  public Integer generateUniqueSeriesId() {
-    Set<Integer> existingSeriesIds = new HashSet<>();
-    
-    // Collect all existing series IDs in this calendar
-    for (IEvent event : events) {
-      if (event.getSeriesId() != null) {
-        existingSeriesIds.add(event.getSeriesId());
-      }
-    }
-    
-    // Generate a unique ID that doesn't conflict
-    // Start from a high number to avoid conflicts with existing series
-    int newSeriesId = 10000 + new Random().nextInt(90000); // Random 5-digit number
-    while (existingSeriesIds.contains(newSeriesId)) {
-      newSeriesId = 10000 + new Random().nextInt(90000);
-    }
-    
-    return newSeriesId;
   }
 }

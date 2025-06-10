@@ -1,5 +1,6 @@
 package calendar.controller.parser;
 
+import calendar.model.CalendarModel;
 import calendar.model.ICalendarManager;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
@@ -24,7 +25,7 @@ public class SmartCommandParserFactory implements ICommandFactory {
   @Override
   public ICommandParser createParser(String commandLine) throws IllegalArgumentException {
     validateCommandNotEmpty(commandLine);
-    ICommandParser parser;
+    ICommandParser parser = null;
 
     String[] commandParts = commandLine.trim().split("\\s+");
     String commandType = commandParts[0].toLowerCase();
@@ -44,7 +45,8 @@ public class SmartCommandParserFactory implements ICommandFactory {
     }
     else {
       // get specific currently in use calendar from manager method
-      ICalendarModel model = manager.getCurrentCalendar(commandParts[2]);
+      // ICalendarModel model = manager.getCurrentCalendar(commandParts[2]);
+      ICalendarModel model = new CalendarModel();
       // throw exception when no current calendar in use
       ICommandFactory defaultFactory = new CommandParserFactory(model, view);
       parser = defaultFactory.createParser(commandLine);

@@ -25,7 +25,7 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   protected ICalendarController createController() {
     try {
-      return new HeadlessController(model, view, file);
+      return new HeadlessController(manager, view, file);
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
@@ -48,13 +48,13 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullFile() throws FileNotFoundException {
-    new HeadlessController(model, view, null);
+    new HeadlessController(manager, view, null);
   }
 
   @Test(expected = FileNotFoundException.class)
   public void testNonExistentFile() throws FileNotFoundException {
     File nonExistentFile = new File("nonexistent.txt");
-    new HeadlessController(model, view, nonExistentFile);
+    new HeadlessController(manager, view, nonExistentFile);
   }
 
   // ----------------------------------------------------------------------------------------------

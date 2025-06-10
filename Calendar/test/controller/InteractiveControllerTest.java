@@ -17,7 +17,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
   protected Readable input;
 
   protected ICalendarController createController() {
-    return new InteractiveController(model, view, input);
+    return new InteractiveController(manager, view, input);
   }
 
   protected void convertStringInput(String s) {
@@ -29,7 +29,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testNullReadable() {
-    new InteractiveController(model, view, null);
+    new InteractiveController(manager, view, null);
   }
 
   // ----------------------------------------------------------------------------------------------

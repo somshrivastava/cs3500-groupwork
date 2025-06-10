@@ -33,36 +33,24 @@ public class CalendarManager implements ICalendarManager {
 
   @Override
   public void createCalendar(String calendarName, ZoneId timezone) {
-    if (calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + 
-          " already exists");
-    }
+    validateCalendarNameAvailable(calendarName);
     ISmartCalendarModel newCalendar = new SmartCalendarModel(calendarName, timezone);
     this.calendars.put(calendarName, newCalendar);
   }
 
   @Override
   public void useCalendar(String calendarName) {
-    if (!calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + 
-          " does not exist");
-    }
+    validateCalendarExists(calendarName);
     this.currentCalendar = this.calendars.get(calendarName);
   }
 
   @Override
   public void editCalendar(String calendarName, String property, String newValue) {
-    if (!calendars.containsKey(calendarName)) {
-      throw new IllegalArgumentException("Calendar with name " + calendarName + 
-          " does not exist");
-    }
+    validateCalendarExists(calendarName);
     ISmartCalendarModel calendarToEdit = this.calendars.get(calendarName);
     switch (property) {
       case "name":
-        if (calendars.containsKey(newValue)) {
-          throw new IllegalArgumentException("Calendar with name " + calendarName + 
-              " already exists");
-        }
+        validateCalendarNameAvailable(newValue);
         String oldCalendarName = calendarToEdit.getCalendarName();
         calendarToEdit.setCalendarName(newValue);
         calendars.remove(oldCalendarName);
@@ -85,19 +73,8 @@ public class CalendarManager implements ICalendarManager {
   @Override
   public void copyEvent(String eventName, LocalDateTime sourceDateTime, 
                        String targetCalendarName, LocalDateTime targetDateTime) {
-    // Check that a current calendar is set
-    if (currentCalendar == null) {
-      throw new IllegalArgumentException("No calendar is currently in use. " + 
-          "Use 'use calendar' command first.");
-    }
-
-    // Check that the target calendar exists
-    if (!calendars.containsKey(targetCalendarName)) {
-      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
-          "' does not exist");
-    }
-
-    ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
+    validateCurrentCalendarSet();
+    ISmartCalendarModel targetCalendar = getValidatedTargetCalendar(targetCalendarName);
 
     // Let the current calendar create the copied event
     IEvent copiedEvent = currentCalendar.createCopiedEvent(eventName, sourceDateTime, 
@@ -111,19 +88,8 @@ public class CalendarManager implements ICalendarManager {
   @Override
   public void copyEventsOnDate(LocalDateTime sourceDate, String targetCalendarName, 
                                LocalDateTime targetDate) {
-    // Check that a current calendar is set
-    if (currentCalendar == null) {
-      throw new IllegalArgumentException("No calendar is currently in use. " + 
-          "Use 'use calendar' command first.");
-    }
-
-    // Check that the target calendar exists
-    if (!calendars.containsKey(targetCalendarName)) {
-      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
-          "' does not exist");
-    }
-
-    ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
+    validateCurrentCalendarSet();
+    ISmartCalendarModel targetCalendar = getValidatedTargetCalendar(targetCalendarName);
 
     // Copy all events from the source date to the target date with timezone conversion
     currentCalendar.copyAllEventsToCalendar(sourceDate, targetCalendar, targetDate);
@@ -132,22 +98,64 @@ public class CalendarManager implements ICalendarManager {
   @Override
   public void copyEventsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, 
                                     String targetCalendarName, LocalDateTime targetStartDate) {
-    // Check that a current calendar is set
-    if (currentCalendar == null) {
-      throw new IllegalArgumentException("No calendar is currently in use. " + 
-          "Use 'use calendar' command first.");
-    }
-
-    // Check that the target calendar exists
-    if (!calendars.containsKey(targetCalendarName)) {
-      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
-          "' does not exist");
-    }
-
-    ISmartCalendarModel targetCalendar = calendars.get(targetCalendarName);
+    validateCurrentCalendarSet();
+    ISmartCalendarModel targetCalendar = getValidatedTargetCalendar(targetCalendarName);
 
     // Copy all events in the date range to the target calendar with timezone conversion
     currentCalendar.copyEventsInRangeToCalendar(startDate, endDate, targetCalendar, 
         targetStartDate);
+  }
+
+  /**
+   * Validates that a calendar with the given name exists.
+   * 
+   * @param calendarName the name of the calendar to check
+   * @throws IllegalArgumentException if the calendar does not exist
+   */
+  private void validateCalendarExists(String calendarName) {
+    if (!calendars.containsKey(calendarName)) {
+      throw new IllegalArgumentException("Calendar with name " + calendarName + 
+          " does not exist");
+    }
+  }
+
+  /**
+   * Validates that a current calendar is set.
+   * 
+   * @throws IllegalArgumentException if no current calendar is set
+   */
+  private void validateCurrentCalendarSet() {
+    if (currentCalendar == null) {
+      throw new IllegalArgumentException("No calendar is currently in use. " + 
+          "Use 'use calendar' command first.");
+    }
+  }
+
+  /**
+   * Validates that the target calendar exists and returns it.
+   * 
+   * @param targetCalendarName the name of the target calendar
+   * @return the target calendar
+   * @throws IllegalArgumentException if the target calendar does not exist
+   */
+  private ISmartCalendarModel getValidatedTargetCalendar(String targetCalendarName) {
+    if (!calendars.containsKey(targetCalendarName)) {
+      throw new IllegalArgumentException("Target calendar '" + targetCalendarName + 
+          "' does not exist");
+    }
+    return calendars.get(targetCalendarName);
+  }
+
+  /**
+   * Validates that a calendar name is available (not already in use).
+   * 
+   * @param calendarName the name to check for availability
+   * @throws IllegalArgumentException if the calendar name already exists
+   */
+  private void validateCalendarNameAvailable(String calendarName) {
+    if (calendars.containsKey(calendarName)) {
+      throw new IllegalArgumentException("Calendar with name " + calendarName + 
+          " already exists");
+    }
   }
 }

@@ -6,13 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/Event.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/ISmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ISmartCalendarModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/AbstractControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/AbstractControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/model/CalendarManagerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/CalendarManagerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/SmartCalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/SmartCalendarModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/model/CalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/CalendarModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/model/EventTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/EventTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/model/SmartCalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/res/asdf.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +39,10 @@
     "Downloaded.Files.Path.Enabled": "false",
     "JUnit.CalendarControllerTest.executor": "Run",
     "JUnit.CalendarManagerTest.executor": "Run",
+    "JUnit.CalendarManagerTest.testCopyEventsBetweenDates.executor": "Debug",
     "JUnit.CalendarModelTest.executor": "Run",
     "JUnit.CommandParserTest.executor": "Run",
+    "JUnit.SmartCalendarModelTest.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
@@ -81,5 +86,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
