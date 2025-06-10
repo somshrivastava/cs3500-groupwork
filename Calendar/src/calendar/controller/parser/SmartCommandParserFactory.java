@@ -35,19 +35,17 @@ public class SmartCommandParserFactory implements ICommandFactory {
       parser = new UseCalCommandParser(manager, view);
     }
     else if (commandType.equals(COPY)) {
-      //
+      parser = new CopyCommandParser(manager, view);
     }
     else if (commandType.equals(CREATE) && commandType2.equals("calendar")) {
       parser = new CreateCalCommandParser(manager, view);
     }
     else if (commandType.equals(EDIT) && commandType2.equals("calendar")) {
-      //
+      parser = new EditCalCommandParser(manager, view);
     }
     else {
       // get specific currently in use calendar from manager method
-      // ICalendarModel model = manager.getCurrentCalendar(commandParts[2]);
-      ICalendarModel model = new CalendarModel();
-      // throw exception when no current calendar in use
+      ICalendarModel model = manager.getCurrentCalendar();
       ICommandFactory defaultFactory = new CommandParserFactory(model, view);
       parser = defaultFactory.createParser(commandLine);
     }
