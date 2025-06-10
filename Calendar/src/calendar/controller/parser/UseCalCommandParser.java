@@ -28,7 +28,7 @@ class UseCalCommandParser extends AbstractCommandParser {
     // Extract calendar name
     int nameEndIndex = extractQuotedText(commandParts, CAL_NAME_INDEX);
     String calendarName = buildQuotedText(commandParts, CAL_NAME_INDEX, nameEndIndex);
-    if (nameEndIndex + 1 != commandParts.length) {
+    if (nameEndIndex != commandParts.length) {
       throw new IllegalArgumentException("Invalid use command. " +
               "Format should be: use calendar --name [name-of-calendar]");
     }

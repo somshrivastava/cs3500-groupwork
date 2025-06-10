@@ -29,13 +29,13 @@ class EditCalCommandParser extends AbstractCommandParser {
     int nameEndIndex = extractQuotedText(commandParts, CAL_NAME_INDEX);
     String calendarName = buildQuotedText(commandParts, CAL_NAME_INDEX, nameEndIndex);
 
-    validateKeyword(commandParts[nameEndIndex + 1], "--property", "'calendar name'");
+    validateKeyword(commandParts[nameEndIndex], "--property", "'calendar name'");
 
     // Extract property name
-    String propertyName = validateProperty(commandParts[nameEndIndex + 2]);
+    String propertyName = validateProperty(commandParts[nameEndIndex + 1]);
 
     // extract new value
-    int propertyIndex = nameEndIndex + 3;
+    int propertyIndex = nameEndIndex + 2;
     int propertyEndIndex = extractQuotedText(commandParts, propertyIndex);
     String newValue = buildQuotedText(commandParts, propertyIndex, propertyEndIndex);
 

@@ -31,10 +31,13 @@ class CreateCalCommandParser extends AbstractCommandParser {
     int nameEndIndex = extractQuotedText(commandParts, CAL_NAME_INDEX);
     String calendarName = buildQuotedText(commandParts, CAL_NAME_INDEX, nameEndIndex);
 
-    validateKeyword(commandParts[nameEndIndex + 1], "--timezone", "'calendar name'");
+    validateKeyword(commandParts[nameEndIndex], "--timezone", "'calendar name'");
 
-    // get timezone
-    String timeZone = commandParts[nameEndIndex + 2];
+    // get timezone (handle quoted timezone)
+    int timezoneStartIndex = nameEndIndex + 1;
+    int timezoneEndIndex = extractQuotedText(commandParts, timezoneStartIndex);
+    String timeZone = buildQuotedText(commandParts, timezoneStartIndex, timezoneEndIndex);
+    
     if (!validateTimeZone(timeZone)) {
       throw new IllegalArgumentException("Invalid region time zone.");
     }

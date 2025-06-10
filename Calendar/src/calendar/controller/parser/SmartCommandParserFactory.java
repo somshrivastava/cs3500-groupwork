@@ -46,6 +46,10 @@ public class SmartCommandParserFactory implements ICommandFactory {
     else {
       // get specific currently in use calendar from manager method
       ICalendarModel model = manager.getCurrentCalendar();
+      if (model == null) {
+        throw new IllegalArgumentException("No calendar is currently in use. " +
+                "Use 'use calendar --name [calendar-name]' command first.");
+      }
       ICommandFactory defaultFactory = new CommandParserFactory(model, view);
       parser = defaultFactory.createParser(commandLine);
     }

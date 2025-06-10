@@ -56,33 +56,29 @@ class CopyCommandParser extends AbstractCommandParser {
   private void parseCopySingleEvent(String[] parts) {
     final int eventNameIndex = 2;
 
-    final int onOffset = 1;
-    final int firstDateOffset = 2;
-    final int targetOffset = 3;
-
     // find event name
     int eventEndIndex = extractQuotedText(parts, eventNameIndex);
     String eventName = buildQuotedText(parts, eventNameIndex, eventEndIndex);
 
     // Validate we have the "on" keyword where expected
-    validateKeyword(parts[eventEndIndex + onOffset], ON, "event name");
+    validateKeyword(parts[eventEndIndex], ON, "event name");
 
-    // Parse the date
-    LocalDateTime originalDate = parseDateTime(parts[eventNameIndex + firstDateOffset]);
+    // Parse the date (should be dateStringTtimeString format)
+    LocalDateTime originalDate = parseDateTime(parts[eventEndIndex + 1]);
 
     // Validate the --target keyword appears before the calendar name
-    validateKeyword(parts[eventNameIndex + targetOffset], "--target", "date");
+    validateKeyword(parts[eventEndIndex + 2], "--target", "date");
 
     // Get the new calendar name
-    int calendarNameIndex = eventNameIndex + targetOffset;
+    int calendarNameIndex = eventEndIndex + 3;
     int nameEndIndex = extractQuotedText(parts, calendarNameIndex);
     String calendarName = buildQuotedText(parts, calendarNameIndex, nameEndIndex);
 
     // Validate we have the "to" keyword where expected
-    validateKeyword(parts[nameEndIndex + 1], TO, "calendar name");
+    validateKeyword(parts[nameEndIndex], TO, "calendar name");
 
-    // Parse the new date
-    LocalDateTime newDate = parseDateTime(parts[nameEndIndex + 2]);
+    // Parse the new date (should be dateStringTtimeString format)
+    LocalDateTime newDate = parseDateTime(parts[nameEndIndex + 1]);
 
     // Call manager to copy event
     manager.copyEvent(eventName, originalDate, calendarName, newDate);
@@ -97,43 +93,57 @@ class CopyCommandParser extends AbstractCommandParser {
     int targetOffset = 0;
     LocalDateTime date2 = null;
 
-    // Parse the first date
-    LocalDateTime date1 = parseDateTime(parts[keyWord + date1Offset]);
-
-    // check which copy command
+    // check which copy command and parse accordingly
     if (parts[keyWord].equals("on")) {
+      // Parse the first date (dateString format)
+      LocalDateTime date1 = parseDate(parts[keyWord + date1Offset]);
       targetOffset = 2;
+      
+      // Validate --target keyword
+      validateKeyword(parts[keyWord + targetOffset], "--target", "date");
+      
+      // Get the calendar name
+      int calendarNameIndex = keyWord + targetOffset + 1;
+      int nameEndIndex = extractQuotedText(parts, calendarNameIndex);
+      String calendarName = buildQuotedText(parts, calendarNameIndex, nameEndIndex);
+
+      // Validate we have the "to" keyword where expected
+      validateKeyword(parts[nameEndIndex], TO, "calendar name");
+
+      // Parse the last date (dateString format)
+      LocalDateTime lastDate = parseDate(parts[nameEndIndex + 1]);
+      
+      manager.copyEventsOnDate(date1, calendarName, lastDate);
     }
     else if (parts[keyWord].equals("between")) {
+      // Parse the first date (dateString format)
+      LocalDateTime date1 = parseDate(parts[keyWord + date1Offset]);
       targetOffset = 4;
       final int andOffset = 2;
       validateKeyword(parts[keyWord + andOffset], "and", "date");
-      // get date2
-      date2 = parseDateTime(parts[keyWord + andOffset + 1]);
+      // get date2 (dateString format)
+      date2 = parseDate(parts[keyWord + andOffset + 1]);
+      
+      // Validate --target keyword
+      validateKeyword(parts[keyWord + targetOffset], "--target", "second date");
+      
+      // Get the calendar name
+      int calendarNameIndex = keyWord + targetOffset + 1;
+      int nameEndIndex = extractQuotedText(parts, calendarNameIndex);
+      String calendarName = buildQuotedText(parts, calendarNameIndex, nameEndIndex);
+
+      // Validate we have the "to" keyword where expected
+      validateKeyword(parts[nameEndIndex], TO, "calendar name");
+
+      // Parse the last date (dateString format)
+      LocalDateTime lastDate = parseDate(parts[nameEndIndex + 1]);
+      
+      manager.copyEventsBetweenDates(date1, date2, calendarName, lastDate);
     }
     else {
       throw new IllegalArgumentException("Invalid copy command. Format: " +
               "copy events on [date] --target [calendarName] to [date] or " +
               "copy events between [date] and [date] --target [calendarName] to [date]");
-    }
-
-    // Get the calendar name
-    int calendarNameIndex = keyWord + targetOffset + 1;
-    int nameEndIndex = extractQuotedText(parts, calendarNameIndex);
-    String calendarName = buildQuotedText(parts, calendarNameIndex, nameEndIndex);
-
-    // Validate we have the "to" keyword where expected
-    validateKeyword(parts[nameEndIndex + 1], TO, "calendar name");
-
-    // Parse the last date
-    LocalDateTime lastDate = parseDateTime(parts[nameEndIndex + 2]);
-
-    // check which copy command
-    if (parts[keyWord].equals("on")) {
-      manager.copyEventsOnDate(date1, calendarName, lastDate);
-    }
-    else if (parts[keyWord].equals("between")) {
-      manager.copyEventsBetweenDates(date1, date2, calendarName, lastDate);
     }
   }
 }

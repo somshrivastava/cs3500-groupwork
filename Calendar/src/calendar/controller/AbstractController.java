@@ -16,9 +16,9 @@ public abstract class AbstractController implements ICalendarController {
 
   protected AbstractController(ICalendarManager manager, ICalendarView calendarView) {
     //this.calendarModel = calendarModel;
+    this.manager = manager;
     this.calendarView = calendarView;
     this.factory = createFactory();
-    this.manager = manager;
   }
 
   /**
