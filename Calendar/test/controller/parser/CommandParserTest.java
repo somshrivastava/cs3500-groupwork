@@ -1,7 +1,10 @@
-package controller;
+package controller.parser;
 
 import calendar.controller.parser.ICommandParser;
-import calendar.controller.parser.CommandParserFactory;
+import calendar.controller.parser.SmartCommandParserFactory;
+import controller.MockCalendarManager;
+import controller.MockCalendarView;
+import controller.MockSmartCalendarModel;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,20 +16,31 @@ import static org.junit.Assert.fail;
 /**
  * Comprehensive test suite for CommandParser using manual mock implementations.
  * Tests all command types, valid parsing scenarios, and error conditions.
+ * Updated for Assignment 5 to work with SmartCommandParserFactory and calendar context.
  */
 public class CommandParserTest {
   private StringBuilder modelLog;
-  private CommandParserFactory factory;
+  private StringBuilder managerLog;
+  private SmartCommandParserFactory factory;
+  private MockCalendarManager mockManager;
+  private MockCalendarView mockView;
   private ICommandParser parser;
   private String input;
 
   @Before
   public void setUp() {
     modelLog = new StringBuilder();
+    managerLog = new StringBuilder();
     StringBuilder viewOutput = new StringBuilder();
-    MockCalendarModel mockModel = new MockCalendarModel(modelLog);
-    MockCalendarView mockView = new MockCalendarView(viewOutput);
-    factory = new CommandParserFactory(mockModel, mockView);
+    
+    MockSmartCalendarModel mockModel = new MockSmartCalendarModel(modelLog);
+    mockManager = new MockCalendarManager(managerLog);
+    mockView = new MockCalendarView(viewOutput);
+    
+    // Set up an active calendar for event commands to work
+    mockManager.setCurrentCalendar(mockModel);
+    
+    factory = new SmartCommandParserFactory(mockManager, mockView);
   }
 
   @Test
@@ -759,5 +773,160 @@ public class CommandParserTest {
             "Queried for all events that occur on 2024-03-20T00:00" +
             "Checked if there is an event during 2024-03-20T10:30";
     assertEquals(expectedLog, modelLog.toString());
+  }
+
+  // Integration Tests for Assignment 5 - Calendar Management + Event Operations
+  @Test
+  public void testCalendarManagementIntegration() {
+    // Test creating a calendar
+    input = "create calendar --name Work --timezone America/New_York";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    assertTrue("Should handle calendar commands", 
+        managerLog.toString().contains("Created calendar Work with timezone America/New_York"));
+    
+    // Test using the calendar
+    managerLog.setLength(0); // Clear log
+    input = "use calendar --name Work";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    assertTrue("Should handle use calendar commands", 
+        managerLog.toString().contains("Switched to calendar Work"));
+  }
+
+  @Test
+  public void testEventCommandRequiresActiveCalendar() {
+    // Remove active calendar
+    mockManager.setCurrentCalendar(null);
+    
+    try {
+      input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00";
+      parser = factory.createParser(input);
+      fail("Should throw exception when no calendar is active");
+    } catch (IllegalArgumentException e) {
+      assertTrue("Error should mention no active calendar", 
+          e.getMessage().contains("No calendar is currently in use"));
+    }
+  }
+
+  @Test
+  public void testCalendarContextSwitching() {
+    // Set up first calendar
+    input = "create calendar --name Work --timezone America/New_York";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    input = "use calendar --name Work";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Create event in Work calendar
+    input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    String workEventLog = modelLog.toString();
+    assertTrue("Should create event in active calendar", 
+        workEventLog.contains("Created single timed event Meeting"));
+    
+    // Switch to different calendar
+    modelLog.setLength(0); // Clear model log
+    input = "use calendar --name Personal";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Create event in Personal calendar (would need different mock setup)
+    input = "print events on 2024-03-20";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    assertTrue("Should query events in new active calendar", 
+        modelLog.toString().contains("Queried for all events"));
+  }
+
+  @Test
+  public void testCopyCommandIntegration() {
+    input = "copy event Meeting on 2024-03-20T10:00 --target Personal to 2024-03-25T10:00";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    String expected = "Copied event Meeting from 2024-03-20T10:00 to calendar Personal at 2024-03-25T10:00";
+    assertTrue("Should handle copy event commands", 
+        managerLog.toString().contains(expected));
+  }
+
+  @Test
+  public void testCopyEventsOnDateIntegration() {
+    input = "copy events on 2024-03-20 --target Personal to 2024-04-15";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    String expected = "Copied events on 2024-03-20T00:00 to calendar Personal starting at 2024-04-15T00:00";
+    assertTrue("Should handle copy events on date commands", 
+        managerLog.toString().contains(expected));
+  }
+
+  @Test
+  public void testCopyEventsBetweenDatesIntegration() {
+    input = "copy events between 2024-03-18 and 2024-03-22 --target Personal to 2024-05-01";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    String expected = "Copied events between 2024-03-18T00:00 and 2024-03-22T00:00 to calendar Personal starting at 2024-05-01T00:00";
+    assertTrue("Should handle copy events between dates commands", 
+        managerLog.toString().contains(expected));
+  }
+
+  @Test
+  public void testEditCalendarIntegration() {
+    input = "edit calendar --name Work --property timezone Europe/London";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    String expected = "Edited calendar Work property timezone to Europe/London";
+    assertTrue("Should handle edit calendar commands", 
+        managerLog.toString().contains(expected));
+  }
+
+  @Test
+  public void testMixedCalendarAndEventCommands() {
+    // Create and use calendar
+    input = "create calendar --name TestCal --timezone UTC";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    input = "use calendar --name TestCal";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Create event
+    input = "create event TestEvent from 2024-03-20T10:00 to 2024-03-20T11:00";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Query event
+    input = "print events on 2024-03-20";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Edit calendar
+    input = "edit calendar --name TestCal --property timezone America/New_York";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Copy event
+    input = "copy event TestEvent on 2024-03-20T10:00 --target OtherCal to 2024-03-25T10:00";
+    parser = factory.createParser(input);
+    parser.parse(input);
+    
+    // Verify all operations were logged
+    assertTrue("Should create calendar", managerLog.toString().contains("Created calendar TestCal"));
+    assertTrue("Should use calendar", managerLog.toString().contains("Switched to calendar TestCal"));
+    assertTrue("Should create event", modelLog.toString().contains("Created single timed event TestEvent"));
+    assertTrue("Should query events", modelLog.toString().contains("Queried for all events"));
+    assertTrue("Should edit calendar", managerLog.toString().contains("Edited calendar TestCal"));
+    assertTrue("Should copy event", managerLog.toString().contains("Copied event TestEvent"));
   }
 }

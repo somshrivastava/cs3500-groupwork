@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/calendar/sathya.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/CopyCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/CopyCommandParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/CreateCalCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/CreateCalCommandParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/EditCalCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/EditCalCommandParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/UseCalCommandParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/UseCalCommandParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/CommandParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/parser/CommandParserTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,32 +25,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.CalendarApp.executor": "Run",
-    "Downloaded.Files.Path.Enabled": "false",
-    "JUnit.CalendarControllerTest.executor": "Run",
-    "JUnit.CalendarManagerTest.executor": "Run",
-    "JUnit.CalendarManagerTest.testCopyEventsBetweenDates.executor": "Debug",
-    "JUnit.CalendarModelTest.executor": "Run",
-    "JUnit.CommandParserTest.executor": "Run",
-    "JUnit.SmartCalendarModelTest.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_directory_selection": "/Users/somshrivastava/Developer/cs3500-groupwork/Calendar/test",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.CalendarApp.executor&quot;: &quot;Run&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;JUnit.AbstractControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CalendarAppTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CalendarControllerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CalendarManagerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CalendarManagerTest.testCopyEventsBetweenDates.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.CalendarModelTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CommandParserTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SmartCalendarModelTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SmartCommandParserFactoryTest.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_directory_selection&quot;: &quot;/Users/somshrivastava/Developer/cs3500-groupwork/Calendar/test&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/calendar" />
@@ -79,6 +77,7 @@
       <updated>1748880362080</updated>
       <workItem from="1748880363126" duration="553000" />
       <workItem from="1748915727724" duration="24543000" />
+      <workItem from="1749677695665" duration="603000" />
     </task>
     <servers />
   </component>

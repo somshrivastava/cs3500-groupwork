@@ -29,6 +29,20 @@ public class SmartCommandParserFactory implements ICommandFactory {
 
     String[] commandParts = commandLine.trim().split("\\s+");
     String commandType = commandParts[0].toLowerCase();
+    
+    // Check if we have at least 2 parts before accessing commandParts[1]
+    if (commandParts.length < 2) {
+      // For single-word commands, try to delegate to event command factory if calendar is active
+      ICalendarModel model = manager.getCurrentCalendar();
+      if (model == null) {
+        throw new IllegalArgumentException("No calendar is currently in use. " +
+                "Use 'use calendar --name [calendar-name]' command first.");
+      }
+      ICommandFactory defaultFactory = new CommandParserFactory(model, view);
+      parser = defaultFactory.createParser(commandLine);
+      return parser;
+    }
+    
     String commandType2 = commandParts[1].toLowerCase();
 
     if (commandType.equals(USE)) {
