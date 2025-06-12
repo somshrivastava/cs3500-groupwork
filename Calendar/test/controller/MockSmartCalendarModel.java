@@ -3,12 +3,8 @@ package controller;
 import calendar.model.IEvent;
 import calendar.model.ISmartCalendarModel;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Mock implementation of ISmartCalendarModel for testing purposes.
@@ -42,61 +38,73 @@ public class MockSmartCalendarModel extends MockCalendarModel implements ISmartC
 
   @Override
   public void setCalendarName(String calendarName) {
-    log.append("Set calendar name to ").append(calendarName);
+    String s = "Set calendar name to " + calendarName;
+    log.append(s);
     this.calendarName = calendarName;
   }
 
   @Override
   public void setTimezone(ZoneId timezone) {
-    log.append("Set calendar timezone to ").append(timezone);
+    String s = "Set calendar timezone to " + timezone;
+    log.append(s);
     this.timezone = timezone;
   }
 
   @Override
   public IEvent findEventBySubjectAndTime(String subject, LocalDateTime startDateTime) {
-    log.append("Found event ").append(subject).append(" at ").append(startDateTime);
+    String s = "Found event " + subject + " at " + startDateTime;
+    log.append(s);
     // Return a mock event for testing
     return null; // In real implementation would return actual event
   }
 
   @Override
   public void convertAllEventsToNewTimezone(ZoneId oldTimezone, ZoneId newTimezone) {
-    log.append("Converted all events from ").append(oldTimezone).append(" to ").append(newTimezone);
+    String s = "Converted all events from " + oldTimezone + " to " + newTimezone;
+    log.append(s);
   }
 
   @Override
-  public IEvent createCopiedEvent(String eventName, LocalDateTime sourceDateTime, 
-                                 LocalDateTime targetDateTime) {
-    log.append("Created copied event ").append(eventName).append(" from ").append(sourceDateTime)
-        .append(" to ").append(targetDateTime);
+  public IEvent createCopiedEvent(String eventName, LocalDateTime sourceDateTime,
+                                  LocalDateTime targetDateTime) {
+    String s = "Created copied event " + eventName + " from " + sourceDateTime + " to "
+            + targetDateTime;
+    log.append(s);
     // Return a mock event for testing
     return null; // In real implementation would return actual event
   }
 
   @Override
-  public void copyAllEventsToCalendar(LocalDateTime sourceDate, ISmartCalendarModel targetCalendar, 
-                                     LocalDateTime targetDate) {
-    log.append("Copied all events from ").append(sourceDate).append(" to calendar ")
-        .append(targetCalendar.getCalendarName()).append(" on ").append(targetDate);
+  public void copyAllEventsToCalendar(LocalDateTime sourceDate, ISmartCalendarModel targetCalendar,
+                                      LocalDateTime targetDate) {
+    String s = "Copied all events from " + sourceDate + " to calendar "
+            + targetCalendar.getCalendarName() + " on " + targetDate;
+    log.append(s);
   }
 
   @Override
-  public void copyEventsInRangeToCalendar(LocalDateTime startDate, LocalDateTime endDate, 
-                                         ISmartCalendarModel targetCalendar, 
-                                         LocalDateTime targetStartDate) {
-    log.append("Copied events from ").append(startDate).append(" to ").append(endDate)
-        .append(" to calendar ").append(targetCalendar.getCalendarName())
-        .append(" starting at ").append(targetStartDate);
+  public void copyEventsInRangeToCalendar(LocalDateTime startDate, LocalDateTime endDate,
+                                          ISmartCalendarModel targetCalendar,
+                                          LocalDateTime targetStartDate) {
+    String s = "Copied events from " + startDate + " to " + endDate + " to calendar "
+            + targetCalendar.getCalendarName() + " starting at " + targetStartDate;
+    log.append(s);
   }
 
   @Override
   public void addEvent(IEvent event) {
-    log.append("Added pre-built event ").append(event.getSubject());
+    String s = "Added pre-built event " + event.getSubject();
+    log.append(s);
   }
 
   @Override
   public Integer generateUniqueSeriesId() {
     log.append("Generated unique series ID");
     return 1; // Mock series ID
+  }
+
+  // for testing
+  public String getLog() {
+    return log.toString();
   }
 } 

@@ -37,6 +37,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testExitCommandCaseSensitive() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("EXIT\n");
     controller = createController();
     controller.execute();
@@ -52,6 +53,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testExitWithTrailingText() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("exit now\n");
     controller = createController();
     controller.execute();
@@ -65,11 +67,28 @@ public class InteractiveControllerTest extends AbstractControllerTest {
             "Message displayed: \n> \n", logView.toString());
   }
 
+  @Test
+  public void testNoCurrentCalendar() {
+    convertStringInput("create event \"Tournament\" on 2026-04-15 repeats SU for 2 times\n");
+    controller = createController();
+    controller.execute();
+
+    assertEquals("", logModel.toString());
+    assertEquals("Message displayed: Welcome to the Calendar Application - Interactive" +
+            " Mode\n" +
+            "Message displayed: Type 'exit' to quit\n" +
+            "Message displayed: \n> \n" +
+            "Error: No calendar is currently in use. Use 'use calendar --name [calendar-name]' " +
+            "command first.\n" +
+            "Message displayed: \n> \n", logView.toString());
+  }
+
   // ----------------------------------------------------------------------------------------------
   // Tests for input edge cases
 
   @Test
   public void testEmptyInputLines() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("\n\n\nexit\n");
     controller = createController();
     controller.execute();
@@ -90,6 +109,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testWhitespaceOnlyLines() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("   \n\t\n  \t  \nexit\n");
     controller = createController();
     controller.execute();
@@ -110,6 +130,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testMultipleCommandsWithEmptyLines() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
             "\n\n" +
             "show status on 2024-03-20T10:30\n" +
@@ -140,6 +161,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testVeryLongInputLine() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     StringBuilder longSubject = new StringBuilder("Very Long Event Name ");
     for (int i = 0; i < 100; i++) {
       longSubject.append("Word").append(i).append(" ");
@@ -163,6 +185,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testInputWithoutExit() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n");
     controller = createController();
     controller.execute();
@@ -179,6 +202,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testRapidSuccessionOfCommands() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("create event Meeting1 from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
             "create event Meeting2 from 2024-03-20T11:00 to 2024-03-20T12:00\n" +
             "create event Meeting3 from 2024-03-20T12:00 to 2024-03-20T13:00\n" +
@@ -201,6 +225,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testMultipleConsecutiveInvalidCommands() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("invalid1\n" +
             "invalid2\n" +
             "delete event Meeting\n" +
@@ -227,6 +252,7 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testMixedValidInvalidWithRecovery() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     convertStringInput("create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
             "invalid command\n" +
             "show status on 2024-03-20T10:30\n" +
@@ -399,20 +425,21 @@ public class InteractiveControllerTest extends AbstractControllerTest {
 
   @Test
   public void testInteractionsView() {
-    Interaction[] interactions = new Interaction[] {
-      new PrintInteraction("Message displayed: Welcome to the Calendar " +
-              "Application - Interactive Mode"),
-      new PrintInteraction("Message displayed: Type 'exit' to quit"),
-      new PrintInteraction("Message displayed: "),
-      new PrintInteraction("> "),
-      new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 " +
-              "to 2024-03-20T11:00\n"),
-      new InputInteraction("not a valid command\n"),
-      new PrintInteraction("Message displayed: \n> \nError: Unknown command: " +
-              "'not'. Valid commands are: create, edit, print, show"),
-      new InputInteraction("q"),
-      new PrintInteraction("Message displayed: \n> "),
-      new PrintInteraction("Message displayed: Goodbye"),
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
+    Interaction[] interactions = new Interaction[]{
+            new PrintInteraction("Message displayed: Welcome to the Calendar " +
+                    "Application - Interactive Mode"),
+            new PrintInteraction("Message displayed: Type 'exit' to quit"),
+            new PrintInteraction("Message displayed: "),
+            new PrintInteraction("> "),
+            new InputInteraction("create event \"Team Meeting\" from 2024-03-20T10:00 " +
+                    "to 2024-03-20T11:00\n"),
+            new InputInteraction("not a valid command\n"),
+            new PrintInteraction("Message displayed: \n> \nError: Unknown command: " +
+                    "'not'. Valid commands are: create, edit, print, show"),
+            new InputInteraction("q"),
+            new PrintInteraction("Message displayed: \n> "),
+            new PrintInteraction("Message displayed: Goodbye"),
     };
 
     StringBuilder fakeUserInput = new StringBuilder();
@@ -427,8 +454,4 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     controller.execute();
     assertEquals(expectedOutput.toString(), logView.toString());
   }
-
-  // ----------------------------------------------------------------------------------------------
-  // Integration tests
-
 }

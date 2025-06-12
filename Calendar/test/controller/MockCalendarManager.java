@@ -27,12 +27,14 @@ public class MockCalendarManager implements ICalendarManager {
 
   @Override
   public void createCalendar(String calendarName, ZoneId timezone) {
-    log.append("Created calendar ").append(calendarName).append(" with timezone ").append(timezone);
+    String s = "Created calendar " + calendarName + " with timezone " + timezone;
+    log.append(s);
   }
 
   @Override
   public void useCalendar(String calendarName) {
-    log.append("Switched to calendar ").append(calendarName);
+    String s = "Switched to calendar " + calendarName;
+    log.append(s);
     // In a real implementation, this would set the current calendar
     // For testing, we'll create a mock calendar if one isn't already set
     if (currentCalendar == null) {
@@ -42,30 +44,32 @@ public class MockCalendarManager implements ICalendarManager {
 
   @Override
   public void editCalendar(String calendarName, String property, String newValue) {
-    log.append("Edited calendar ").append(calendarName).append(" property ").append(property)
-        .append(" to ").append(newValue);
+    String s = "Edited calendar " + calendarName + " property " + property + " to " + newValue;
+    log.append(s);
   }
 
   @Override
-  public void copyEvent(String eventName, LocalDateTime sourceDateTime, 
-                       String targetCalendarName, LocalDateTime targetDateTime) {
-    log.append("Copied event ").append(eventName).append(" from ").append(sourceDateTime)
-        .append(" to calendar ").append(targetCalendarName).append(" at ").append(targetDateTime);
+  public void copyEvent(String eventName, LocalDateTime sourceDateTime,
+                        String targetCalendarName, LocalDateTime targetDateTime) {
+    String s = "Copied event " + eventName + " from " + sourceDateTime + " to calendar "
+            + targetCalendarName + " at " + targetDateTime;
+    log.append(s);
   }
 
   @Override
-  public void copyEventsOnDate(LocalDateTime sourceDate, String targetCalendarName, 
-                              LocalDateTime targetDate) {
-    log.append("Copied events on ").append(sourceDate).append(" to calendar ")
-        .append(targetCalendarName).append(" starting at ").append(targetDate);
+  public void copyEventsOnDate(LocalDateTime sourceDate, String targetCalendarName,
+                               LocalDateTime targetDate) {
+    String s = "Copied events on " + sourceDate + " to calendar " + targetCalendarName
+            + " starting at " + targetDate;
+    log.append(s);
   }
 
   @Override
-  public void copyEventsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, 
-                                    String targetCalendarName, LocalDateTime targetStartDate) {
-    log.append("Copied events between ").append(startDate).append(" and ").append(endDate)
-        .append(" to calendar ").append(targetCalendarName).append(" starting at ")
-        .append(targetStartDate);
+  public void copyEventsBetweenDates(LocalDateTime startDate, LocalDateTime endDate,
+                                     String targetCalendarName, LocalDateTime targetStartDate) {
+    String s = "Copied events between " + startDate + " and " + endDate
+            + " to calendar " + targetCalendarName + " starting at " + targetStartDate;
+    log.append(s);
   }
 
   // Additional methods for testing setup
@@ -75,6 +79,10 @@ public class MockCalendarManager implements ICalendarManager {
 
   public String getLog() {
     return log.toString();
+  }
+
+  public String getModelLog() {
+    return ((MockSmartCalendarModel) currentCalendar).getLog();
   }
 
   public void clearLog() {
