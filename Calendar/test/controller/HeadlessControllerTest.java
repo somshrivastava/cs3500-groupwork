@@ -43,7 +43,6 @@ public class HeadlessControllerTest extends AbstractControllerTest {
     }
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for constructor validation
 
   @Test(expected = IllegalArgumentException.class)
@@ -57,7 +56,6 @@ public class HeadlessControllerTest extends AbstractControllerTest {
     new HeadlessController(manager, view, nonExistentFile);
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for file content edge cases
 
   @Test
@@ -160,7 +158,6 @@ public class HeadlessControllerTest extends AbstractControllerTest {
                 logView.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for invalid commands
 
   @Test

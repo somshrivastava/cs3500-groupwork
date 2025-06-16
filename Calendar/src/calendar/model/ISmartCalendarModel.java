@@ -72,7 +72,8 @@ public interface ISmartCalendarModel extends ICalendarModel {
                           LocalDateTime targetDateTime);
 
   /**
-   * Copies all events from a source date to a target calendar on a target date with timezone conversion.
+   * Copies all events from a source date to a target calendar on a target date with timezone
+   * conversion.
    * Events are converted from this calendar's timezone to the target calendar's timezone.
    *
    * @param sourceDate the date to copy events from
@@ -83,9 +84,11 @@ public interface ISmartCalendarModel extends ICalendarModel {
                               LocalDateTime targetDate);
 
   /**
-   * Copies all events in a date range from this calendar to a target calendar with timezone conversion.
+   * Copies all events in a date range from this calendar to a target calendar with timezone
+   * conversion.
    * Events are converted from this calendar's timezone to the target calendar's timezone.
-   * If an event series partly overlaps with the range, only overlapping events are copied but retain series status.
+   * If an event series partly overlaps with the range, only overlapping events are copied
+   * but retain series status.
    *
    * @param startDate the start date of the range (inclusive)
    * @param endDate the end date of the range (inclusive)
@@ -93,7 +96,8 @@ public interface ISmartCalendarModel extends ICalendarModel {
    * @param targetStartDate the start date to place the copied events on
    */
   void copyEventsInRangeToCalendar(LocalDateTime startDate, LocalDateTime endDate, 
-                                  ISmartCalendarModel targetCalendar, LocalDateTime targetStartDate);
+                                  ISmartCalendarModel targetCalendar, LocalDateTime
+                                           targetStartDate);
 
   /**
    * Adds a pre-built event to this calendar.

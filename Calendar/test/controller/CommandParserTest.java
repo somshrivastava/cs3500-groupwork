@@ -1,10 +1,7 @@
-package controller.parser;
+package controller;
 
 import calendar.controller.parser.ICommandParser;
 import calendar.controller.parser.SmartCommandParserFactory;
-import controller.MockCalendarManager;
-import controller.MockCalendarView;
-import controller.MockSmartCalendarModel;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +20,6 @@ public class CommandParserTest {
   private StringBuilder managerLog;
   private SmartCommandParserFactory factory;
   private MockCalendarManager mockManager;
-  private MockCalendarView mockView;
   private ICommandParser parser;
   private String input;
 
@@ -35,7 +31,7 @@ public class CommandParserTest {
     
     MockSmartCalendarModel mockModel = new MockSmartCalendarModel(modelLog);
     mockManager = new MockCalendarManager(managerLog);
-    mockView = new MockCalendarView(viewOutput);
+    MockCalendarView mockView = new MockCalendarView(viewOutput);
     
     // Set up an active calendar for event commands to work
     mockManager.setCurrentCalendar(mockModel);
@@ -852,7 +848,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
     
-    String expected = "Copied event Meeting from 2024-03-20T10:00 to calendar Personal at 2024-03-25T10:00";
+    String expected = "Copied event Meeting from 2024-03-20T10:00 to calendar Personal at" +
+            " 2024-03-25T10:00";
     assertTrue("Should handle copy event commands", 
         managerLog.toString().contains(expected));
   }
@@ -863,7 +860,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
     
-    String expected = "Copied events on 2024-03-20T00:00 to calendar Personal starting at 2024-04-15T00:00";
+    String expected = "Copied events on 2024-03-20T00:00 to calendar Personal starting at " +
+            "2024-04-15T00:00";
     assertTrue("Should handle copy events on date commands", 
         managerLog.toString().contains(expected));
   }
@@ -874,7 +872,8 @@ public class CommandParserTest {
     parser = factory.createParser(input);
     parser.parse(input);
     
-    String expected = "Copied events between 2024-03-18T00:00 and 2024-03-22T00:00 to calendar Personal starting at 2024-05-01T00:00";
+    String expected = "Copied events between 2024-03-18T00:00 and 2024-03-22T00:00 to " +
+            "calendar Personal starting at 2024-05-01T00:00";
     assertTrue("Should handle copy events between dates commands", 
         managerLog.toString().contains(expected));
   }
@@ -922,11 +921,17 @@ public class CommandParserTest {
     parser.parse(input);
     
     // Verify all operations were logged
-    assertTrue("Should create calendar", managerLog.toString().contains("Created calendar TestCal"));
-    assertTrue("Should use calendar", managerLog.toString().contains("Switched to calendar TestCal"));
-    assertTrue("Should create event", modelLog.toString().contains("Created single timed event TestEvent"));
-    assertTrue("Should query events", modelLog.toString().contains("Queried for all events"));
-    assertTrue("Should edit calendar", managerLog.toString().contains("Edited calendar TestCal"));
-    assertTrue("Should copy event", managerLog.toString().contains("Copied event TestEvent"));
+    assertTrue("Should create calendar", managerLog.toString()
+            .contains("Created calendar TestCal"));
+    assertTrue("Should use calendar", managerLog.toString()
+            .contains("Switched to calendar TestCal"));
+    assertTrue("Should create event", modelLog.toString()
+            .contains("Created single timed event TestEvent"));
+    assertTrue("Should query events", modelLog.toString()
+            .contains("Queried for all events"));
+    assertTrue("Should edit calendar", managerLog.toString()
+            .contains("Edited calendar TestCal"));
+    assertTrue("Should copy event", managerLog.toString()
+            .contains("Copied event TestEvent"));
   }
 }

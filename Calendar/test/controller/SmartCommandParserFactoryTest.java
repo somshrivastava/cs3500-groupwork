@@ -1,21 +1,23 @@
-package controller.parser;
+package controller;
 
-import calendar.controller.parser.*;
-import controller.MockCalendarManager;
-import controller.MockCalendarView;
-import controller.MockSmartCalendarModel;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import calendar.controller.parser.ICommandParser;
+import calendar.controller.parser.SmartCommandParserFactory;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 
 /**
  * Test suite for SmartCommandParserFactory that tests command routing logic.
  */
 public class SmartCommandParserFactoryTest {
   private MockCalendarManager mockManager;
-  private MockCalendarView mockView;
   private SmartCommandParserFactory factory;
   private StringBuilder managerLog;
   private StringBuilder viewOutput;
@@ -25,7 +27,7 @@ public class SmartCommandParserFactoryTest {
     managerLog = new StringBuilder();
     viewOutput = new StringBuilder();
     mockManager = new MockCalendarManager(managerLog);
-    mockView = new MockCalendarView(viewOutput);
+    MockCalendarView mockView = new MockCalendarView(viewOutput);
     factory = new SmartCommandParserFactory(mockManager, mockView);
   }
 
@@ -67,11 +69,13 @@ public class SmartCommandParserFactoryTest {
 
   @Test
   public void testCopyEventCommand() {
-    String command = "copy event Meeting on 2024-03-20T10:00 --target Personal to 2024-03-25T10:00";
+    String command = "copy event Meeting on 2024-03-20T10:00 --target Personal to " +
+            "2024-03-25T10:00";
     ICommandParser parser = factory.createParser(command);
     parser.parse(command);
     
-    assertEquals("Copied event Meeting from 2024-03-20T10:00 to calendar Personal at 2024-03-25T10:00", 
+    assertEquals("Copied event Meeting from 2024-03-20T10:00 to calendar Personal " +
+                    "at 2024-03-25T10:00",
         mockManager.getLog());
   }
 
@@ -81,17 +85,20 @@ public class SmartCommandParserFactoryTest {
     ICommandParser parser = factory.createParser(command);
     parser.parse(command);
     
-    assertEquals("Copied events on 2024-03-20T00:00 to calendar Personal starting at 2024-04-15T00:00", 
+    assertEquals("Copied events on 2024-03-20T00:00 to calendar Personal starting" +
+                    " at 2024-04-15T00:00",
         mockManager.getLog());
   }
 
   @Test
   public void testCopyEventsBetweenDatesCommand() {
-    String command = "copy events between 2024-03-18 and 2024-03-22 --target Personal to 2024-05-01";
+    String command = "copy events between 2024-03-18 and 2024-03-22 --target Personal " +
+            "to 2024-05-01";
     ICommandParser parser = factory.createParser(command);
     parser.parse(command);
     
-    assertEquals("Copied events between 2024-03-18T00:00 and 2024-03-22T00:00 to calendar Personal starting at 2024-05-01T00:00", 
+    assertEquals("Copied events between 2024-03-18T00:00 and 2024-03-22T00:00 " +
+                    "to calendar Personal starting at 2024-05-01T00:00",
         mockManager.getLog());
   }
 
@@ -137,7 +144,8 @@ public class SmartCommandParserFactoryTest {
   public void testEditEventWithoutActiveCalendar() {
     mockManager.setCurrentCalendar(null);
     
-    String command = "edit event subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 with NewMeeting";
+    String command = "edit event subject Meeting from 2024-03-20T10:00 to 2024-03-20T11:00 " +
+            "with NewMeeting";
     factory.createParser(command);
   }
 
@@ -163,11 +171,13 @@ public class SmartCommandParserFactoryTest {
 
   @Test
   public void testCopyCaseInsensitive() {
-    String command = "COPY event Meeting on 2024-03-20T10:00 --target Personal to 2024-03-25T10:00";
+    String command = "COPY event Meeting on 2024-03-20T10:00 --target Personal to" +
+            " 2024-03-25T10:00";
     ICommandParser parser = factory.createParser(command);
     parser.parse(command);
     
-    assertEquals("Copied event Meeting from 2024-03-20T10:00 to calendar Personal at 2024-03-25T10:00", 
+    assertEquals("Copied event Meeting from 2024-03-20T10:00 to calendar Personal at " +
+                    "2024-03-25T10:00",
         mockManager.getLog());
   }
 
@@ -267,7 +277,8 @@ public class SmartCommandParserFactoryTest {
     mockManager.setCurrentCalendar(null);
     
     try {
-      factory.createParser("create event Test from 2024-03-20T10:00 to 2024-03-20T11:00");
+      factory.createParser("create event Test from 2024-03-20T10:00 to " +
+              "2024-03-20T11:00");
       fail("Should throw exception for event command without active calendar");
     } catch (IllegalArgumentException e) {
       assertTrue("Error message should mention calendar requirement", 
@@ -300,11 +311,13 @@ public class SmartCommandParserFactoryTest {
 
   @Test
   public void testCopyEventWithQuotedNames() {
-    String command = "copy event \"Team Meeting\" on 2024-03-20T10:00 --target \"Personal Calendar\" to 2024-03-25T10:00";
+    String command = "copy event \"Team Meeting\" on 2024-03-20T10:00 --target \"Personal " +
+            "Calendar\" to 2024-03-25T10:00";
     ICommandParser parser = factory.createParser(command);
     parser.parse(command);
     
-    assertEquals("Copied event Team Meeting from 2024-03-20T10:00 to calendar Personal Calendar at 2024-03-25T10:00", 
+    assertEquals("Copied event Team Meeting from 2024-03-20T10:00 to calendar Personal" +
+                    " Calendar at 2024-03-25T10:00",
         mockManager.getLog());
   }
 

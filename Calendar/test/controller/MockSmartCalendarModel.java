@@ -3,12 +3,8 @@ package controller;
 import calendar.model.IEvent;
 import calendar.model.ISmartCalendarModel;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Mock implementation of ISmartCalendarModel for testing purposes.
@@ -18,12 +14,22 @@ public class MockSmartCalendarModel extends MockCalendarModel implements ISmartC
   private String calendarName;
   private ZoneId timezone;
 
+  /**
+   * Creates a mock smart calendar model.
+   * @param log the string builder log
+   */
   public MockSmartCalendarModel(StringBuilder log) {
     super(log);
     this.calendarName = "DefaultTestCalendar";
     this.timezone = ZoneId.of("America/New_York");
   }
 
+  /**
+   * Creates a mock smart calendar model.
+   * @param log the string builder log
+   * @param name the name of the calendar
+   * @param timezone the timezone of the calendar
+   */
   public MockSmartCalendarModel(StringBuilder log, String name, ZoneId timezone) {
     super(log);
     this.calendarName = name;

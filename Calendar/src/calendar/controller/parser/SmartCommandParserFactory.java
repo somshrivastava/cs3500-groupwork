@@ -1,6 +1,5 @@
 package calendar.controller.parser;
 
-import calendar.model.CalendarModel;
 import calendar.model.ICalendarManager;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;

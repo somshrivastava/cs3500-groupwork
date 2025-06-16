@@ -307,16 +307,23 @@ public class CalendarModelTest {
   @Test
   public void testEditEventStartTime() {
     model.createSingleTimedEvent("Meeting", baseDateTime, endDateTime);
-    LocalDateTime newStart = baseDateTime.plusHours(1);
+    LocalDateTime newStart = baseDateTime.plusMinutes(30); // 10:30 AM, still before 11:00 AM end
     model.editEvent("Meeting", baseDateTime, endDateTime, "start",
             newStart.toString());
 
-    List<IEvent> events = model.printEvents(baseDateTime.plusHours(1));
+    List<IEvent> events = model.printEvents(baseDateTime.plusMinutes(30));
     assertEquals(1, events.size());
     assertEquals(newStart, events.get(0).getStartDateTime());
-    // Duration should be maintained
-    assertEquals(1, java.time.Duration.between(events.get(0).getStartDateTime(),
-            events.get(0).getEndDateTime()).toHours());
+    // End time should remain unchanged
+    assertEquals(endDateTime, events.get(0).getEndDateTime());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testEditEventStartTimeAfterEndTime() {
+    model.createSingleTimedEvent("Meeting", baseDateTime, endDateTime);
+    LocalDateTime newStart = endDateTime.plusHours(1); // Start after end
+    model.editEvent("Meeting", baseDateTime, endDateTime, "start",
+            newStart.toString());
   }
 
   @Test
@@ -688,7 +695,7 @@ public class CalendarModelTest {
     }
   }
 
-  // ----------------------------------------------------------------------------------------------
+
   // Additional Edge Case and Boundary Tests
 
   @Test

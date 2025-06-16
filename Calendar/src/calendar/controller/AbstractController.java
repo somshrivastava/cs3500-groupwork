@@ -7,7 +7,10 @@ import calendar.model.ICalendarManager;
 import calendar.view.ICalendarView;
 
 /**
- * This class represents implementations of a controller of a calendar application.
+ * Represents the abstract controller for the calendar application.
+ * It contains the common setup and methods for the controller.
+ * It also contains the abstract methods for creating the controller and converting the input
+ * string.
  */
 public abstract class AbstractController implements ICalendarController {
   protected final ICalendarView calendarView;

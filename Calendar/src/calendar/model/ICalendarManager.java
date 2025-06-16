@@ -2,7 +2,6 @@ package calendar.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map;
 
 /**
  * Interface for managing a collection of smart calendars.

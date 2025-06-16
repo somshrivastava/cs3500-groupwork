@@ -2,7 +2,6 @@ package model;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -14,8 +13,14 @@ import java.util.Set;
 import java.util.HashSet;
 
 import calendar.model.SmartCalendarModel;
-import calendar.model.ISmartCalendarModel;
 import calendar.model.IEvent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Represents tests and examples for SmartCalendarModel.
@@ -331,7 +336,7 @@ public class SmartCalendarModelTest {
         LocalDateTime.of(2024, 3, 20, 10, 0));
   }
   
-  // ==================== Copy Events To Calendar Tests ====================
+
   
   @Test
   public void testCopyAllEventsToCalendarBasic() {
@@ -354,7 +359,9 @@ public class SmartCalendarModelTest {
     assertEquals(2, copiedEvents.size());
     
     // Verify timezone conversion (EST to PST = 3 hours earlier)
-    boolean foundMorning = false, foundLunch = false;
+    boolean foundMorning = false;
+
+    boolean foundLunch = false;
     for (IEvent event : copiedEvents) {
       if (event.getSubject().equals("Morning Meeting")) {
         assertEquals(LocalDateTime.of(2024, 3, 20, 6, 0), event.getStartDateTime());
@@ -434,7 +441,7 @@ public class SmartCalendarModelTest {
     assertEquals(LocalDateTime.of(2024, 3, 20, 15, 0), event.getEndDateTime());
   }
   
-  // ==================== Copy Events In Range Tests ====================
+
   
   @Test
   public void testCopyEventsInRangeToCalendarBasic() {
@@ -470,7 +477,9 @@ public class SmartCalendarModelTest {
     assertEquals(3, copiedEvents.size());
     
     // Verify events maintain relative dates and are timezone converted
-    boolean foundDay1 = false, foundDay2 = false, foundDay3 = false;
+    boolean foundDay1 = false;
+    boolean foundDay2 = false;
+    boolean foundDay3 = false;
     for (IEvent event : copiedEvents) {
       // EST to PST conversion: 2 PM EST = 11 AM PST
       assertEquals(11, event.getStartDateTime().getHour());
@@ -551,7 +560,7 @@ public class SmartCalendarModelTest {
     assertEquals(0, copiedEvents.size());
   }
   
-  // ==================== Add Event Tests ====================
+
   
   @Test
   public void testAddEventBasic() {
@@ -599,7 +608,7 @@ public class SmartCalendarModelTest {
     assertEquals(eventWithSeries.getSeriesId(), copiedEvents.get(0).getSeriesId());
   }
   
-  // ==================== Series ID Generation Tests ====================
+
   
   @Test
   public void testGenerateUniqueSeriesIdBasic() {
@@ -639,7 +648,7 @@ public class SmartCalendarModelTest {
     assertEquals("IDs should increment by 1", 1, thirdId - secondId);
   }
   
-  // ==================== Integration Tests ====================
+
   
   @Test
   public void testComplexScenarioWithMultipleOperations() {
@@ -720,7 +729,7 @@ public class SmartCalendarModelTest {
     }
   }
   
-  // ==================== Edge Cases and Error Handling ====================
+
   
   @Test
   public void testTimezoneConversionEdgeCases() {

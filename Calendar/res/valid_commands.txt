@@ -1,13 +1,18 @@
+create calendar --name "Work" --timezone America/New_York
+create calendar --name "Personal" --timezone America/Los_Angeles
+use calendar --name "Work"
 create event "Team Meeting" from 2024-03-20T10:00 to 2024-03-20T11:00
-create event "Club" on 2025-05-19
-create event "OOD Lecture" from 2025-05-05T11:40 to 2025-05-05T13:20 repeats MTWR for 10 times
-create event "Brunch with Friends" from 2025-02-20T10:30 to 2025-02-20T12:45 repeats SU until 2025-06-01
-create event "Tournament" on 2026-04-15 repeats SU for 2 times
-create event "Class" on 2025-09-01 repeats MWRF until 2026-05-10
-edit event subject "Club" from 2025-05-19T08:00 to 2025-05-19T17:00 with "Class"
-edit events subject "Brunch with Friends" from 2025-02-23T10:30 with "Club"
-edit series description "Class" from 2025-09-01T08:00 with "dance club with friends"
-print events on 2026-05-06
-print events from 2025-02-20T10:30 to 2025-02-20T12:30
-show status on 2024-03-20T10:00
+create event "Daily Standup" from 2024-03-21T09:00 to 2024-03-21T09:30 repeats MTWRF for 5 times
+create event "Company Holiday" on 2024-03-25
+copy event "Team Meeting" on 2024-03-20T10:00 --target "Personal" to 2024-03-27T16:00
+copy events on 2024-03-25 --target "Personal" to 2024-03-30
+copy events between 2024-03-21 and 2024-03-22 --target "Personal" to 2024-04-01
+use calendar --name "Personal"
+create event "Doctor Appointment" from 2024-03-22T14:00 to 2024-03-22T15:00
+create event "Weekend Trip" on 2024-03-23 repeats S for 2 times
+print events on 2024-03-22
+edit calendar --name "Work" --property timezone Europe/London
+use calendar --name "Work"
+print events on 2024-03-20
+show status on 2024-03-20T15:00
 exit

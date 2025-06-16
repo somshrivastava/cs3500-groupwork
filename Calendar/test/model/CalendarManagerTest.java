@@ -2,7 +2,6 @@ package model;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -14,6 +13,13 @@ import java.util.Arrays;
 import calendar.model.CalendarManager;
 import calendar.model.ISmartCalendarModel;
 import calendar.model.IEvent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Comprehensive test suite for CalendarManager.
@@ -28,7 +34,7 @@ public class CalendarManagerTest {
     manager = new CalendarManager();
   }
   
-  // ==================== Constructor Tests ====================
+
   
   @Test
   public void testConstructor() {
@@ -37,7 +43,7 @@ public class CalendarManagerTest {
         newManager.getCurrentCalendar());
   }
   
-  // ==================== Calendar Creation Tests ====================
+
   
   @Test
   public void testCreateCalendarBasic() {
@@ -99,7 +105,7 @@ public class CalendarManagerTest {
     assertEquals("Work-Calendar", manager.getCurrentCalendar().getCalendarName());
   }
   
-  // ==================== Calendar Usage Tests ====================
+
   
   @Test
   public void testUseCalendarBasic() {
@@ -133,7 +139,7 @@ public class CalendarManagerTest {
     assertEquals("Calendar1", manager.getCurrentCalendar().getCalendarName());
   }
   
-  // ==================== Calendar Editing Tests ====================
+
   
   @Test
   public void testEditCalendarName() {
@@ -219,7 +225,7 @@ public class CalendarManagerTest {
     }
   }
   
-  // ==================== Event Copying Tests ====================
+
   
   @Test
   public void testCopyEventBasic() {
@@ -313,7 +319,9 @@ public class CalendarManagerTest {
     assertEquals(3, copiedEvents.size());
     
     // Verify timezone conversion (EST to PST = 3 hours earlier)
-    boolean foundMorning = false, foundLunch = false, foundAfternoon = false;
+    boolean foundMorning = false;
+    boolean foundLunch = false;
+    boolean foundAfternoon = false;
     
     for (IEvent event : copiedEvents) {
       if (event.getSubject().equals("Morning Meeting")) {
@@ -404,7 +412,7 @@ public class CalendarManagerTest {
         LocalDateTime.of(2024, 4, 20, 0, 0));
   }
   
-  // ==================== Integration Tests ====================
+
   
   @Test
   public void testComplexMultiCalendarScenario() {
@@ -439,7 +447,8 @@ public class CalendarManagerTest {
     assertEquals(2, workEvents.size());
     
     // Verify timezone conversion happened
-    boolean foundOriginal = false, foundCopied = false;
+    boolean foundOriginal = false;
+    boolean foundCopied = false;
     for (IEvent event : workEvents) {
       if (event.getSubject().equals("Team Standup")) {
         assertEquals(LocalDateTime.of(2024, 3, 15, 9, 0), event.getStartDateTime());
@@ -511,7 +520,7 @@ public class CalendarManagerTest {
     }
   }
   
-  // ==================== Edge Cases and Error Handling ====================
+
   
   @Test
   public void testEmptyCalendarOperations() {
@@ -570,9 +579,7 @@ public class CalendarManagerTest {
   @Test
   public void testVeryLongCalendarNames() {
     StringBuilder longName = new StringBuilder();
-    for (int i = 0; i < 100; i++) {
-      longName.append("A");
-    }
+    longName.append("A".repeat(100));
     
     manager.createCalendar(longName.toString(), ZoneId.of("America/New_York"));
     manager.useCalendar(longName.toString());

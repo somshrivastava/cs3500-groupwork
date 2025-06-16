@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import calendar.controller.ICalendarController;
-import calendar.model.CalendarManager;
 import calendar.model.ICalendarManager;
 import calendar.model.ICalendarModel;
 import calendar.view.ICalendarView;
@@ -12,7 +11,10 @@ import calendar.view.ICalendarView;
 import static org.junit.Assert.assertEquals;
 
 /**
- * This class encompasses the implementations for testing a CalenderController.
+ * This class represents the abstract test class for the CalendarController.
+ * It contains the common setup and methods for testing the controller.
+ * It also contains the abstract methods for creating the controller and converting the
+ * input string.
  */
 public abstract class AbstractControllerTest {
 
@@ -28,8 +30,12 @@ public abstract class AbstractControllerTest {
     logModel = new StringBuilder();
     logView = new StringBuilder();
     model = new MockCalendarModel(logModel);
-    manager = new CalendarManager();
+    manager = new MockCalendarManager(logModel);
     view = new MockCalendarView(logView);
+    
+    // Set up a mock calendar in the manager so event operations work
+    MockSmartCalendarModel mockCalendar = new MockSmartCalendarModel(logModel);
+    ((MockCalendarManager) manager).setCurrentCalendar(mockCalendar);
   }
 
   protected abstract ICalendarController createController();
@@ -48,7 +54,6 @@ public abstract class AbstractControllerTest {
     createController();
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for invalid commands
 
   @Test
@@ -69,7 +74,6 @@ public abstract class AbstractControllerTest {
   }
 
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for valid single commands
 
   @Test

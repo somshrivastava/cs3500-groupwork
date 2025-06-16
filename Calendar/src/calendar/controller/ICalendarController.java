@@ -2,6 +2,7 @@ package calendar.controller;
 
 /**
  * Represents the controller interface for the calendar application.
+ * It contains the method for executing the calendar application.
  */
 public interface ICalendarController {
 

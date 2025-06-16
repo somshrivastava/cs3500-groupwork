@@ -442,7 +442,9 @@ public class CalendarModel implements ICalendarModel {
       case "description":
         return newValue;
       case "start":
-        return parseDateTime(newValue);
+        LocalDateTime newStart = parseDateTime(newValue);
+        validator.validateStartBeforeEnd(newStart, event.getEndDateTime());
+        return newStart;
       case "end":
         LocalDateTime newEnd = parseDateTime(newValue);
         validator.validateStartBeforeEnd(event.getStartDateTime(), newEnd);
@@ -523,7 +525,7 @@ public class CalendarModel implements ICalendarModel {
   }
 
   /**
-   * Applies a start time change to an event, maintaining duration.
+   * Applies a start time change to an event, only changing the start time.
    * @param builder the builder to modify
    * @param original the original event
    * @param newStart the new start time
@@ -536,14 +538,8 @@ public class CalendarModel implements ICalendarModel {
               .atTime(newStart.toLocalTime());
     }
     builder.startDateTime(newStart);
-
-    // Maintain the duration
-    long duration = java.time.Duration.between(
-            original.getStartDateTime(),
-            original.getEndDateTime()
-    ).toMinutes();
-    LocalDateTime newEnd = newStart.plusMinutes(duration);
-    builder.endDateTime(newEnd);
+    // Keep the original end time unchanged
+    builder.endDateTime(original.getEndDateTime());
   }
 
   /**

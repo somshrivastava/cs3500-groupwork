@@ -24,7 +24,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     input = new StringReader(s);
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for constructor validation
 
   @Test(expected = IllegalArgumentException.class)
@@ -32,7 +31,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     new InteractiveController(manager, view, null);
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for exit command variations
 
   @Test
@@ -65,7 +63,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
             "Message displayed: \n> \n", logView.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for input edge cases
 
   @Test
@@ -257,7 +254,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
             "Message displayed: Goodbye\n", logView.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for invalid commands
 
   // invalid date/time
@@ -394,7 +390,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
             "Message displayed: Goodbye\n", logView.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Tests for sequence of commands interactions
 
   @Test
@@ -428,7 +423,6 @@ public class InteractiveControllerTest extends AbstractControllerTest {
     assertEquals(expectedOutput.toString(), logView.toString());
   }
 
-  // ----------------------------------------------------------------------------------------------
   // Integration tests
 
 }

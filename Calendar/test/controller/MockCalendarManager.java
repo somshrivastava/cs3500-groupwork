@@ -36,7 +36,7 @@ public class MockCalendarManager implements ICalendarManager {
     // In a real implementation, this would set the current calendar
     // For testing, we'll create a mock calendar if one isn't already set
     if (currentCalendar == null) {
-      currentCalendar = new MockSmartCalendarModel(new StringBuilder());
+      currentCalendar = new MockSmartCalendarModel(log);
     }
   }
 

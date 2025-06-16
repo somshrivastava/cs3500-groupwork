@@ -18,8 +18,8 @@ import calendar.view.ICalendarView;
  * - Interactive mode: User enters commands through the console
  * - Headless mode: Commands are read from a file
  * How to run each mode:
- * - Interactive: java CalendarApp2 --mode interactive
- * - Headless: java CalendarApp2 --mode headless {file name}
+ * - Interactive: java CalendarApp --mode interactive
+ * - Headless: java CalendarApp --mode headless {file name}
  */
 public class CalendarApp {
 
