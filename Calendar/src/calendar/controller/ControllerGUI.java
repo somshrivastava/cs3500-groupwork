@@ -1,13 +1,15 @@
 package calendar.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 
 import calendar.model.ICalendarManager;
+import calendar.model.ICalendarModel;
+import calendar.model.IEvent;
 import calendar.view.ICalendarViewGUI;
 
 public class ControllerGUI implements Features, ICalendarController {
@@ -16,8 +18,6 @@ public class ControllerGUI implements Features, ICalendarController {
 
   // current month user is viewing
   private YearMonth currMonth;
-  // current date user is selecting
-  private LocalDate date;
 
   public ControllerGUI(ICalendarManager m) {
     manager = m;
@@ -52,15 +52,36 @@ public class ControllerGUI implements Features, ICalendarController {
   }
 
   @Override
-  public void createEvent() {
-    // model.createEvent()
+  public void createEvent(String eventName, LocalDateTime date) {
+    ICalendarModel cal = manager.getCurrentCalendar();
+    cal.createSingleAllDayEvent(eventName, date);
+    //cal.createSingleTimedEvent();
   }
 
   @Override
-  public void viewEvents() {
+  public void viewEvents(LocalDate date) {
     // retrieve events from model and have view show it
-    //List<String> dayEvents = model.get;
-    String eventList = dayEvents.isEmpty() ? "No events" : String.join("\n", dayEvents);
-    view.showEvents(eventList);
+    ICalendarModel cal = manager.getCurrentCalendar();
+    List<IEvent> dayEvents = cal.printEvents(date.atStartOfDay());
+    StringBuilder eventList = new StringBuilder();
+    for (IEvent e : dayEvents) {
+      eventList.append(e.getSubject()).append("\n");
+    }
+    view.showEvents(eventList.toString());
+  }
+
+  @Override
+  public void showScheduleView(LocalDate startDate) {
+
+  }
+
+  @Override
+  public YearMonth getCurrentMonth() {
+    return this.currMonth;
+  }
+
+  @Override
+  public String getCurrentCalendar() {
+    return manager.getCurrentCalendar().toString();
   }
 }
