@@ -96,13 +96,14 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   @Test
   public void testExitInMiddleOfFile() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     String input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                   "exit\n" +
-                   "create event Another from 2024-03-21T10:00 to 2024-03-21T11:00";
+            "exit\n" +
+            "create event Another from 2024-03-21T10:00 to 2024-03-21T11:00";
     convertStringInput(input);
     controller = createController();
     controller.execute();
-    
+
     String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
             "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
@@ -111,13 +112,14 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   @Test
   public void testMultipleExitCommands() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     String input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                   "exit\n" +
-                   "exit";
+            "exit\n" +
+            "exit";
     convertStringInput(input);
     controller = createController();
     controller.execute();
-    
+
     String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
             "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
@@ -126,12 +128,13 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   @Test
   public void testExitWithWhitespace() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     String input = "create event Meeting from 2024-03-20T10:00 to 2024-03-20T11:00\n" +
-                   "  exit  ";
+            "  exit  ";
     convertStringInput(input);
     controller = createController();
     controller.execute();
-    
+
     String expectedLog = "Created single timed event Meeting starting at 2024-03-20T10:00 until " +
             "2024-03-20T11:00";
     assertEquals(expectedLog, logModel.toString());
@@ -140,22 +143,41 @@ public class HeadlessControllerTest extends AbstractControllerTest {
 
   @Test
   public void testFileWithOnlyInvalidCommands() {
+    ((MockCalendarManager) manager).setCurrentCalendar(new MockSmartCalendarModel(logModel));
     String input = "invalid command\n" +
-                   "another invalid\n" +
-                   "delete event Meeting\n" +
-                   "exit";
+            "another invalid\n" +
+            "delete event Meeting\n" +
+            "exit";
     convertStringInput(input);
     controller = createController();
     controller.execute();
-    
+
     assertEquals("", logModel.toString());
     assertEquals("Error: Unknown command: 'invalid'. Valid commands are: create, edit, " +
                     "print, show\n" +
-                "Error: Unknown command: 'another'. Valid commands are: create, edit, print, " +
+                    "Error: Unknown command: 'another'. Valid commands are: create, edit, print, " +
                     "show\n" +
-                "Error: Unknown command: 'delete'. Valid commands are: create, edit, " +
-                    "print, show\n", 
-                logView.toString());
+                    "Error: Unknown command: 'delete'. Valid commands are: create, edit, " +
+                    "print, show\n",
+            logView.toString());
+  }
+
+  @Test
+  public void testNoCurrentCalendar() {
+    // what about trying to edit a non-existing calendar
+    String input = "create event \"Club\" on 2025-05-19\n" +
+            "create event \"Tournament\" on 2026-04-15 repeats SU for 2 times\n" +
+            "exit";
+    convertStringInput(input);
+    controller = createController();
+    controller.execute();
+
+    assertEquals("", logModel.toString());
+    assertEquals("Error: No calendar is currently in use. Use 'use calendar --name " +
+                    "[calendar-name]' command first.\n" +
+                    "Error: No calendar is currently in use. Use 'use calendar --name " +
+                    "[calendar-name]' command first.\n",
+            logView.toString());
   }
 
   // Tests for invalid commands
