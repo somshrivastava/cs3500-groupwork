@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -76,8 +78,14 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
 
     this.add(topPanel, BorderLayout.NORTH);
 
+    // Add instruction label
+    JLabel instructionLabel = new JLabel("Left click: View events | Right click: Create event", SwingConstants.CENTER);
+    instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.ITALIC, 11f));
+    instructionLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
     // Main content area with calendar and schedule side by side
     JPanel mainPanel = new JPanel(new BorderLayout());
+    mainPanel.add(instructionLabel, BorderLayout.NORTH);
     mainPanel.add(calendarPanel, BorderLayout.CENTER);
     mainPanel.add(scheduleScrollPane, BorderLayout.EAST);
 
@@ -158,10 +166,19 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
       JButton dayButton = new JButton(String.valueOf(day));
       dayButton.setPreferredSize(new Dimension(80, 60));
       
-      // When a day is clicked, show events for that date
-      dayButton.addActionListener(e -> {
-        if (features != null) {
-          features.viewEvents(date);
+      // Add mouse listener for both left and right clicks
+      dayButton.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          if (features != null) {
+            if (SwingUtilities.isRightMouseButton(e)) {
+              // Right click - create event
+              features.createEvent(date);
+            } else if (SwingUtilities.isLeftMouseButton(e)) {
+              // Left click - view events
+              features.viewEvents(date);
+            }
+          }
         }
       });
       
@@ -198,8 +215,6 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     this.revalidate();
     this.repaint();
   }
-
-
 
   @Override
   public void updateCurrentMonth(YearMonth month) {
