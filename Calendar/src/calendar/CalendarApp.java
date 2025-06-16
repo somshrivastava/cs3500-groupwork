@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
+import calendar.controller.ControllerGUI;
 import calendar.controller.HeadlessController;
 import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
@@ -11,6 +12,8 @@ import calendar.model.CalendarManager;
 import calendar.model.ICalendarManager;
 import calendar.view.CalendarView;
 import calendar.view.ICalendarView;
+import calendar.view.ICalendarViewGUI;
+import calendar.view.JFrameView;
 
 /**
  * The driver of this application.
@@ -50,14 +53,14 @@ public class CalendarApp {
     if (args.length < 2 || !args[0].equals("--mode")) {
       throw new IllegalArgumentException(
               "Application must be ran in the following format: " +
-                      "java CalendarApp --mode {'interactive' or 'headless'} {filename}");
+                      "java CalendarApp --mode {'interactive' or 'headless' or 'gui'} {filename}");
     }
   }
 
   /**
    * Creates the controller based on the mode.
    *
-   * @param mode the mode (interactive or headless)
+   * @param mode the mode (interactive, headless, or gui)
    * @param args the command line arguments
    * @return the controller
    * @throws IllegalArgumentException if the mode is invalid
@@ -72,8 +75,14 @@ public class CalendarApp {
         return createInteractiveController(manager, calendarView);
       case "headless":
         return createHeadlessController(manager, calendarView, args);
+      case "gui":
+        // change to interface?
+        ICalendarViewGUI viewGUI = new JFrameView();
+        ControllerGUI controllerGUI = (ControllerGUI) createGUIController(manager);
+        controllerGUI.setView(viewGUI);
+        return controllerGUI;
       default:
-        throw new IllegalArgumentException("Mode must be 'interactive' or 'headless'");
+        throw new IllegalArgumentException("Mode must be 'interactive' or 'headless' or 'gui'");
     }
   }
 
@@ -115,5 +124,15 @@ public class CalendarApp {
     } catch (FileNotFoundException e) {
       throw new RuntimeException("File not found: " + args[2]);
     }
+  }
+
+  /**
+   * Creates an interactive controller.
+   *
+   * @param manager the calendar manager model
+   * @return a gui controller
+   */
+  private static ICalendarController createGUIController(ICalendarManager manager) {
+    return new ControllerGUI(manager);
   }
 }
