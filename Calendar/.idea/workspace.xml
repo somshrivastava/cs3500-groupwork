@@ -5,34 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/Calendar_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/res/Calendar.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archive.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/asdf.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/invalid_command.txt" beforeDir="false" afterPath="$PROJECT_DIR$/res/invalid_command.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/valid_commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/res/valid_commands.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/CalendarApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/CalendarApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/AbstractController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/ICalendarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/ICalendarController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/parser/SmartCommandParserFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/ISmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ISmartCalendarModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/AbstractControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/AbstractControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/HeadlessControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/InteractiveControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/MockCalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/MockCalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/MockSmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/MockSmartCalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/parser/CommandParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/CommandParserTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/controller/parser/SmartCommandParserFactoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/SmartCommandParserFactoryTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/CalendarManagerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/CalendarManagerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/CalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/CalendarModelTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/model/SmartCalendarModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/model/SmartCalendarModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,6 +100,7 @@
       <workItem from="1749837824017" duration="6866000" />
       <workItem from="1749855366474" duration="2542000" />
       <workItem from="1749927168821" duration="983000" />
+      <workItem from="1750108764702" duration="3163000" />
     </task>
     <servers />
   </component>

@@ -3,6 +3,7 @@ package calendar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.time.ZoneId;
 
 import calendar.controller.ControllerGUI;
 import calendar.controller.HeadlessController;
@@ -10,6 +11,7 @@ import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
 import calendar.model.CalendarManager;
 import calendar.model.ICalendarManager;
+import calendar.model.SmartCalendarModel;
 import calendar.view.CalendarView;
 import calendar.view.ICalendarView;
 import calendar.view.ICalendarViewGUI;
@@ -17,10 +19,11 @@ import calendar.view.JFrameView;
 
 /**
  * The driver of this application.
- * This application supports two modes as well as the management of multiple calendars:
+ * This application supports three modes as well as the management of multiple calendars:
  * - Interactive mode: User enters commands through the console
  * - Headless mode: Commands are read from a file
  * How to run each mode:
+ * - GUI: java CalendarApp --mode gui
  * - Interactive: java CalendarApp --mode interactive
  * - Headless: java CalendarApp --mode headless {file name}
  */
@@ -32,15 +35,19 @@ public class CalendarApp {
    * @param args command line arguments in either format:
    *             --mode interactive (for interactive mode)
    *             --mode headless {file name} (for headless mode)
+   *             --mode gui (for gui mode)
    * @throws IllegalArgumentException if the mode is invalid or arguments are missing
    * @throws RuntimeException         if the file cannot be found in headless mode
    */
   public static void main(String[] args) {
-    validateArguments(args);
-
-    String mode = args[1];
-    ICalendarController controller = createController(mode, args);
-    controller.execute();
+    try {
+      validateArguments(args);
+      String mode = args[1];
+      ICalendarController controller = createController(mode, args);
+      controller.execute();
+    } catch (Exception e) {
+      System.exit(1);
+    }
   }
 
   /**
@@ -52,8 +59,7 @@ public class CalendarApp {
   private static void validateArguments(String[] args) {
     if (args.length < 2 || !args[0].equals("--mode")) {
       throw new IllegalArgumentException(
-              "Application must be ran in the following format: " +
-                      "java CalendarApp --mode {'interactive' or 'headless' or 'gui'} {filename}");
+              "Invalid arguments. Use --mode followed by 'interactive', 'headless', or 'gui'");
     }
   }
 
@@ -67,72 +73,79 @@ public class CalendarApp {
    * @throws RuntimeException         if file cannot be found in headless mode
    */
   private static ICalendarController createController(String mode, String[] args) {
-    ICalendarManager manager = new CalendarManager();
-    ICalendarView calendarView = new CalendarView(System.out);
-
     switch (mode.toLowerCase()) {
       case "interactive":
-        return createInteractiveController(manager, calendarView);
+        return createInteractiveController();
       case "headless":
-        return createHeadlessController(manager, calendarView, args);
+        return createHeadlessController(args);
       case "gui":
-        // change to interface?
-        ICalendarViewGUI viewGUI = new JFrameView();
-        ControllerGUI controllerGUI = (ControllerGUI) createGUIController(manager);
-        controllerGUI.setView(viewGUI);
-        return controllerGUI;
+        return createGUIController();
       default:
-        throw new IllegalArgumentException("Mode must be 'interactive' or 'headless' or 'gui'");
+        throw new IllegalArgumentException("Mode must be 'interactive', 'headless', or 'gui'");
     }
   }
 
   /**
    * Creates an interactive controller.
    *
-   * @param manager the calendar manager model
-   * @param view    the calendar view
    * @return an interactive controller
    */
-  private static ICalendarController createInteractiveController(ICalendarManager manager,
-                                                                 ICalendarView view) {
+  private static ICalendarController createInteractiveController() {
+    ICalendarManager manager = new CalendarManager();
+    ICalendarView calendarView = new CalendarView(System.out);
     Readable readable = new InputStreamReader(System.in);
-    return new InteractiveController(manager, view, readable);
+    return new InteractiveController(manager, calendarView, readable);
   }
 
   /**
    * Creates a headless controller.
    *
-   * @param manager the calendar model manager
-   * @param view    the calendar view
-   * @param args    the command line arguments containing the filename
+   * @param args the command line arguments containing the filename
    * @return a headless controller
    * @throws RuntimeException if the file is not found or not enough arguments
    */
-  private static ICalendarController createHeadlessController(ICalendarManager manager,
-                                                              ICalendarView view,
-                                                              String[] args) {
+  private static ICalendarController createHeadlessController(String[] args) {
     if (args.length < 3) {
       throw new IllegalArgumentException(
               "Headless mode requires the following format: java CalendarApp --mode headless " +
                       "{file name}");
     }
 
+    ICalendarManager manager = new CalendarManager();
+    ICalendarView calendarView = new CalendarView(System.out);
     File file = new File(args[2]);
 
     try {
-      return new HeadlessController(manager, view, file);
+      return new HeadlessController(manager, calendarView, file);
     } catch (FileNotFoundException e) {
       throw new RuntimeException("File not found: " + args[2]);
     }
   }
 
   /**
-   * Creates an interactive controller.
+   * Creates a GUI controller with default calendar setup.
    *
-   * @param manager the calendar manager model
-   * @return a gui controller
+   * @return a GUI controller
    */
-  private static ICalendarController createGUIController(ICalendarManager manager) {
-    return new ControllerGUI(manager);
+  private static ICalendarController createGUIController() {
+    ICalendarManager manager = setupDefaultCalendar();
+    ICalendarViewGUI viewGUI = new JFrameView();
+    ControllerGUI controllerGUI = new ControllerGUI(manager);
+    controllerGUI.setView(viewGUI);
+    return controllerGUI;
+  }
+
+  /**
+   * Sets up a default calendar with system timezone.
+   * @return configured calendar manager with default calendar
+   */
+  private static ICalendarManager setupDefaultCalendar() {
+    ICalendarManager manager = new CalendarManager();
+
+    // Create a default calendar with system timezone
+    manager.createCalendar("MyCalendar", ZoneId.systemDefault());
+    manager.useCalendar("MyCalendar");
+
+    return manager;
   }
 }

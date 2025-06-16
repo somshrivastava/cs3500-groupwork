@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.Map;
 import java.util.HashMap;
 
+
 /**
  * Manages a collection of smart calendars.
  * This class handles the creation, editing, and management of multiple calendars.
@@ -156,4 +157,6 @@ public class CalendarManager implements ICalendarManager {
           " already exists");
     }
   }
+
+
 }
