@@ -1,43 +1,36 @@
 package calendar.view;
 
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
 
 import calendar.controller.Features;
-import calendar.model.IEvent;
 
 /**
- * The interface for our GUI view class
+ * The interface for the GUI view class.
  */
 public interface ICalendarViewGUI {
 
   /**
-   * Get the string from the text field and return it
+   * Get the string from the text field and return it.
    *
    * @return the input string from text field
    */
   String getInputString();
 
   /**
-   * Clear the text field. Note that a more general "setInputString" would work for this
-   * purpose but would be incorrect. This is because the text field is not set programmatically
-   * in general but input by the user.
+   * Clear the text field.
    */
   void clearInputString();
 
   /**
    * Reset the focus on the appropriate part of the view that has the keyboard listener attached
-   * to it, so that keyboard events will still flow through.
+   * to it, so that keyboard events will work.
    */
   void resetFocus();
 
   /**
    * Adds the given features to this view.
    *
-   * @param features the features to add to the view.
+   * @param features the features to add to the view
    */
   void addFeatures(Features features);
 
@@ -47,12 +40,11 @@ public interface ICalendarViewGUI {
   void updateCalendar();
 
   /**
-   * Displays a schedule view showing events from the given start date.
+   * Displays a schedule view with the given content.
    *
-   * @param startDate the starting date for the schedule
-   * @param events the list of events to display (up to 10)
+   * @param scheduleContent the formatted schedule content to display
    */
-  void displayScheduleView(LocalDate startDate, List<IEvent> events);
+  void displayScheduleView(String scheduleContent);
 
   /**
    * Updates the current month display.
@@ -86,4 +78,11 @@ public interface ICalendarViewGUI {
    * Makes the view visible.
    */
   void display();
+
+  /**
+   * Shows events to the user.
+   *
+   * @param eventList the formatted event list to display
+   */
+  void showEvents(String eventList);
 }

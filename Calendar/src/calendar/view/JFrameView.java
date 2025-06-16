@@ -7,10 +7,8 @@ import java.awt.event.KeyListener;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import calendar.controller.Features;
-import calendar.model.IEvent;
 
 /**
  * A Swing-based GUI view for the calendar application.
@@ -175,60 +173,33 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   }
 
   @Override
-  public void displayScheduleView(LocalDate startDate, List<IEvent> events) {
+  public void displayScheduleView(String scheduleContent) {
     schedulePanel.removeAll();
     
     // Add title
-    JLabel titleLabel = new JLabel("Schedule from " + startDate.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+    JLabel titleLabel = new JLabel("Schedule View");
     titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
     titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     schedulePanel.add(titleLabel);
     schedulePanel.add(Box.createVerticalStrut(10));
 
-    if (events.isEmpty()) {
-      JLabel noEventsLabel = new JLabel("No events to display");
-      noEventsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-      schedulePanel.add(noEventsLabel);
-    } else {
-      // Display up to 10 events
-      int eventsToShow = Math.min(events.size(), 10);
-      for (int i = 0; i < eventsToShow; i++) {
-        IEvent event = events.get(i);
-        JPanel eventPanel = createEventPanel(event);
-        schedulePanel.add(eventPanel);
-        schedulePanel.add(Box.createVerticalStrut(5));
-      }
-      
-      if (events.size() > 10) {
-        JLabel moreLabel = new JLabel("... and " + (events.size() - 10) + " more events");
-        moreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        moreLabel.setFont(moreLabel.getFont().deriveFont(Font.ITALIC));
-        schedulePanel.add(moreLabel);
-      }
-    }
+    // Display the schedule content in a text area
+    JTextArea scheduleTextArea = new JTextArea(scheduleContent);
+    scheduleTextArea.setEditable(false);
+    scheduleTextArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+    scheduleTextArea.setBackground(this.getBackground());
+    
+    JScrollPane textScrollPane = new JScrollPane(scheduleTextArea);
+    textScrollPane.setBorder(null);
+    textScrollPane.setPreferredSize(new Dimension(280, 350));
+    
+    schedulePanel.add(textScrollPane);
 
-    schedulePanel.revalidate();
-    schedulePanel.repaint();
+    this.revalidate();
+    this.repaint();
   }
 
-  private JPanel createEventPanel(IEvent event) {
-    JPanel eventPanel = new JPanel();
-    eventPanel.setLayout(new BoxLayout(eventPanel, BoxLayout.Y_AXIS));
-    eventPanel.setBorder(BorderFactory.createEtchedBorder());
-    eventPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, eventPanel.getPreferredSize().height));
 
-    JLabel subjectLabel = new JLabel(event.getSubject());
-    subjectLabel.setFont(subjectLabel.getFont().deriveFont(Font.BOLD));
-    
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
-    JLabel timeLabel = new JLabel(event.getStartDateTime().format(formatter) + 
-                                 " - " + event.getEndDateTime().format(formatter));
-    
-    eventPanel.add(subjectLabel);
-    eventPanel.add(timeLabel);
-    
-    return eventPanel;
-  }
 
   @Override
   public void updateCurrentMonth(YearMonth month) {
@@ -273,5 +244,11 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   @Override
   public void display() {
     this.setVisible(true);
+    this.requestFocus(); // Ensure keyboard events work
+  }
+
+  @Override
+  public void showEvents(String eventList) {
+    JOptionPane.showMessageDialog(this, eventList, "Events", JOptionPane.INFORMATION_MESSAGE);
   }
 }
