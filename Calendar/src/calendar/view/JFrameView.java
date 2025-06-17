@@ -8,8 +8,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 
 import calendar.controller.Features;
 
@@ -175,10 +178,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           if (features != null) {
             if (SwingUtilities.isRightMouseButton(e)) {
               // Right click - create event
-              // get user input for event name
-              String newEvent = JOptionPane.showInputDialog(this, "Add new event:");
-              // another input for time of event?
-              features.createEvent(newEvent, date.atStartOfDay());
+              showCreateEventDialog(date);
             } else if (SwingUtilities.isLeftMouseButton(e)) {
               // Left click - view events
               features.viewEvents(date);
@@ -270,5 +270,133 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   @Override
   public void showEvents(String eventList) {
     JOptionPane.showMessageDialog(this, eventList, "Events", JOptionPane.INFORMATION_MESSAGE);
+  }
+
+  /**
+   * Shows a simple dialog to create a new event.
+   *
+   * @param selectedDate the date that was clicked on the calendar
+   */
+  private void showCreateEventDialog(LocalDate selectedDate) {
+    if (features == null) {
+      return;
+    }
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+    // Event name
+    panel.add(new JLabel("Event Name:"));
+    JTextField eventNameField = new JTextField(20);
+    panel.add(eventNameField);
+    panel.add(Box.createVerticalStrut(10));
+
+    // Start date and time
+    panel.add(new JLabel("Start Date & Time:"));
+    JPanel startPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    
+    // Start date spinner
+    SpinnerDateModel startDateModel = new SpinnerDateModel();
+    startDateModel.setValue(java.sql.Date.valueOf(selectedDate));
+    JSpinner startDateSpinner = new JSpinner(startDateModel);
+    JSpinner.DateEditor startDateEditor = new JSpinner.DateEditor(startDateSpinner, "yyyy-MM-dd");
+    startDateSpinner.setEditor(startDateEditor);
+    
+    // Start time spinner
+    Calendar startTimeCal = Calendar.getInstance();
+    startTimeCal.set(Calendar.HOUR_OF_DAY, 9);
+    startTimeCal.set(Calendar.MINUTE, 0);
+    startTimeCal.set(Calendar.SECOND, 0);
+    startTimeCal.set(Calendar.MILLISECOND, 0);
+    
+    SpinnerDateModel startTimeModel = new SpinnerDateModel();
+    startTimeModel.setValue(startTimeCal.getTime());
+    JSpinner startTimeSpinner = new JSpinner(startTimeModel);
+    JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "HH:mm");
+    startTimeSpinner.setEditor(startTimeEditor);
+    
+    startPanel.add(startDateSpinner);
+    startPanel.add(startTimeSpinner);
+    panel.add(startPanel);
+    panel.add(Box.createVerticalStrut(10));
+
+    // End date and time
+    panel.add(new JLabel("End Date & Time:"));
+    JPanel endPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    
+    // End date spinner
+    SpinnerDateModel endDateModel = new SpinnerDateModel();
+    endDateModel.setValue(java.sql.Date.valueOf(selectedDate));
+    JSpinner endDateSpinner = new JSpinner(endDateModel);
+    JSpinner.DateEditor endDateEditor = new JSpinner.DateEditor(endDateSpinner, "yyyy-MM-dd");
+    endDateSpinner.setEditor(endDateEditor);
+    
+    // End time spinner
+    Calendar endTimeCal = Calendar.getInstance();
+    endTimeCal.set(Calendar.HOUR_OF_DAY, 10);
+    endTimeCal.set(Calendar.MINUTE, 0);
+    endTimeCal.set(Calendar.SECOND, 0);
+    endTimeCal.set(Calendar.MILLISECOND, 0);
+    
+    SpinnerDateModel endTimeModel = new SpinnerDateModel();
+    endTimeModel.setValue(endTimeCal.getTime());
+    JSpinner endTimeSpinner = new JSpinner(endTimeModel);
+    JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "HH:mm");
+    endTimeSpinner.setEditor(endTimeEditor);
+    
+    endPanel.add(endDateSpinner);
+    endPanel.add(endTimeSpinner);
+    panel.add(endPanel);
+
+    // Show dialog
+    int result = JOptionPane.showConfirmDialog(this, panel, "Create New Event", 
+        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+    if (result == JOptionPane.OK_OPTION) {
+      try {
+        String eventName = eventNameField.getText().trim();
+        if (eventName.isEmpty()) {
+          showError("Event name cannot be empty.");
+          return;
+        }
+
+        // Get dates from spinners
+        Date startDateValue = (Date) startDateSpinner.getValue();
+        Date startTimeValue = (Date) startTimeSpinner.getValue();
+        Date endDateValue = (Date) endDateSpinner.getValue();
+        Date endTimeValue = (Date) endTimeSpinner.getValue();
+
+        // Convert to LocalDateTime using Calendar
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDateValue);
+        LocalDate startDate = LocalDate.of(startCal.get(Calendar.YEAR), 
+            startCal.get(Calendar.MONTH) + 1, 
+            startCal.get(Calendar.DAY_OF_MONTH));
+        
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDateValue);
+        LocalDate endDate = LocalDate.of(endCal.get(Calendar.YEAR), 
+            endCal.get(Calendar.MONTH) + 1, 
+            endCal.get(Calendar.DAY_OF_MONTH));
+        
+        startTimeCal = Calendar.getInstance();
+        startTimeCal.setTime(startTimeValue);
+        LocalDateTime startDateTime = startDate.atTime(
+            startTimeCal.get(Calendar.HOUR_OF_DAY), 
+            startTimeCal.get(Calendar.MINUTE));
+        
+        endTimeCal = Calendar.getInstance();
+        endTimeCal.setTime(endTimeValue);
+        LocalDateTime endDateTime = endDate.atTime(
+            endTimeCal.get(Calendar.HOUR_OF_DAY), 
+            endTimeCal.get(Calendar.MINUTE));
+
+        // Create the event
+        features.createEvent(eventName, startDateTime, endDateTime);
+        
+      } catch (Exception ex) {
+        showError("Error creating event: " + ex.getMessage());
+      }
+    }
   }
 }

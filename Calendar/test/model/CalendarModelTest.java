@@ -923,4 +923,116 @@ public class CalendarModelTest {
                       event.getStartDateTime().getDayOfWeek() == DayOfWeek.SUNDAY);
     }
   }
+
+  @Test
+  public void testGetUpcomingEventsBasic() {
+    // Create events on different dates
+    model.createSingleTimedEvent("Event 1", 
+        LocalDateTime.of(2024, 3, 20, 10, 0),
+        LocalDateTime.of(2024, 3, 20, 11, 0));
+    model.createSingleTimedEvent("Event 2", 
+        LocalDateTime.of(2024, 3, 22, 14, 0),
+        LocalDateTime.of(2024, 3, 22, 15, 0));
+    model.createSingleTimedEvent("Event 3", 
+        LocalDateTime.of(2024, 3, 25, 9, 0),
+        LocalDateTime.of(2024, 3, 25, 10, 0));
+
+    // Get upcoming events from March 21
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 21, 0, 0), 5);
+
+    assertEquals(2, upcomingEvents.size());
+    assertEquals("Event 2", upcomingEvents.get(0).getSubject());
+    assertEquals("Event 3", upcomingEvents.get(1).getSubject());
+  }
+
+  @Test
+  public void testGetUpcomingEventsLimitedResults() {
+    // Create 5 events
+    for (int i = 1; i <= 5; i++) {
+      model.createSingleTimedEvent("Event " + i, 
+          LocalDateTime.of(2024, 3, 20 + i, 10, 0),
+          LocalDateTime.of(2024, 3, 20 + i, 11, 0));
+    }
+
+    // Request only 3 events
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 20, 0, 0), 3);
+
+    assertEquals(3, upcomingEvents.size());
+    assertEquals("Event 1", upcomingEvents.get(0).getSubject());
+    assertEquals("Event 2", upcomingEvents.get(1).getSubject());
+    assertEquals("Event 3", upcomingEvents.get(2).getSubject());
+  }
+
+  @Test
+  public void testGetUpcomingEventsSortedByStartTime() {
+    // Create events in reverse chronological order
+    model.createSingleTimedEvent("Late Event", 
+        LocalDateTime.of(2024, 3, 25, 15, 0),
+        LocalDateTime.of(2024, 3, 25, 16, 0));
+    model.createSingleTimedEvent("Early Event", 
+        LocalDateTime.of(2024, 3, 20, 9, 0),
+        LocalDateTime.of(2024, 3, 20, 10, 0));
+    model.createSingleTimedEvent("Middle Event", 
+        LocalDateTime.of(2024, 3, 22, 12, 0),
+        LocalDateTime.of(2024, 3, 22, 13, 0));
+
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 19, 0, 0), 10);
+
+    assertEquals(3, upcomingEvents.size());
+    assertEquals("Early Event", upcomingEvents.get(0).getSubject());
+    assertEquals("Middle Event", upcomingEvents.get(1).getSubject());
+    assertEquals("Late Event", upcomingEvents.get(2).getSubject());
+  }
+
+  @Test
+  public void testGetUpcomingEventsExactStartTime() {
+    model.createSingleTimedEvent("Exact Time Event", 
+        LocalDateTime.of(2024, 3, 20, 10, 0),
+        LocalDateTime.of(2024, 3, 20, 11, 0));
+    model.createSingleTimedEvent("Before Event", 
+        LocalDateTime.of(2024, 3, 20, 9, 0),
+        LocalDateTime.of(2024, 3, 20, 9, 30));
+
+    // Search from exact start time of first event
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 20, 10, 0), 10);
+
+    assertEquals(1, upcomingEvents.size());
+    assertEquals("Exact Time Event", upcomingEvents.get(0).getSubject());
+  }
+
+  @Test
+  public void testGetUpcomingEventsEmptyResult() {
+    model.createSingleTimedEvent("Past Event", 
+        LocalDateTime.of(2024, 3, 15, 10, 0),
+        LocalDateTime.of(2024, 3, 15, 11, 0));
+
+    // Search for events after all existing events
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 20, 0, 0), 10);
+
+    assertEquals(0, upcomingEvents.size());
+  }
+
+  @Test
+  public void testGetUpcomingEventsWithRecurringEvents() {
+    model.createRecurringTimedEvent("Weekly Meeting", 
+        LocalDateTime.of(2024, 3, 18, 14, 0), // Monday
+        LocalDateTime.of(2024, 3, 18, 15, 0),
+        new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY)), 4);
+
+    List<IEvent> upcomingEvents = model.getUpcomingEvents(
+        LocalDateTime.of(2024, 3, 17, 0, 0), 3);
+
+    assertEquals(3, upcomingEvents.size());
+    // All should be "Weekly Meeting" with same series ID
+    Integer seriesId = upcomingEvents.get(0).getSeriesId();
+    for (IEvent event : upcomingEvents) {
+      assertEquals("Weekly Meeting", event.getSubject());
+      assertEquals(seriesId, event.getSeriesId());
+    }
+  }
 }

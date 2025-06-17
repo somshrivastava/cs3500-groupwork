@@ -30,11 +30,13 @@ public interface Features {
   void changeCalendar(String calendarName);
 
   /**
-   * Creates a new event on the specified date.
+   * Creates a new event with the specified details.
    *
-   * @param date the date on which to create the event
+   * @param eventName the name/subject of the event
+   * @param startDateTime the start date and time of the event
+   * @param endDateTime the end date and time of the event
    */
-  void createEvent(String eventName, LocalDateTime date);
+  void createEvent(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
   /**
    * Views events for a specific date.
