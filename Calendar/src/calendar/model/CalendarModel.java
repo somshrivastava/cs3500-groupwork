@@ -243,6 +243,35 @@ public class CalendarModel implements ICalendarModel {
   }
 
   /**
+   * Gets a limited number of events that occur on or after a specific date/time.
+   * @param startDateTime the start date/time to search from (inclusive)
+   * @param maxEvents the maximum number of events to return
+   * @return a list of events that start on or after the given date/time, limited to maxEvents,
+   *         sorted by start time
+   */
+  @Override
+  public List<IEvent> getUpcomingEvents(LocalDateTime startDateTime, int maxEvents) {
+    List<IEvent> upcomingEvents = new ArrayList<>();
+    
+    // Filter events that start on or after the given date/time
+    for (IEvent event : events) {
+      if (!event.getStartDateTime().isBefore(startDateTime)) {
+        upcomingEvents.add(event);
+      }
+    }
+    
+    // Sort events by start time
+    upcomingEvents.sort(Comparator.comparing(IEvent::getStartDateTime));
+    
+    // Limit to maxEvents
+    if (upcomingEvents.size() > maxEvents) {
+      upcomingEvents = upcomingEvents.subList(0, maxEvents);
+    }
+    
+    return upcomingEvents;
+  }
+
+  /**
    * Checks if the given time is busy (has an event scheduled).
    * @param dateTime the time to check
    * @return true if there is an event at the given time, false otherwise

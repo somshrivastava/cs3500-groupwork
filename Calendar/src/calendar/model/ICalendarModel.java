@@ -135,6 +135,16 @@ public interface ICalendarModel {
   List<IEvent> printEvents(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
   /**
+   * Gets a limited number of events that occur on or after a specific date/time.
+   *
+   * @param startDateTime the start date/time to search from (inclusive)
+   * @param maxEvents the maximum number of events to return
+   * @return a list of events that start on or after the given date/time, limited to maxEvents,
+   *         sorted by start time
+   */
+  List<IEvent> getUpcomingEvents(LocalDateTime startDateTime, int maxEvents);
+
+  /**
    * Checks if the given time is busy (has an event scheduled).
    *
    * @param dateTime the time to check
