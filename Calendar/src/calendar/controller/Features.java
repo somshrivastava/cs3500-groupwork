@@ -44,7 +44,8 @@ public interface Features {
   void viewEvents(LocalDate date);
 
   /**
-   * Shows a schedule view starting from the specified date.
+   * Shows a schedule view starting from the specified date
+   * (get first 10 events on or after specified date).
    *
    * @param startDate the starting date for the schedule view
    */

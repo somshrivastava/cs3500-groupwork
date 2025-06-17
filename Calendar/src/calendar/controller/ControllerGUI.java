@@ -36,23 +36,27 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public void execute() {
-    // how to execute?
+    view.display();
   }
 
   public void changeMonth(YearMonth currentMonth, int offset) {
     currMonth = currentMonth.plusMonths(offset);
     // should this be how view changes gui?
-    view.updateCalendar();
+    view.updateCurrentMonth(currMonth);
   }
 
   public void changeCalendar(String selectedCalendar) {
     // change calendar from manager
-    manager.useCalendar(selectedCalendar);
-    view.updateCalendar();
+    manager.useCalendar(selectedCalendar); // manager throws exception if calendar does not exist
+    view.updateCurrentCalendar(selectedCalendar);
   }
 
   @Override
   public void createEvent(String eventName, LocalDateTime date) {
+    // have two createEvent methods?
+    if (eventName == null || eventName.trim().isEmpty()) {
+      view.showError("Cannot make event without a name.");
+    }
     ICalendarModel cal = manager.getCurrentCalendar();
     cal.createSingleAllDayEvent(eventName, date);
     //cal.createSingleTimedEvent();
@@ -72,7 +76,10 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public void showScheduleView(LocalDate startDate) {
-
+    ICalendarModel cal = manager.getCurrentCalendar();
+    // somehow get first 10 events on or after specified date
+    // TODO: need a method in model to get all events ON or AFTER a specified date
+    //cal.printEvents(startDate);
   }
 
   @Override

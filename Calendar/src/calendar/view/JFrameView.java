@@ -1,6 +1,7 @@
 package calendar.view;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -28,11 +29,11 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   private JButton scheduleViewButton;
   private JPanel schedulePanel;
   private JScrollPane scheduleScrollPane;
-  
+
   // Current display state (NOT model data - just what's currently shown)
   private YearMonth displayedMonth;
   private String displayedCalendarName;
-  
+
   // Reference to features for callbacks
   private Features features;
 
@@ -79,7 +80,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     this.add(topPanel, BorderLayout.NORTH);
 
     // Add instruction label
-    JLabel instructionLabel = new JLabel("Left click: View events | Right click: Create event", SwingConstants.CENTER);
+    JLabel instructionLabel = new JLabel("Left click: View events | Right click: Create event",
+            SwingConstants.CENTER);
     instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.ITALIC, 11f));
     instructionLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -165,7 +167,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
       LocalDate date = displayedMonth.atDay(day);
       JButton dayButton = new JButton(String.valueOf(day));
       dayButton.setPreferredSize(new Dimension(80, 60));
-      
+
       // Add mouse listener for both left and right clicks
       dayButton.addMouseListener(new MouseAdapter() {
         @Override
@@ -173,7 +175,10 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           if (features != null) {
             if (SwingUtilities.isRightMouseButton(e)) {
               // Right click - create event
-              features.createEvent(date);
+              // get user input for event name
+              String newEvent = JOptionPane.showInputDialog(this, "Add new event:");
+              // another input for time of event?
+              features.createEvent(newEvent, date.atStartOfDay());
             } else if (SwingUtilities.isLeftMouseButton(e)) {
               // Left click - view events
               features.viewEvents(date);
@@ -181,7 +186,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           }
         }
       });
-      
+
       calendarPanel.add(dayButton);
     }
 
@@ -192,7 +197,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   @Override
   public void displayScheduleView(String scheduleContent) {
     schedulePanel.removeAll();
-    
+
     // Add title
     JLabel titleLabel = new JLabel("Schedule View");
     titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
@@ -205,11 +210,11 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     scheduleTextArea.setEditable(false);
     scheduleTextArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
     scheduleTextArea.setBackground(this.getBackground());
-    
+
     JScrollPane textScrollPane = new JScrollPane(scheduleTextArea);
     textScrollPane.setBorder(null);
     textScrollPane.setPreferredSize(new Dimension(280, 350));
-    
+
     schedulePanel.add(textScrollPane);
 
     this.revalidate();
