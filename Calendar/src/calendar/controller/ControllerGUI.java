@@ -21,12 +21,18 @@ public class ControllerGUI implements Features, ICalendarController {
   private YearMonth currMonth;
 
   public ControllerGUI(ICalendarManager m) {
+    if (m == null) {
+      throw new IllegalArgumentException("Calendar manager is null.");
+    }
     manager = m;
     // Initialize current month to the current month
     currMonth = YearMonth.now();
   }
 
   public void setView(ICalendarViewGUI v) {
+    if (v == null) {
+      throw new IllegalArgumentException("View is null");
+    }
     view = v;
     // provide view with all the callbacks
     view.addFeatures(this);
@@ -54,12 +60,20 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public void changeMonth(YearMonth currentMonth, int offset) {
+    if (currentMonth == null) {
+      view.showError("Current month is null.");
+      return;
+    }
     currMonth = currentMonth.plusMonths(offset);
     view.updateCurrentMonth(currMonth);
   }
 
   @Override
   public void changeCalendar(String selectedCalendar) {
+    if (selectedCalendar == null) {
+      view.showError("Selected calendar name is null.");
+      return;
+    }
     // change calendar from manager
     manager.useCalendar(selectedCalendar); // manager throws exception if calendar does not exist
     view.updateCurrentCalendar(selectedCalendar);
@@ -95,6 +109,10 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public void viewEvents(LocalDate date) {
+    if (date == null) {
+      view.showError("Date to view event is null");
+      return;
+    }
     ICalendarModel cal = manager.getCurrentCalendar();
     List<IEvent> dayEvents = cal.printEvents(date.atStartOfDay());
 
@@ -103,6 +121,10 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public void showScheduleView(LocalDate startDate) {
+    if (startDate == null) {
+      view.showError("Date to show schedule view is null");
+      return;
+    }
     ICalendarModel cal = manager.getCurrentCalendar();
     List<IEvent> events = cal.getUpcomingEvents(startDate.atStartOfDay(), 10);
     view.displayScheduleView(eventsListToString(events, startDate));
@@ -119,6 +141,9 @@ public class ControllerGUI implements Features, ICalendarController {
   }
 
   private String eventsListToString(List<IEvent> events, LocalDate date) {
+    if (date == null) {
+      return "Date to show events is null";
+    }
     if (events.isEmpty()) {
       return "No events on " + date.toString();
     }
