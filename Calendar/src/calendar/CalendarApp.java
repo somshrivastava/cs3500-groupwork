@@ -11,7 +11,6 @@ import calendar.controller.ICalendarController;
 import calendar.controller.InteractiveController;
 import calendar.model.CalendarManager;
 import calendar.model.ICalendarManager;
-import calendar.model.SmartCalendarModel;
 import calendar.view.CalendarView;
 import calendar.view.ICalendarView;
 import calendar.view.ICalendarViewGUI;
@@ -137,6 +136,7 @@ public class CalendarApp {
 
   /**
    * Sets up a default calendar with system timezone.
+   *
    * @return configured calendar manager with default calendar
    */
   private static ICalendarManager setupDefaultCalendar() {
