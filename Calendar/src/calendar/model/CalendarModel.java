@@ -227,7 +227,7 @@ public class CalendarModel implements ICalendarModel {
   @Override
   public List<IEvent> printEvents(LocalDateTime date) {
     LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-    LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59);
+    LocalDateTime endOfDay = date.toLocalDate().atTime(LocalTime.MAX);
     return getEventsInInterval(startOfDay, endOfDay);
   }
 

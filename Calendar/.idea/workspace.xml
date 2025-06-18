@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/SmartCalendarModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +96,8 @@
       <workItem from="1749837824017" duration="6866000" />
       <workItem from="1749855366474" duration="2542000" />
       <workItem from="1749927168821" duration="983000" />
-      <workItem from="1750108764702" duration="3163000" />
+      <workItem from="1750108764702" duration="11289000" />
+      <workItem from="1750275293143" duration="202000" />
     </task>
     <servers />
   </component>
