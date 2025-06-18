@@ -56,6 +56,13 @@ public class ControllerGUITest {
   }
 
   @Test
+  public void testSetView() {
+    ((ControllerGUI) controller).setView(view);
+    assertEquals("Features added\n" + "Current month updated to " + YearMonth.now() + "\n",
+            logView.toString());
+  }
+
+  @Test
   public void testExecute() {
     ((ICalendarController) controller).execute();
     assertEquals("View displayed\n", logView.toString());
