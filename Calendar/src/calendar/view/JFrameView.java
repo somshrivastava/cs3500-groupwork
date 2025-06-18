@@ -253,12 +253,14 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
 
   @Override
   public void showMessage(String message) {
-    JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, message, "Information",
+            JOptionPane.INFORMATION_MESSAGE);
   }
 
   @Override
   public void showError(String error) {
-    JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(this, error, "Error",
+            JOptionPane.ERROR_MESSAGE);
   }
 
   @Override
@@ -269,7 +271,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
 
   @Override
   public void showEvents(String eventList) {
-    JOptionPane.showMessageDialog(this, eventList, "Events", JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, eventList, "Events",
+            JOptionPane.INFORMATION_MESSAGE);
   }
 
   /**
@@ -294,27 +297,27 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     // Start date and time
     panel.add(new JLabel("Start Date & Time:"));
     JPanel startPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    
+
     // Start date spinner
     SpinnerDateModel startDateModel = new SpinnerDateModel();
     startDateModel.setValue(java.sql.Date.valueOf(selectedDate));
     JSpinner startDateSpinner = new JSpinner(startDateModel);
     JSpinner.DateEditor startDateEditor = new JSpinner.DateEditor(startDateSpinner, "yyyy-MM-dd");
     startDateSpinner.setEditor(startDateEditor);
-    
+
     // Start time spinner
     Calendar startTimeCal = Calendar.getInstance();
     startTimeCal.set(Calendar.HOUR_OF_DAY, 9);
     startTimeCal.set(Calendar.MINUTE, 0);
     startTimeCal.set(Calendar.SECOND, 0);
     startTimeCal.set(Calendar.MILLISECOND, 0);
-    
+
     SpinnerDateModel startTimeModel = new SpinnerDateModel();
     startTimeModel.setValue(startTimeCal.getTime());
     JSpinner startTimeSpinner = new JSpinner(startTimeModel);
     JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "HH:mm");
     startTimeSpinner.setEditor(startTimeEditor);
-    
+
     startPanel.add(startDateSpinner);
     startPanel.add(startTimeSpinner);
     panel.add(startPanel);
@@ -323,34 +326,34 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     // End date and time
     panel.add(new JLabel("End Date & Time:"));
     JPanel endPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    
+
     // End date spinner
     SpinnerDateModel endDateModel = new SpinnerDateModel();
     endDateModel.setValue(java.sql.Date.valueOf(selectedDate));
     JSpinner endDateSpinner = new JSpinner(endDateModel);
     JSpinner.DateEditor endDateEditor = new JSpinner.DateEditor(endDateSpinner, "yyyy-MM-dd");
     endDateSpinner.setEditor(endDateEditor);
-    
+
     // End time spinner
     Calendar endTimeCal = Calendar.getInstance();
     endTimeCal.set(Calendar.HOUR_OF_DAY, 10);
     endTimeCal.set(Calendar.MINUTE, 0);
     endTimeCal.set(Calendar.SECOND, 0);
     endTimeCal.set(Calendar.MILLISECOND, 0);
-    
+
     SpinnerDateModel endTimeModel = new SpinnerDateModel();
     endTimeModel.setValue(endTimeCal.getTime());
     JSpinner endTimeSpinner = new JSpinner(endTimeModel);
     JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "HH:mm");
     endTimeSpinner.setEditor(endTimeEditor);
-    
+
     endPanel.add(endDateSpinner);
     endPanel.add(endTimeSpinner);
     panel.add(endPanel);
 
     // Show dialog
-    int result = JOptionPane.showConfirmDialog(this, panel, "Create New Event", 
-        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    int result = JOptionPane.showConfirmDialog(this, panel, "Create New Event",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
     if (result == JOptionPane.OK_OPTION) {
       try {
@@ -369,31 +372,31 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
         // Convert to LocalDateTime using Calendar
         Calendar startCal = Calendar.getInstance();
         startCal.setTime(startDateValue);
-        LocalDate startDate = LocalDate.of(startCal.get(Calendar.YEAR), 
-            startCal.get(Calendar.MONTH) + 1, 
-            startCal.get(Calendar.DAY_OF_MONTH));
-        
+        LocalDate startDate = LocalDate.of(startCal.get(Calendar.YEAR),
+                startCal.get(Calendar.MONTH) + 1,
+                startCal.get(Calendar.DAY_OF_MONTH));
+
         Calendar endCal = Calendar.getInstance();
         endCal.setTime(endDateValue);
-        LocalDate endDate = LocalDate.of(endCal.get(Calendar.YEAR), 
-            endCal.get(Calendar.MONTH) + 1, 
-            endCal.get(Calendar.DAY_OF_MONTH));
-        
+        LocalDate endDate = LocalDate.of(endCal.get(Calendar.YEAR),
+                endCal.get(Calendar.MONTH) + 1,
+                endCal.get(Calendar.DAY_OF_MONTH));
+
         startTimeCal = Calendar.getInstance();
         startTimeCal.setTime(startTimeValue);
         LocalDateTime startDateTime = startDate.atTime(
-            startTimeCal.get(Calendar.HOUR_OF_DAY), 
-            startTimeCal.get(Calendar.MINUTE));
-        
+                startTimeCal.get(Calendar.HOUR_OF_DAY),
+                startTimeCal.get(Calendar.MINUTE));
+
         endTimeCal = Calendar.getInstance();
         endTimeCal.setTime(endTimeValue);
         LocalDateTime endDateTime = endDate.atTime(
-            endTimeCal.get(Calendar.HOUR_OF_DAY), 
-            endTimeCal.get(Calendar.MINUTE));
+                endTimeCal.get(Calendar.HOUR_OF_DAY),
+                endTimeCal.get(Calendar.MINUTE));
 
         // Create the event
         features.createEvent(eventName, startDateTime, endDateTime);
-        
+
       } catch (Exception ex) {
         showError("Error creating event: " + ex.getMessage());
       }
