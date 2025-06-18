@@ -29,6 +29,8 @@ public class ControllerGUITest {
   private StringBuilder logModel;
   private StringBuilder logView;
 
+  private String setViewLog;
+
   @Before
   public void setUp() {
     logModel = new StringBuilder();
@@ -43,6 +45,9 @@ public class ControllerGUITest {
     // Set up a mock calendar in the manager so event operations work
     MockSmartCalendarModel mockCalendar = new MockSmartCalendarModel(logModel);
     ((MockCalendarManager) manager).setCurrentCalendar(mockCalendar);
+
+    setViewLog = "Features added\n" + "Current month updated to " + YearMonth.now() + "\n"
+            + "Calendar updated to: No Calendar\n";
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -58,34 +63,37 @@ public class ControllerGUITest {
   @Test
   public void testSetView() {
     ((ControllerGUI) controller).setView(view);
-    assertEquals("Features added\n" + "Current month updated to " + YearMonth.now() + "\n",
+    assertEquals("Features added\n" + "Current month updated to " + YearMonth.now() + "\n"
+                    + "Calendar updated to: No Calendar\n" + "Features added\n"
+                    + "Current month updated to " + YearMonth.now() + "\n"
+                    + "Calendar updated to: DefaultTestCalendar\n",
             logView.toString());
   }
 
   @Test
   public void testExecute() {
     ((ICalendarController) controller).execute();
-    assertEquals("View displayed\n", logView.toString());
+    assertEquals(setViewLog + "View displayed\n", logView.toString());
   }
 
   @Test
   public void testChangeMonthNext() {
     YearMonth month = YearMonth.of(2025, 6);
     controller.changeMonth(month, 1);
-    assertEquals("Current month updated to " + Month.of(7) + "\n", logView.toString());
+    assertEquals(setViewLog + "Current month updated to " + YearMonth.of(2025, 7) + "\n", logView.toString());
   }
 
   @Test
   public void testChangeMonthPrev() {
     YearMonth month = YearMonth.of(2025, 6);
     controller.changeMonth(month, -1);
-    assertEquals("Current month updated to " + Month.of(5) + "\n", logView.toString());
+    assertEquals(setViewLog + "Current month updated to " + YearMonth.of(2025, 5) + "\n", logView.toString());
   }
 
   @Test
   public void testChangeCalendar() {
     controller.changeCalendar("Calendar2");
-    assertEquals("Calendar updated to: Calendar2\n", logView.toString());
+    assertEquals(setViewLog + "Calendar updated to: Calendar2\n", logView.toString());
     assertEquals("Switched to calendar Calendar2", logModel.toString());
   }
 
@@ -94,7 +102,7 @@ public class ControllerGUITest {
     LocalDateTime start = LocalDateTime.of(2025, 6, 20, 11, 30);
     LocalDateTime end = LocalDateTime.of(2025, 6, 20, 13, 30);
     controller.createEvent("Class", start, end);
-    assertEquals("Message displayed: Event 'Class' created successfully!\n"
+    assertEquals(setViewLog + "Message displayed: Event 'Class' created successfully!\n"
             + "Calendar updated\n", logView.toString());
     assertEquals("Created single timed event Class starting at " + start + " until " + end,
             ((MockCalendarManager) manager).getModelLog());
@@ -104,8 +112,8 @@ public class ControllerGUITest {
   public void testViewEvents() {
     LocalDate date = LocalDate.of(2025, 6, 20);
     controller.viewEvents(date);
-    assertEquals("Events displayed: No events on" + date, logView.toString());
-    assertEquals("Queried for all events that occur on " + date,
+    assertEquals(setViewLog + "Events displayed: No events on " + date + "\n", logView.toString());
+    assertEquals("Queried for all events that occur on " + date.atStartOfDay(),
             ((MockCalendarManager) manager).getModelLog());
   }
 
@@ -113,8 +121,8 @@ public class ControllerGUITest {
   public void testShowScheduleView() {
     LocalDate date = LocalDate.of(2025, 6, 20);
     controller.showScheduleView(date);
-    assertEquals("Schedule view displayed: No events on " + date, logView.toString());
-    assertEquals("Got upcoming 10 events starting from " + date,
+    assertEquals(setViewLog + "Schedule view displayed: No events on " + date + "\n", logView.toString());
+    assertEquals("Got upcoming 10 events starting from " + date.atStartOfDay(),
             ((MockCalendarManager) manager).getModelLog());
   }
 
@@ -122,7 +130,7 @@ public class ControllerGUITest {
   public void testGetCurrentMonth() {
     YearMonth month = YearMonth.of(2025, 6);
     controller.changeMonth(month, -1);
-    assertEquals("Current month updated to " + Month.of(5) + "\n", logView.toString());
+    assertEquals(setViewLog + "Current month updated to " + YearMonth.of(2025, 5) + "\n", logView.toString());
     assertEquals(YearMonth.of(2025, 5), controller.getCurrentMonth());
   }
 
