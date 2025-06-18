@@ -19,10 +19,11 @@ import calendar.view.JFrameView;
 /**
  * The driver of this application.
  * This application supports three modes as well as the management of multiple calendars:
+ * - GUI mode (default): Graphical user interface
  * - Interactive mode: User enters commands through the console
  * - Headless mode: Commands are read from a file
  * How to run each mode:
- * - GUI: java CalendarApp --mode gui
+ * - GUI: java CalendarApp (no arguments, default mode) or java CalendarApp --mode gui
  * - Interactive: java CalendarApp --mode interactive
  * - Headless: java CalendarApp --mode headless {file name}
  */
@@ -35,11 +36,19 @@ public class CalendarApp {
    *             --mode interactive (for interactive mode)
    *             --mode headless {file name} (for headless mode)
    *             --mode gui (for gui mode)
+   *             or no arguments (defaults to gui mode)
    * @throws IllegalArgumentException if the mode is invalid or arguments are missing
    * @throws RuntimeException         if the file cannot be found in headless mode
    */
   public static void main(String[] args) {
     try {
+      // If no arguments provided, default to GUI mode
+      if (args.length == 0) {
+        ICalendarController controller = createGUIController();
+        controller.execute();
+        return;
+      }
+      
       validateArguments(args);
       String mode = args[1];
       ICalendarController controller = createController(mode, args);

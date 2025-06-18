@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -158,5 +160,8 @@ public class CalendarManager implements ICalendarManager {
     }
   }
 
-
+  @Override
+  public List<String> getCalendarNames() {
+    return new ArrayList<>(calendars.keySet());
+  }
 }
