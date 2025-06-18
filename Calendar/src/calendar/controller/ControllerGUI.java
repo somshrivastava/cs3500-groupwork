@@ -137,7 +137,7 @@ public class ControllerGUI implements Features, ICalendarController {
 
   @Override
   public String getCurrentCalendar() {
-    return manager.getCurrentCalendar().toString();
+    return manager.getCurrentCalendar().getCalendarName();
   }
 
   private String eventsListToString(List<IEvent> events, LocalDate date) {

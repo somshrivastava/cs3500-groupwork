@@ -5,6 +5,7 @@ import calendar.model.ISmartCalendarModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 /**
  * Mock implementation of ISmartCalendarModel for testing purposes.
@@ -117,4 +118,4 @@ public class MockSmartCalendarModel extends MockCalendarModel implements ISmartC
   public String getLog() {
     return log.toString();
   }
-} 
+}
