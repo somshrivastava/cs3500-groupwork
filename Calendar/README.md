@@ -26,6 +26,7 @@ recurring events through either an interactive or headless mode.
 - **Copy**: Copy events within or between calendars
 
 ### Interface Modes
+- **GUI Mode**: Graphical user interface with calendar view and event management
 - **Interactive Mode**: Real-time command-line interface with user prompts
 - **Headless Mode**: Batch processing from input files
 
@@ -46,10 +47,17 @@ The application follows an MVC architecture pattern:
 - View (calendar.view)
   - ICalendarView - Display interface
   - CalendarView - Console-based view implementation
-- Controller (calendar.controller)
-  - ICalendarController - Controller interface
-  - InteractiveController - Interactive command-line controller
-  - HeadlessController - Headless mode controller
+  - ICalendarViewGUI - GUI interface
+  - JFrameView - Swing-based GUI implementation
+  - CreateEventDialog - Event creation dialog
+  - EditEventDialog - Event editing dialog
+  - DialogUtils - Shared UI utility methods
+  - Controller (calendar.controller)
+    - ICalendarController - Controller interface
+    - InteractiveController - Interactive command-line controller
+    - HeadlessController - Headless mode controller
+    - ControllerGUI - GUI controller with MVC separation
+    - Features - High-level GUI callback interface
   - Parser (calendar.controller.parser)
     - SmartCommandParserFactory - Enhanced command routing
     - CommandParserFactory - Event command parsing
@@ -66,6 +74,15 @@ The application follows an MVC architecture pattern:
 ## Getting Started
 
 ### Running the Application
+
+#### GUI Mode (Default)
+```bash
+java -jar Calendar.jar
+# OR
+java CalendarApp
+# OR  
+java CalendarApp --mode gui
+```
 
 #### Interactive Mode
 ```bash
@@ -197,6 +214,99 @@ print events on 2024-03-20
 show status on 2024-03-20T10:30
 exit
 ```
+
+## GUI Features
+
+### Core Functionality
+- **Calendar View**: Monthly calendar display with navigation
+- **Event Creation**: Right-click on dates to create new events
+- **Event Viewing**: Left-click on dates to view existing events  
+- **Event Editing**: Select and edit individual events
+- **Schedule View**: View upcoming events (up to 10) from any start date
+- **Keyboard Shortcuts**: Arrow keys for navigation, 'S' for schedule view
+
+### Supported Operations
+- ✅ **Create Single Events**: Timed events with start/end times
+- ✅ **Edit Events**: Modify event subject, start time, or end time
+- ✅ **View Events**: Display events for any date
+- ✅ **Schedule View**: Show upcoming events from selected date
+- ✅ **Month Navigation**: Browse different months
+- ✅ **Error Handling**: User-friendly validation messages
+
+### GUI Limitations
+- ❌ **Multiple Calendars**: GUI only supports single default calendar
+- ❌ **Recurring Events**: Cannot create repeating events via GUI
+- ❌ **Advanced Properties**: Only basic event properties supported
+- ❌ **Event Series**: No support for event series management
+
+## Changes Made for GUI Implementation
+
+### Design Changes
+- **Added GUI MVC Components**:
+  - `ICalendarViewGUI` interface for GUI-specific view operations
+  - `JFrameView` implementing Swing-based calendar interface
+  - `ControllerGUI` handling GUI-specific controller logic
+  - `Features` interface for high-level GUI callbacks
+
+- **Extracted Dialog Components**:
+  - `CreateEventDialog` for event creation
+  - `EditEventDialog` for event modification  
+  - `DialogUtils` for shared UI utility methods
+
+- **Enhanced Controller Architecture**:
+  - High-level feature requests instead of low-level UI events
+  - Controller provides data to view (proper MVC separation)
+  - Validation moved from view to controller layer
+
+### Code Quality Improvements
+- **Eliminated Duplicate Code**: Created `DialogUtils` utility class
+- **Removed Type Casting**: Used proper Swing model access patterns
+- **Improved Error Handling**: Graceful error messages for users
+- **Added Keyboard Shortcuts**: Configurable hotkey system
+
+## Team Contributions
+
+### Implementation Areas
+- **GUI Framework**: Swing-based calendar interface and dialogs
+- **MVC Architecture**: Proper separation between model, view, and controller
+- **Event Management**: Create, edit, and view event functionality
+- **Code Quality**: Refactoring, duplicate code elimination, documentation
+
+*Note: Specific individual contributions would be detailed by team members*
+
+## Features Status
+
+### Working Features
+- ✅ GUI Mode with calendar interface
+- ✅ Interactive Mode with command-line interface  
+- ✅ Headless Mode with file-based commands
+- ✅ Single event creation and editing
+- ✅ Multiple calendar support (CLI only)
+- ✅ Recurring events (CLI only)
+- ✅ Event copying between calendars (CLI only)
+- ✅ Timezone support
+- ✅ Schedule and event viewing
+- ✅ Command-line argument handling
+- ✅ JAR file execution
+
+### Limitations
+- GUI supports only single calendar (multiple calendars available in CLI)
+- GUI supports only single events (recurring events available in CLI)
+- Event properties limited to subject, start/end times in GUI
+
+## Additional Notes
+
+### JAR File Usage
+The provided `Calendar.jar` file supports all three modes:
+- Double-click for GUI mode
+- `java -jar Calendar.jar --mode interactive` for CLI
+- `java -jar Calendar.jar --mode headless filename.txt` for batch processing
+
+### GUI Design Principles
+- Follows MVC architecture with proper separation of concerns
+- Uses high-level Features interface for controller-view communication
+- Implements graceful error handling with user-friendly messages
+- Provides keyboard shortcuts for improved user experience
 
 ## Date and Time Formats
 

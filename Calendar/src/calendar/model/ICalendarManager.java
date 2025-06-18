@@ -85,4 +85,11 @@ public interface ICalendarManager {
    */
   void copyEventsBetweenDates(LocalDateTime startDate, LocalDateTime endDate, 
                               String targetCalendarName, LocalDateTime targetStartDate);
+
+  /**
+   * Gets a list of all available calendar names.
+   * 
+   * @return a list of calendar names
+   */
+  java.util.List<String> getCalendarNames();
 }
