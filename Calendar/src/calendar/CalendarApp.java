@@ -48,7 +48,7 @@ public class CalendarApp {
         controller.execute();
         return;
       }
-      
+
       validateArguments(args);
       String mode = args[1];
       ICalendarController controller = createController(mode, args);

@@ -136,6 +136,13 @@ public class MockCalendarModel implements ICalendarModel {
     return List.of();
   }
 
+  @Override
+  public List<IEvent> getUpcomingEvents(LocalDateTime startDateTime, int maxEvents) {
+    String msg = "Got upcoming " + maxEvents + " events starting from " + startDateTime;
+    log.append(msg);
+    return List.of();
+  }
+
   /**
    * Checks if the given time is busy (has an event scheduled).
    */

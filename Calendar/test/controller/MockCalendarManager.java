@@ -5,6 +5,7 @@ import calendar.model.ISmartCalendarModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -70,6 +71,12 @@ public class MockCalendarManager implements ICalendarManager {
     String s = "Copied events between " + startDate + " and " + endDate
             + " to calendar " + targetCalendarName + " starting at " + targetStartDate;
     log.append(s);
+  }
+
+  @Override
+  public List<String> getCalendarNames() {
+    log.append("Retrieved list of calendar names");
+    return List.of();
   }
 
   // Additional methods for testing setup

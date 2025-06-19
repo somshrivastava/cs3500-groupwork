@@ -117,4 +117,4 @@ public class MockSmartCalendarModel extends MockCalendarModel implements ISmartC
   public String getLog() {
     return log.toString();
   }
-} 
+}

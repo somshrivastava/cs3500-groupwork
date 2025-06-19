@@ -30,9 +30,9 @@ public interface Features {
   /**
    * Creates a new event with the specified details.
    *
-   * @param eventName the name/subject of the event
+   * @param eventName     the name/subject of the event
    * @param startDateTime the start date and time of the event
-   * @param endDateTime the end date and time of the event
+   * @param endDateTime   the end date and time of the event
    */
   void createEvent(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
@@ -69,12 +69,12 @@ public interface Features {
    * Edits a single event's property.
    *
    * @param eventSubject the subject of the event to edit
-   * @param eventStart the start time of the event to edit
-   * @param eventEnd the end time of the event to edit
-   * @param property the property to change (subject, start, end, description, location, status)
-   * @param newValue the new value for the property
+   * @param eventStart   the start time of the event to edit
+   * @param eventEnd     the end time of the event to edit
+   * @param property     the property to change (subject, start, end, description, location, status)
+   * @param newValue     the new value for the property
    */
-  void editEvent(String eventSubject, LocalDateTime eventStart, LocalDateTime eventEnd, 
+  void editEvent(String eventSubject, LocalDateTime eventStart, LocalDateTime eventEnd,
                  String property, String newValue);
 
   /**
@@ -84,17 +84,17 @@ public interface Features {
    * @return list of events for the date
    */
   List<IEvent> getEventsForDate(LocalDate date);
-  
+
   // High-level event requests following MVC principles
-  
+
   /**
    * User requests to create a new event for the specified date.
    * This is a high-level request that the controller can handle by showing appropriate dialogs.
-   * 
+   *
    * @param date the date for which to create an event
    */
   void requestCreateEvent(LocalDate date);
-  
+
   /**
    * User requests to view events for the specified date.
    * This is a high-level request that the controller can handle by retrieving events and showing
@@ -103,11 +103,11 @@ public interface Features {
    * @param date the date for which to view events
    */
   void requestViewEvents(LocalDate date);
-  
+
   /**
    * User requests to edit the specified event.
    * This is a high-level request that the controller can handle by showing appropriate dialogs.
-   * 
+   *
    * @param event the event to edit
    */
   void requestEditEvent(IEvent event);
