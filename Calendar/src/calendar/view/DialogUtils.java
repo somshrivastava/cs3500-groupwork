@@ -1,20 +1,26 @@
 package calendar.view;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.SpinnerDateModel;
+import java.awt.FlowLayout;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Utility class for common dialog operations.
+ * Utility class for common dialog operations with simple, clean layouts.
  */
 public final class DialogUtils {
   
   // Constants for UI dimensions and styling
   public static final int VERTICAL_STRUT_SIZE = 10;
-  public static final int BORDER_SIZE = 10;
+  public static final int BORDER_SIZE = 15;
   public static final String DATE_FORMAT = "yyyy-MM-dd";
   public static final String TIME_FORMAT = "HH:mm";
   public static final int DEFAULT_MINUTE = 0;
@@ -25,33 +31,62 @@ public final class DialogUtils {
   }
   
   /**
-   * Creates a main panel for dialogs with standard layout and border.
+   * Creates a main panel for dialogs with simple layout.
+   * 
+   * @return the main dialog panel
    */
   public static JPanel createDialogMainPanel() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
+    panel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, 
+                                                   BORDER_SIZE, BORDER_SIZE));
     return panel;
   }
   
   /**
-   * Creates a panel containing date and time spinners with optional label.
+   * Creates a panel with date and time spinners (without label).
+   * 
+   * @param dateSpinner the date spinner
+   * @param timeSpinner the time spinner
+   * @return the date/time panel
    */
-  public static JPanel createDateTimePanel(String label, JSpinner dateSpinner, JSpinner timeSpinner) {
-    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+  public static JPanel createDateTimePanel(JSpinner dateSpinner, JSpinner timeSpinner) {
+    return createDateTimePanel(null, dateSpinner, timeSpinner);
+  }
+  
+  /**
+   * Creates a panel with date and time spinners (with optional label).
+   * 
+   * @param label optional label for the panel
+   * @param dateSpinner the date spinner
+   * @param timeSpinner the time spinner
+   * @return the date/time panel
+   */
+  public static JPanel createDateTimePanel(String label, JSpinner dateSpinner, 
+                                          JSpinner timeSpinner) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    
     if (label != null) {
       panel.add(new JLabel(label));
     }
-    panel.add(dateSpinner);
-    panel.add(timeSpinner);
+    
+    JPanel spinnerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+    spinnerPanel.add(dateSpinner);
+    spinnerPanel.add(timeSpinner);
+    panel.add(spinnerPanel);
+    
     return panel;
   }
   
   /**
-   * Creates a panel containing buttons in a flow layout.
+   * Creates a panel containing buttons.
+   * 
+   * @param buttons the buttons to add
+   * @return the button panel
    */
   public static JPanel createButtonPanel(JButton... buttons) {
-    JPanel buttonPanel = new JPanel(new FlowLayout());
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     for (JButton button : buttons) {
       buttonPanel.add(button);
     }
@@ -60,7 +95,9 @@ public final class DialogUtils {
   
   /**
    * Creates a date spinner initialized with the given date.
-   * No type casting needed - uses proper SpinnerDateModel.
+   * 
+   * @param date the initial date
+   * @return the date spinner
    */
   public static JSpinner createDateSpinner(LocalDate date) {
     SpinnerDateModel dateModel = new SpinnerDateModel();
@@ -73,7 +110,9 @@ public final class DialogUtils {
   
   /**
    * Creates a time spinner initialized with the given hour.
-   * No type casting needed - uses proper SpinnerDateModel.
+   * 
+   * @param hour the initial hour
+   * @return the time spinner
    */
   public static JSpinner createTimeSpinner(int hour) {
     Calendar timeCal = Calendar.getInstance();
@@ -102,24 +141,28 @@ public final class DialogUtils {
   }
   
   /**
-   * Extracts LocalDateTime from date and time spinners without type casting.
-   * Uses proper SpinnerDateModel access methods.
+   * Extracts LocalDateTime from date and time spinners.
+   * 
+   * @param dateSpinner the date spinner
+   * @param timeSpinner the time spinner
+   * @return the combined LocalDateTime
    */
-  public static LocalDateTime getDateTimeFromSpinners(JSpinner dateSpinner, JSpinner timeSpinner) {
-    // Use the model directly to avoid type casting
+  public static LocalDateTime getDateTimeFromSpinners(JSpinner dateSpinner, 
+                                                     JSpinner timeSpinner) {
     SpinnerDateModel dateModel = (SpinnerDateModel) dateSpinner.getModel();
     SpinnerDateModel timeModel = (SpinnerDateModel) timeSpinner.getModel();
     
     Date dateValue = dateModel.getDate();
     Date timeValue = timeModel.getDate();
     
-    LocalDate date = convertDateToLocalDate(dateValue);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(dateValue);
+    LocalDate date = LocalDate.of(cal.get(Calendar.YEAR),
+        cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
     
     Calendar timeCal = Calendar.getInstance();
     timeCal.setTime(timeValue);
 
-    return date.atTime(
-        timeCal.get(Calendar.HOUR_OF_DAY),
-        timeCal.get(Calendar.MINUTE));
+    return date.atTime(timeCal.get(Calendar.HOUR_OF_DAY), timeCal.get(Calendar.MINUTE));
   }
 } 

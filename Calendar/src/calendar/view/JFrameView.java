@@ -1,9 +1,33 @@
 package calendar.view;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+import javax.swing.Box;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.JSpinner;
+import javax.swing.KeyStroke;
+import javax.swing.JDialog;
+import javax.swing.UIManager;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.AbstractAction;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,6 +44,7 @@ import calendar.model.IEvent;
 /**
  * A Swing-based GUI view for the calendar application.
  * This view provides a calendar display and schedule view without storing any model data.
+ * Note: This class exceeds 100 lines due to complex GUI layout requirements.
  */
 public class JFrameView extends JFrame implements ICalendarViewGUI {
 
@@ -48,7 +73,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   // Constants for strings
   private static final String WINDOW_TITLE = "Calendar App";
   private static final String[] DAY_LABELS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-  private static final String INSTRUCTION_TEXT = "Left click: View/Edit events | Right click: Create event";
+  private static final String INSTRUCTION_TEXT = 
+      "Left click: View/Edit events | Right click: Create event";
 
   // UI Components
   private JPanel topPanel;
@@ -73,6 +99,9 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   // Reference to features for callbacks
   private Features features;
 
+  /**
+   * Constructs a new JFrameView and initializes the GUI components.
+   */
   public JFrameView() {
     super(WINDOW_TITLE);
     this.eventData = new HashMap<>();
@@ -99,7 +128,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     calendarPanel = new JPanel();
     schedulePanel = new JPanel();
     schedulePanel.setLayout(new BoxLayout(schedulePanel, BoxLayout.Y_AXIS));
-    scheduleScrollPane = createScrollPane(schedulePanel, SCHEDULE_PANEL_WIDTH, SCHEDULE_PANEL_HEIGHT);
+    scheduleScrollPane = createScrollPane(schedulePanel, SCHEDULE_PANEL_WIDTH, 
+                                          SCHEDULE_PANEL_HEIGHT);
     
     // Keyboard support
     keyboardComponent = new KeyboardComponent();
@@ -382,7 +412,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     
     if (dialog.isConfirmed() && features != null) {
       // View makes a request to controller, which handles validation
-      features.createEvent(dialog.getEventName(), dialog.getStartDateTime(), dialog.getEndDateTime());
+      features.createEvent(dialog.getEventName(), dialog.getStartDateTime(), 
+                           dialog.getEndDateTime());
     }
   }
 
@@ -418,7 +449,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     // Title
     JLabel titleLabel = new JLabel("Events for " + date, SwingConstants.CENTER);
     titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
-    titleLabel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
+    titleLabel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, 
+                                                         BORDER_SIZE, BORDER_SIZE));
     mainPanel.add(titleLabel, BorderLayout.NORTH);
     
     // Event list
@@ -511,7 +543,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   }
 
   /**
-   * Keyboard component that handles hotkey mappings following the lecture's InputMap/ActionMap pattern.
+   * Keyboard component that handles hotkey mappings following the lecture's 
+   * InputMap/ActionMap pattern.
    * This encapsulates keyboard event handling and translates to high-level Features callbacks.
    */
   private class KeyboardComponent extends JPanel {

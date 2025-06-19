@@ -1,6 +1,11 @@
 package calendar.view;
 
-import javax.swing.*;
+import javax.swing.JSpinner;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,13 +34,6 @@ public abstract class AbstractEventDialog extends JDialog {
    */
   protected AbstractEventDialog(JFrame parent, String title, int height) {
     super(parent, title, true);
-    setupDialog(height);
-  }
-  
-  /**
-   * Sets up common dialog properties.
-   */
-  private void setupDialog(int height) {
     setSize(DIALOG_WIDTH, height);
     setLocationRelativeTo(getParent());
   }
@@ -119,7 +117,6 @@ public abstract class AbstractEventDialog extends JDialog {
    * Subclasses should call this after creating their spinners.
    */
   protected void finalizeDialog() {
-    JPanel contentPanel = createContentPanel();
-    add(contentPanel);
+    add(createContentPanel());
   }
 } 

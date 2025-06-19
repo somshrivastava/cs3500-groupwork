@@ -97,7 +97,8 @@ public interface Features {
   
   /**
    * User requests to view events for the specified date.
-   * This is a high-level request that the controller can handle by retrieving events and showing appropriate dialogs.
+   * This is a high-level request that the controller can handle by retrieving events and showing
+   * appropriate dialogs.
    * 
    * @param date the date for which to view events
    */

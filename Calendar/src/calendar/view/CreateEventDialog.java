@@ -1,6 +1,11 @@
 package calendar.view;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import java.awt.Component;
 import java.time.LocalDate;
 
 /**
@@ -10,14 +15,21 @@ import java.time.LocalDate;
 public class CreateEventDialog extends AbstractEventDialog {
   
   // Constants specific to create dialog
-  private static final int CREATE_DIALOG_HEIGHT = 400;
+  private static final int CREATE_DIALOG_HEIGHT = 250;
   private static final int DEFAULT_START_HOUR = 9;
   private static final int DEFAULT_END_HOUR = 10;
   
   // Fields specific to create dialog
+
   private JTextField eventNameField;
   private final LocalDate selectedDate;
-  
+
+  /**
+   * Constructs a CreateEventDialog for the specified date.
+   * 
+   * @param parent the parent frame
+   * @param selectedDate the date for the new event
+   */
   public CreateEventDialog(JFrame parent, LocalDate selectedDate) {
     super(parent, "Create New Event", CREATE_DIALOG_HEIGHT);
     this.selectedDate = selectedDate;
@@ -39,22 +51,30 @@ public class CreateEventDialog extends AbstractEventDialog {
   protected JPanel createContentPanel() {
     JPanel panel = DialogUtils.createDialogMainPanel();
 
-    // Event name section
-    panel.add(new JLabel("Event Name:"));
+    // Event name
+    JLabel nameLabel = new JLabel("Event Name: ");
+    nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(nameLabel);
+    eventNameField.setAlignmentX(Component.LEFT_ALIGNMENT);
     panel.add(eventNameField);
-    panel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
-
-    // Start date and time section
-    panel.add(new JLabel("Start Date & Time:"));
-    panel.add(DialogUtils.createDateTimePanel(null, startDateSpinner, startTimeSpinner));
-    panel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
-
-    // End date and time section
-    panel.add(new JLabel("End Date & Time:"));
-    panel.add(DialogUtils.createDateTimePanel(null, endDateSpinner, endTimeSpinner));
-    panel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
-
-    // Buttons using base class methods
+    
+    // Start date and time
+    JLabel startLabel = new JLabel("Start Date & Time: ");
+    startLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(startLabel);
+    JPanel startPanel = DialogUtils.createDateTimePanel(startDateSpinner, startTimeSpinner);
+    startPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(startPanel);
+    
+    // End date and time
+    JLabel endLabel = new JLabel("End Date & Time: ");
+    endLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(endLabel);
+    JPanel endPanel = DialogUtils.createDateTimePanel(endDateSpinner, endTimeSpinner);
+    endPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    panel.add(endPanel);
+    
+    // Buttons
     JButton createButton = createConfirmButton("Create");
     JButton cancelButton = createCancelButton();
     panel.add(DialogUtils.createButtonPanel(createButton, cancelButton));

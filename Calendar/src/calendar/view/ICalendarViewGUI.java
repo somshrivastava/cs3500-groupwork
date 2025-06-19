@@ -119,3 +119,4 @@ public interface ICalendarViewGUI {
    */
   void showEditEventDialog(IEvent event);
 }
+

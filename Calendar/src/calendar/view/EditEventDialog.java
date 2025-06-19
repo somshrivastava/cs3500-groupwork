@@ -1,7 +1,15 @@
 package calendar.view;
 
-import javax.swing.*;
-import java.time.LocalDate;
+
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.BoxLayout;
+import java.awt.Component;
 
 import calendar.model.IEvent;
 
@@ -12,7 +20,7 @@ import calendar.model.IEvent;
 public class EditEventDialog extends AbstractEventDialog {
   
   // Constants specific to edit dialog
-  private static final int EDIT_DIALOG_HEIGHT = 300;
+  private static final int EDIT_DIALOG_HEIGHT = 250;
   private static final String[] EDIT_PROPERTIES = {"subject", "start", "end"};
   
   // Fields specific to edit dialog
@@ -21,6 +29,12 @@ public class EditEventDialog extends AbstractEventDialog {
   private JPanel inputPanel;
   private final IEvent event;
   
+  /**
+   * Constructs an EditEventDialog for the specified event.
+   * 
+   * @param parent the parent frame
+   * @param event the event to edit
+   */
   public EditEventDialog(JFrame parent, IEvent event) {
     super(parent, "Edit Event", EDIT_DIALOG_HEIGHT);
     this.event = event;
@@ -39,6 +53,7 @@ public class EditEventDialog extends AbstractEventDialog {
     subjectField = new JTextField(event.getSubject());
     inputPanel = new JPanel();
     inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+    inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     // Set up property change listener
     propertyCombo.addActionListener(e -> updateInputPanel());
@@ -54,23 +69,30 @@ public class EditEventDialog extends AbstractEventDialog {
   protected JPanel createContentPanel() {
     JPanel mainPanel = DialogUtils.createDialogMainPanel();
     
-    // Event info section
-    mainPanel.add(new JLabel("Event: " + event.getSubject()));
-    mainPanel.add(new JLabel("Time: " + event.getStartDateTime().toLocalTime() + 
-                            " - " + event.getEndDateTime().toLocalTime()));
-    mainPanel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
+    // Event info
+    JLabel eventLabel = new JLabel("Event: " + event.getSubject());
+    eventLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    mainPanel.add(eventLabel);
     
-    // Property selection section
-    mainPanel.add(new JLabel("Edit:"));
+    JLabel timeLabel = new JLabel("Time: " + event.getStartDateTime().toLocalTime() + 
+                            " - " + event.getEndDateTime().toLocalTime());
+    timeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    mainPanel.add(timeLabel);
+    
+    // Property selection
+    JLabel editLabel = new JLabel("Edit: ");
+    editLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    mainPanel.add(editLabel);
+    propertyCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
     mainPanel.add(propertyCombo);
-    mainPanel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
     
-    // Dynamic input section
-    mainPanel.add(new JLabel("New value:"));
+    // Dynamic input
+    JLabel valueLabel = new JLabel("New value: ");
+    valueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    mainPanel.add(valueLabel);
     mainPanel.add(inputPanel);
-    mainPanel.add(Box.createVerticalStrut(DialogUtils.VERTICAL_STRUT_SIZE));
     
-    // Buttons using base class methods
+    // Buttons
     JButton saveButton = createConfirmButton("Save");
     JButton cancelButton = createCancelButton();
     mainPanel.add(DialogUtils.createButtonPanel(saveButton, cancelButton));
@@ -84,16 +106,20 @@ public class EditEventDialog extends AbstractEventDialog {
     
     switch (selected) {
       case "subject":
-        inputPanel.add(new JLabel("New subject:"));
+        subjectField.setAlignmentX(Component.LEFT_ALIGNMENT);
         inputPanel.add(subjectField);
         break;
       case "start":
-        inputPanel.add(new JLabel("New start date and time:"));
-        inputPanel.add(DialogUtils.createDateTimePanel("Date:", startDateSpinner, startTimeSpinner));
+        JPanel startPanel = DialogUtils.createDateTimePanel(startDateSpinner, startTimeSpinner);
+        startPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        inputPanel.add(startPanel);
         break;
       case "end":
-        inputPanel.add(new JLabel("New end date and time:"));
-        inputPanel.add(DialogUtils.createDateTimePanel("Date:", endDateSpinner, endTimeSpinner));
+        JPanel endPanel = DialogUtils.createDateTimePanel(endDateSpinner, endTimeSpinner);
+        endPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        inputPanel.add(endPanel);
+        break;
+      default:
         break;
     }
     inputPanel.revalidate();

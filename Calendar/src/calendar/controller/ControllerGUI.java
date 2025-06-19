@@ -26,6 +26,12 @@ public class ControllerGUI implements Features, ICalendarController {
   // current month user is viewing
   private YearMonth currMonth;
 
+  /**
+   * Constructs a ControllerGUI with the given calendar manager.
+   * 
+   * @param m the calendar manager to use
+   * @throws IllegalArgumentException if the manager is null
+   */
   public ControllerGUI(ICalendarManager m) {
     if (m == null) {
       throw new IllegalArgumentException("Calendar manager is null.");
@@ -35,6 +41,12 @@ public class ControllerGUI implements Features, ICalendarController {
     currMonth = YearMonth.now();
   }
 
+  /**
+   * Sets the view for this controller and initializes it with current data.
+   * 
+   * @param v the view to set
+   * @throws IllegalArgumentException if the view is null
+   */
   public void setView(ICalendarViewGUI v) {
     if (v == null) {
       throw new IllegalArgumentException("View is null");
@@ -62,7 +74,7 @@ public class ControllerGUI implements Features, ICalendarController {
   }
   
   /**
-   * Sets up customizable keyboard shortcuts
+   * Sets up customizable keyboard shortcuts.
    */
   private void setupKeyboardShortcuts() {
     // These could be read from a configuration file for customization
@@ -84,7 +96,8 @@ public class ControllerGUI implements Features, ICalendarController {
       LocalDate startOfMonth = currMonth.atDay(1);
       LocalDate endOfMonth = currMonth.atEndOfMonth();
       
-      for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)) {
+      for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date =
+              date.plusDays(1)) {
         List<IEvent> events = cal.printEvents(date.atStartOfDay());
         if (!events.isEmpty()) {
           eventData.put(date, events);
@@ -119,7 +132,8 @@ public class ControllerGUI implements Features, ICalendarController {
   }
 
   @Override
-  public void createEvent(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+  public void createEvent(String eventName, LocalDateTime startDateTime,
+                          LocalDateTime endDateTime) {
     String validationError = validateEventCreation(eventName, startDateTime, endDateTime);
     if (validationError != null) {
       view.showError(validationError);
@@ -170,7 +184,8 @@ public class ControllerGUI implements Features, ICalendarController {
   @Override
   public void editEvent(String eventSubject, LocalDateTime eventStart, LocalDateTime eventEnd, 
                         String property, String newValue) {
-    String validationError = validateEventEdit(eventSubject, eventStart, eventEnd, property, newValue);
+    String validationError = validateEventEdit(eventSubject, eventStart, eventEnd,
+            property, newValue);
     if (validationError != null) {
       view.showError(validationError);
       return;
@@ -315,7 +330,8 @@ public class ControllerGUI implements Features, ICalendarController {
    * @param endDateTime the end date/time to validate
    * @return null if valid, error message if invalid
    */
-  private String validateEventCreation(String eventName, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+  private String validateEventCreation(String eventName, LocalDateTime startDateTime,
+                                       LocalDateTime endDateTime) {
     if (eventName == null || eventName.trim().isEmpty()) {
       return "Event name cannot be empty.";
     }
@@ -342,7 +358,8 @@ public class ControllerGUI implements Features, ICalendarController {
    * @param newValue the new value for the property
    * @return null if valid, error message if invalid
    */
-  private String validateEventEdit(String eventSubject, LocalDateTime eventStart, LocalDateTime eventEnd, 
+  private String validateEventEdit(String eventSubject, LocalDateTime eventStart,
+                                   LocalDateTime eventEnd,
                                    String property, String newValue) {
     if (eventSubject == null || property == null || newValue == null) {
       return "Invalid edit parameters.";

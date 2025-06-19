@@ -6,14 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="aa68d7dd-432a-4831-a2a8-fd6a227f604b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/CalendarApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/CalendarApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/ControllerGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/ControllerGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/controller/Features.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/controller/Features.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/CalendarManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/model/ICalendarManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/AbstractEventDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/AbstractEventDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/CreateEventDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/CreateEventDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/DialogUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/DialogUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/calendar/view/EditEventDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/EditEventDialog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/ICalendarViewGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/calendar/view/JFrameView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/submission.zip" beforeDir="false" afterPath="$PROJECT_DIR$/submission.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/controller/ControllerGUITest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/controller/ControllerGUITest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
