@@ -34,17 +34,16 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   private static final int EVENT_LIST_DIALOG_HEIGHT = 400;
   private static final int SCHEDULE_TEXT_AREA_WIDTH = 280;
   private static final int SCHEDULE_TEXT_AREA_HEIGHT = 300;
-  
 
-  
+
   // Constants for spacing
   private static final int HORIZONTAL_STRUT_SIZE = 20;
   private static final int VERTICAL_STRUT_SIZE = 10;
   private static final int BORDER_SIZE = 10;
-  
+
   // Constants for colors
   private static final Color EVENT_INDICATOR_COLOR = new Color(173, 216, 230);
-  
+
   // Constants for strings
   private static final String WINDOW_TITLE = "Calendar App";
   private static final String[] DAY_LABELS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -60,13 +59,13 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   private JButton scheduleViewButton;
   private JPanel schedulePanel;
   private JScrollPane scheduleScrollPane;
-  
+
   // Keyboard support component
   private KeyboardComponent keyboardComponent;
 
   // Current display state
   private YearMonth displayedMonth;
-  
+
   // Event data for display
   private Map<LocalDate, List<IEvent>> eventData;
 
@@ -100,7 +99,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     schedulePanel = new JPanel();
     schedulePanel.setLayout(new BoxLayout(schedulePanel, BoxLayout.Y_AXIS));
     scheduleScrollPane = createScrollPane(schedulePanel, SCHEDULE_PANEL_WIDTH, SCHEDULE_PANEL_HEIGHT);
-    
+
     // Keyboard support
     keyboardComponent = new KeyboardComponent();
   }
@@ -109,13 +108,13 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     layoutTopPanel();
     layoutMainPanel();
   }
-  
+
   private void layoutTopPanel() {
     topPanel.add(prevButton);
     topPanel.add(monthLabel);
     topPanel.add(nextButton);
     topPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SIZE));
-    
+
     // Calendar management section
     topPanel.add(new JLabel("Calendar:"));
     topPanel.add(calendarNameLabel);
@@ -124,7 +123,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
 
     this.add(topPanel, BorderLayout.NORTH);
   }
-  
+
   private void layoutMainPanel() {
     // Add instruction label
     JLabel instructionLabel = createInstructionLabel();
@@ -134,20 +133,20 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     mainPanel.add(instructionLabel, BorderLayout.NORTH);
     mainPanel.add(calendarPanel, BorderLayout.CENTER);
     mainPanel.add(scheduleScrollPane, BorderLayout.EAST);
-    
+
     // Add keyboard component for hotkey support
     mainPanel.add(keyboardComponent, BorderLayout.SOUTH);
 
     this.add(mainPanel, BorderLayout.CENTER);
   }
-  
+
   private JLabel createInstructionLabel() {
     JLabel instructionLabel = new JLabel(INSTRUCTION_TEXT, SwingConstants.CENTER);
     instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.ITALIC, 11f));
     instructionLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     return instructionLabel;
   }
-  
+
   private JScrollPane createScrollPane(JComponent component, int width, int height) {
     JScrollPane scrollPane = new JScrollPane(component);
     scrollPane.setPreferredSize(new Dimension(width, height));
@@ -162,14 +161,14 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     setupButtonListeners();
     keyboardComponent.addFeatures(features);
   }
-  
+
   /**
    * Sets up keyboard shortcuts for the application.
    */
   public void setHotKey(KeyStroke key, String featureName) {
     keyboardComponent.setHotKey(key, featureName);
   }
-  
+
   /**
    * Updates the event data that the view uses for display.
    */
@@ -177,7 +176,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     this.eventData = new HashMap<>(eventData);
     updateCalendar();
   }
-  
+
   private void setupButtonListeners() {
     prevButton.addActionListener(e -> {
       if (features != null) {
@@ -210,7 +209,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     this.revalidate();
     this.repaint();
   }
-  
+
   private void addDayLabels() {
     for (String day : DAY_LABELS) {
       JLabel dayLabel = new JLabel(day, SwingConstants.CENTER);
@@ -220,7 +219,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
       calendarPanel.add(dayLabel);
     }
   }
-  
+
   private void addDayButtons() {
     for (int day = 1; day <= displayedMonth.lengthOfMonth(); day++) {
       LocalDate date = displayedMonth.atDay(day);
@@ -228,32 +227,32 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
       calendarPanel.add(dayButton);
     }
   }
-  
+
   private JButton createDayButton(int day, LocalDate date) {
     JButton dayButton = new JButton(String.valueOf(day));
     dayButton.setPreferredSize(new Dimension(DAY_BUTTON_WIDTH, DAY_BUTTON_HEIGHT));
-    
+
     setupDayButtonAppearance(dayButton, date);
     setupDayButtonListener(dayButton, date);
-    
+
     return dayButton;
   }
-  
+
   private void setupDayButtonAppearance(JButton dayButton, LocalDate date) {
     List<IEvent> eventsOnDate = eventData.getOrDefault(date, List.of());
     if (!eventsOnDate.isEmpty()) {
       dayButton.setBackground(EVENT_INDICATOR_COLOR);
       dayButton.setOpaque(true);
-      
-      String tooltipText = eventsOnDate.size() == 1 ? 
-          "1 event" : eventsOnDate.size() + " events";
+
+      String tooltipText = eventsOnDate.size() == 1 ?
+              "1 event" : eventsOnDate.size() + " events";
       dayButton.setToolTipText(tooltipText);
     } else {
       dayButton.setBackground(UIManager.getColor("Button.background"));
       dayButton.setToolTipText(null);
     }
   }
-  
+
   private void setupDayButtonListener(JButton dayButton, LocalDate date) {
     dayButton.addMouseListener(new MouseAdapter() {
       @Override
@@ -280,7 +279,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     this.revalidate();
     this.repaint();
   }
-  
+
   private void addScheduleTitle() {
     JPanel titlePanel = new JPanel(new FlowLayout());
     JLabel titleLabel = new JLabel("Schedule View");
@@ -288,21 +287,21 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     titlePanel.add(titleLabel);
     schedulePanel.add(titlePanel);
   }
-  
+
   private void addDateSelectionPanel() {
     JPanel datePanel = new JPanel(new FlowLayout());
     datePanel.add(new JLabel("Starting from:"));
-    
+
     JSpinner dateSpinner = DialogUtils.createDateSpinner(displayedMonth.atDay(1));
     datePanel.add(dateSpinner);
-    
+
     JButton updateButton = createUpdateButton(dateSpinner);
     datePanel.add(updateButton);
-    
+
     schedulePanel.add(datePanel);
     schedulePanel.add(Box.createVerticalStrut(VERTICAL_STRUT_SIZE));
   }
-  
+
   private JButton createUpdateButton(JSpinner dateSpinner) {
     JButton updateButton = new JButton("Update");
     updateButton.addActionListener(e -> {
@@ -318,7 +317,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     });
     return updateButton;
   }
-  
+
   private void addScheduleContent(String scheduleContent) {
     JTextArea scheduleTextArea = new JTextArea(scheduleContent);
     scheduleTextArea.setEditable(false);
@@ -327,8 +326,8 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
     scheduleTextArea.setLineWrap(true);
     scheduleTextArea.setWrapStyleWord(true);
 
-    JScrollPane textScrollPane = createScrollPane(scheduleTextArea, 
-        SCHEDULE_TEXT_AREA_WIDTH, SCHEDULE_TEXT_AREA_HEIGHT);
+    JScrollPane textScrollPane = createScrollPane(scheduleTextArea,
+            SCHEDULE_TEXT_AREA_WIDTH, SCHEDULE_TEXT_AREA_HEIGHT);
     textScrollPane.setBorder(BorderFactory.createTitledBorder("Next 10 Events"));
 
     schedulePanel.add(textScrollPane);
@@ -345,7 +344,6 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   public void updateCurrentCalendar(String calendarName) {
     calendarNameLabel.setText(calendarName);
   }
-
 
 
   @Override
@@ -379,7 +377,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   public void showCreateEventDialog(LocalDate selectedDate) {
     CreateEventDialog dialog = new CreateEventDialog(this, selectedDate);
     dialog.setVisible(true);
-    
+
     if (dialog.isConfirmed() && features != null) {
       // View makes a request to controller, which handles validation
       features.createEvent(dialog.getEventName(), dialog.getStartDateTime(), dialog.getEndDateTime());
@@ -395,67 +393,67 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
       handleNoEventsFound(date);
       return;
     }
-    
+
     showEventListDialog(date, events);
   }
-  
+
   private void handleNoEventsFound(LocalDate date) {
     int result = JOptionPane.showConfirmDialog(this,
-        "No events found for " + date + ".\nWould you like to create a new event?",
-        "No Events",
-        JOptionPane.YES_NO_OPTION);
-    
+            "No events found for " + date + ".\nWould you like to create a new event?",
+            "No Events",
+            JOptionPane.YES_NO_OPTION);
+
     if (result == JOptionPane.YES_OPTION && features != null) {
       features.requestCreateEvent(date);
     }
   }
-  
+
   private void showEventListDialog(LocalDate date, List<IEvent> events) {
     JDialog dialog = createDialog("Events for " + date);
-    
+
     JPanel mainPanel = new JPanel(new BorderLayout());
-    
+
     // Title
     JLabel titleLabel = new JLabel("Events for " + date, SwingConstants.CENTER);
     titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
     titleLabel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
     mainPanel.add(titleLabel, BorderLayout.NORTH);
-    
+
     // Event list
     JList<String> eventList = createEventList(events);
     JScrollPane listScrollPane = new JScrollPane(eventList);
     listScrollPane.setBorder(BorderFactory.createTitledBorder("Select an event to edit:"));
     mainPanel.add(listScrollPane, BorderLayout.CENTER);
-    
+
     // Button panel
     JPanel buttonPanel = createEventListButtonPanel(dialog, eventList, events, date);
     mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-    
+
     dialog.add(mainPanel);
     dialog.setVisible(true);
   }
-  
+
   private JList<String> createEventList(List<IEvent> events) {
     DefaultListModel<String> listModel = new DefaultListModel<>();
     JList<String> eventList = new JList<>(listModel);
     eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    
+
     for (IEvent event : events) {
       String eventDisplay = String.format("%s (%s - %s)%s",
-          event.getSubject(),
-          event.getStartDateTime().toLocalTime(),
-          event.getEndDateTime().toLocalTime(),
-          event.getSeriesId() != null ? " [SERIES]" : "");
+              event.getSubject(),
+              event.getStartDateTime().toLocalTime(),
+              event.getEndDateTime().toLocalTime(),
+              event.getSeriesId() != null ? " [SERIES]" : "");
       listModel.addElement(eventDisplay);
     }
-    
+
     return eventList;
   }
-  
-  private JPanel createEventListButtonPanel(JDialog dialog, JList<String> eventList, 
-                                          List<IEvent> events, LocalDate date) {
+
+  private JPanel createEventListButtonPanel(JDialog dialog, JList<String> eventList,
+                                            List<IEvent> events, LocalDate date) {
     JPanel buttonPanel = new JPanel(new FlowLayout());
-    
+
     JButton editButton = new JButton("Edit Selected");
     editButton.addActionListener(e -> {
       int selectedIndex = eventList.getSelectedIndex();
@@ -469,7 +467,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
         JOptionPane.showMessageDialog(dialog, "Please select an event to edit.");
       }
     });
-    
+
     JButton createButton = new JButton("Create New");
     createButton.addActionListener(e -> {
       dialog.dispose();
@@ -477,17 +475,17 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
         features.requestCreateEvent(date);
       }
     });
-    
+
     JButton closeButton = new JButton("Close");
     closeButton.addActionListener(e -> dialog.dispose());
-    
+
     buttonPanel.add(editButton);
     buttonPanel.add(createButton);
     buttonPanel.add(closeButton);
-    
+
     return buttonPanel;
   }
-  
+
   /**
    * Shows a dialog to edit the specified event.
    * Called by controller, not directly by view event handlers.
@@ -495,11 +493,11 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
   public void showEditEventDialog(IEvent event) {
     EditEventDialog dialog = new EditEventDialog(this, event);
     dialog.setVisible(true);
-    
+
     if (dialog.isConfirmed() && features != null) {
       // View makes a request to controller, which handles validation
-      features.editEvent(event.getSubject(), event.getStartDateTime(), 
-                        event.getEndDateTime(), dialog.getProperty(), dialog.getNewValue());
+      features.editEvent(event.getSubject(), event.getStartDateTime(),
+              event.getEndDateTime(), dialog.getProperty(), dialog.getNewValue());
     }
   }
 
@@ -516,20 +514,20 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
    */
   private class KeyboardComponent extends JPanel {
     private Features features;
-    
+
     public KeyboardComponent() {
       setupDefaultKeyMappings();
       setFocusable(true);
     }
-    
+
     public void addFeatures(Features features) {
       this.features = features;
     }
-    
+
     public void setHotKey(KeyStroke key, String featureName) {
       this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(key, featureName);
     }
-    
+
     private void setupDefaultKeyMappings() {
       this.getActionMap().put("previousMonth", new AbstractAction() {
         @Override
@@ -539,7 +537,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           }
         }
       });
-      
+
       this.getActionMap().put("nextMonth", new AbstractAction() {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -548,7 +546,7 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           }
         }
       });
-      
+
       this.getActionMap().put("showSchedule", new AbstractAction() {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -557,13 +555,13 @@ public class JFrameView extends JFrame implements ICalendarViewGUI {
           }
         }
       });
-      
+
       this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-          KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "previousMonth");
+              KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "previousMonth");
       this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-          KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "nextMonth");
+              KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "nextMonth");
       this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-          KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "showSchedule");
+              KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "showSchedule");
     }
   }
 }

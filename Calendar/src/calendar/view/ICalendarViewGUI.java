@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.KeyStroke;
 
 import calendar.controller.Features;
@@ -15,7 +16,6 @@ import calendar.model.IEvent;
  * to update the view without the view directly accessing the model.
  */
 public interface ICalendarViewGUI {
-
 
 
   /**
@@ -76,45 +76,45 @@ public interface ICalendarViewGUI {
    * @param eventList the formatted event list to display
    */
   void showEvents(String eventList);
-  
+
   // Methods supporting improved MVC design
-  
+
   /**
    * Updates the event data that the view uses for display.
    *
    * @param eventData map of dates to their events for display purposes
    */
   void updateEventData(Map<LocalDate, List<IEvent>> eventData);
-  
+
   /**
    * Sets up keyboard shortcuts for the application.
    *
-   * @param key the keystroke to bind
+   * @param key         the keystroke to bind
    * @param featureName the name of the feature to trigger
    */
   void setHotKey(KeyStroke key, String featureName);
-  
+
   /**
    * Shows a dialog to create a new event for the specified date.
    * Called by controller in response to high-level feature requests.
-   * 
+   *
    * @param selectedDate the date for the new event
    */
   void showCreateEventDialog(LocalDate selectedDate);
-  
+
   /**
    * Shows a dialog listing events for a specific date.
    * Called by controller in response to high-level feature requests.
-   * 
-   * @param date the date to show events for
+   *
+   * @param date   the date to show events for
    * @param events the list of events for that date
    */
   void showEventsForDate(LocalDate date, List<IEvent> events);
-  
+
   /**
    * Shows a dialog to edit the specified event.
    * Called by controller in response to high-level feature requests.
-   * 
+   *
    * @param event the event to edit
    */
   void showEditEventDialog(IEvent event);

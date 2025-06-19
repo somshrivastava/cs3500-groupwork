@@ -3,6 +3,7 @@ package calendar.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -55,6 +56,8 @@ public class ControllerGUI implements Features, ICalendarController {
       view.updateCurrentCalendar(currentCal.getCalendarName());
     } else {
       view.updateCurrentCalendar("Default Calendar");
+      manager.createCalendar("Default Calendar", ZoneId.systemDefault());
+      manager.useCalendar("Default Calendar");
     }
     
     // Provide initial event data to view

@@ -5,7 +5,6 @@ import calendar.model.ISmartCalendarModel;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
 /**
  * Mock implementation of ISmartCalendarModel for testing purposes.
